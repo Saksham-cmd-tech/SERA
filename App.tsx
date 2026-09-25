@@ -31,7 +31,9 @@ export default function App(): React.JSX.Element {
 
   useEffect(() => {
     async function setup() {
+      console.log('--- APP SETUP: INITIALIZING DB ---');
       await db.initDatabase();
+      console.log('--- APP SETUP: LOADING STORES ---');
       await Promise.all([
         loadSettings(),
         loadAccounts(),
@@ -41,18 +43,12 @@ export default function App(): React.JSX.Element {
         loadCategories(),
         loadSubscriptions(),
       ]);
+      console.log('--- APP SETUP: COMPLETE ---');
       setDbReady(true);
     }
     setup();
-  }, [
-    loadSettings,
-    loadAccounts,
-    loadTransactions,
-    loadBudgetSummary,
-    loadGoals,
-    loadCategories,
-    loadSubscriptions,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (settings.pinLockEnabled && settings.pinCode) {

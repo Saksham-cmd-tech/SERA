@@ -35,6 +35,10 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSCameraUsageDescription</key>
+	<string>Capture photos of receipts to attach to transactions.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Select receipt images from your photo library.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

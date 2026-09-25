@@ -15,6 +15,7 @@ interface HeaderProps {
   showBack?: boolean;
   onPressBack?: () => void;
   rightAction?: React.ReactNode;
+  avatarName?: string;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -27,6 +28,7 @@ export const Header: React.FC<HeaderProps> = ({
   showBack = false,
   onPressBack,
   rightAction,
+  avatarName,
 }) => {
   const { colors, spacing } = useAppTheme();
 
@@ -44,7 +46,7 @@ export const Header: React.FC<HeaderProps> = ({
           </TouchableOpacity>
         ) : showAvatar ? (
           <TouchableOpacity onPress={onPressAvatar} activeOpacity={0.8}>
-            <Avatar size={36} name="Alexander Wright" />
+            <Avatar size={36} name={avatarName || 'Alexander'} />
           </TouchableOpacity>
         ) : null}
 

@@ -47,7 +47,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   const { summary: budgetSummary, loadBudgetSummary } = useBudgetStore();
   const { goals, loadGoals } = useGoalStore();
-  const { togglePrivacyMode } = useSettingsStore();
+  const { togglePrivacyMode, settings } = useSettingsStore();
 
   const [accountModalVisible, setAccountModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -102,8 +102,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         {/* Header: Avatar, Greeting, and 6-dot Menu */}
         <Header
           showAvatar
+          avatarName={settings.userName || 'Alexander'}
           onPressAvatar={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
-          subtitle="GOOD MORNING"
+          subtitle={settings.userName ? `HELLO, ${settings.userName.toUpperCase()}` : 'GOOD MORNING'}
           title="Overview"
           showMenu
           onPressMenu={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
@@ -181,13 +182,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
         {/* Monthly Budget Section with Vertical Rhythm Bars & Coral Overrun Card */}
         <MonthlyBudgetBanner
-          monthName={budgetSummary?.monthName || 'SEPTEMBER'}
-          totalBudget={budgetSummary?.totalBudget || 45000}
-          totalSpent={budgetSummary?.totalSpent || 31240}
-          totalRemaining={budgetSummary?.totalRemaining || 13760}
-          isOverrun={budgetSummary?.isOverrun}
-          overrunAmount={budgetSummary?.overrunAmount || 3240}
-          overrunCategory={budgetSummary?.overrunCategoryName || 'DINING'}
+          monthName={budgetSummary?.monthName || new Date().toLocaleString('default', { month: 'long' }).toUpperCase()}
+          totalBudget={budgetSummary?.totalBudget || settings.monthlyBudgetGoal || 0}
+          totalSpent={budgetSummary?.totalSpent || 0}
+          totalRemaining={budgetSummary?.totalRemaining || 0}
+          isOverrun={budgetSummary?.isOverrun || false}
+          overrunAmount={budgetSummary?.overrunAmount || 0}
+          overrunCategory={budgetSummary?.overrunCategoryName || ''}
           onPressDetails={() => navigation.navigate('BudgetsTab')}
         />
 
@@ -214,40 +215,51 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             },
           ]}
         >
-          {budgetSummary?.categoryAnalysis?.slice(0, 3).map((cat, idx) => (
-            <View
-              key={cat.categoryId}
-              style={[
-                styles.spendingRow,
-                idx > 0 && { borderTopColor: colors.borderLight, borderTopWidth: 1 },
-              ]}
-            >
-              <View style={styles.spendingLeft}>
+          {budgetSummary?.categoryAnalysis && budgetSummary.categoryAnalysis.some(c => c.spentAmount > 0) ? (
+            budgetSummary.categoryAnalysis
+              .filter(c => c.spentAmount > 0)
+              .slice(0, 3)
+              .map((cat, idx) => (
                 <View
+                  key={cat.categoryId}
                   style={[
-                    styles.spendingDot,
-                    { backgroundColor: cat.isOverrun ? colors.coral : colors.cardDark },
+                    styles.spendingRow,
+                    idx > 0 && { borderTopColor: colors.borderLight, borderTopWidth: 1 },
                   ]}
-                />
-                <AppText
-                  variant="cardTitle"
-                  style={{ color: colors.textPrimary, fontSize: 15, marginLeft: 8 }}
                 >
-                  {cat.categoryName}
-                </AppText>
-              </View>
-              <AppText
-                variant="amountSmall"
-                privacySensitive
-                style={{
-                  color: cat.isOverrun ? colors.coral : colors.textPrimary,
-                  fontWeight: '700',
-                }}
-              >
-                {formatCurrency(cat.spentAmount, currencySymbol, isPrivacyMode, false)}
+                  <View style={styles.spendingLeft}>
+                    <View
+                      style={[
+                        styles.spendingDot,
+                        { backgroundColor: cat.isOverrun ? colors.coral : colors.cardDark },
+                      ]}
+                    />
+                    <AppText
+                      variant="cardTitle"
+                      style={{ color: colors.textPrimary, fontSize: 15, marginLeft: 8 }}
+                    >
+                      {cat.categoryName}
+                    </AppText>
+                  </View>
+                  <AppText
+                    variant="amountSmall"
+                    privacySensitive
+                    style={{
+                      color: cat.isOverrun ? colors.coral : colors.textPrimary,
+                      fontWeight: '700',
+                    }}
+                  >
+                    {formatCurrency(cat.spentAmount, currencySymbol, isPrivacyMode, false)}
+                  </AppText>
+                </View>
+              ))
+          ) : (
+            <View style={{ padding: spacing.md, alignItems: 'center' }}>
+              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                No category expenses recorded this month yet.
               </AppText>
             </View>
-          ))}
+          )}
         </View>
 
         {/* Savings Goals Preview */}
@@ -334,37 +346,57 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               },
             ]}
           >
-            {recentTransactions.map((tx, idx) => (
-              <TransactionRow
-                key={tx.id}
-                transaction={tx}
-                showDivider={idx < recentTransactions.length - 1}
-                onPress={() =>
-                  navigation.navigate('TransactionDetail', { transactionId: tx.id })
-                }
-              />
-            ))}
+            {recentTransactions.length > 0 ? (
+              <>
+                {recentTransactions.map((tx, idx) => (
+                  <TransactionRow
+                    key={tx.id}
+                    transaction={tx}
+                    showDivider={idx < recentTransactions.length - 1}
+                    onPress={() =>
+                      navigation.navigate('TransactionDetail', { transactionId: tx.id })
+                    }
+                  />
+                ))}
 
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => navigation.navigate('TransactionsTab')}
-              style={[
-                styles.showMoreButton,
-                { borderTopColor: colors.borderLight, borderTopWidth: 1 },
-              ]}
-            >
-              <AppText
-                variant="labelSmall"
-                style={{
-                  color: colors.textSecondary,
-                  letterSpacing: 1.8,
-                  fontWeight: '700',
-                  textAlign: 'center',
-                }}
-              >
-                SHOW MORE
-              </AppText>
-            </TouchableOpacity>
+                <TouchableOpacity
+                  activeOpacity={0.7}
+                  onPress={() => navigation.navigate('TransactionsTab')}
+                  style={[
+                    styles.showMoreButton,
+                    { borderTopColor: colors.borderLight, borderTopWidth: 1 },
+                  ]}
+                >
+                  <AppText
+                    variant="labelSmall"
+                    style={{
+                      color: colors.textSecondary,
+                      letterSpacing: 1.8,
+                      fontWeight: '700',
+                      textAlign: 'center',
+                    }}
+                  >
+                    SHOW MORE ↗
+                  </AppText>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <View style={styles.emptyRecentBox}>
+                <CategoryIcon name="Receipt" size={24} color={colors.textSecondary} />
+                <AppText
+                  variant="bodyMedium"
+                  style={{ color: colors.textPrimary, fontWeight: '600', marginTop: 8 }}
+                >
+                  No transactions yet
+                </AppText>
+                <AppText
+                  variant="metadata"
+                  style={{ color: colors.textSecondary, marginTop: 4, textAlign: 'center' }}
+                >
+                  Tap + EXPENSE above to record your first transaction.
+                </AppText>
+              </View>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -563,6 +595,12 @@ const styles = StyleSheet.create({
   },
   showMoreButton: {
     paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyRecentBox: {
+    paddingVertical: 28,
+    paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },

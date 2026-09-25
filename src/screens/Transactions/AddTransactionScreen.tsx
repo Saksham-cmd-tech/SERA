@@ -7,6 +7,7 @@ import {
   TextInput,
   Modal,
   Alert,
+  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
@@ -23,6 +24,7 @@ import { useSettingsStore } from '../../store/useSettingsStore';
 import { TransactionType } from '../../types';
 import { getCurrentTimeString, getTodayDateString } from '../../utils/date';
 import { formatCurrency } from '../../utils/currency';
+import { promptReceiptOptions } from '../../utils/receiptPicker';
 
 interface AddTransactionScreenProps {
   navigation: any;
@@ -64,7 +66,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
   const [date, _setDate] = useState<string>(getTodayDateString());
   const [time, _setTime] = useState<string>(getCurrentTimeString());
   const [notes, setNotes] = useState<string>('');
-  const [receiptAttached, setReceiptAttached] = useState<boolean>(false);
+  const [receiptUri, setReceiptUri] = useState<string | undefined>(undefined);
   const [keypadVisible, setKeypadVisible] = useState<boolean>(true);
   const [categoryModalVisible, setCategoryModalVisible] = useState<boolean>(false);
   const [accountModalVisible, setAccountModalVisible] = useState<boolean>(false);
@@ -130,7 +132,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
         date,
         time,
         currency: selectedAccount?.currency || 'INR',
-        receiptUri: receiptAttached ? 'sample_receipt_stored' : undefined,
+        receiptUri: receiptUri || undefined,
       });
 
       navigation.goBack();
@@ -356,32 +358,61 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
             />
           </View>
 
-          {/* Receipt Attachment Toggle */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => setReceiptAttached(!receiptAttached)}
-            style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}
-          >
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 80 }}>
-              RECEIPT
-            </AppText>
-            <View style={styles.pickerSelector}>
-              <CategoryIcon
-                name="Camera"
-                size={16}
-                color={receiptAttached ? colors.positive : colors.textSecondary}
-              />
-              <AppText
-                variant="bodyMedium"
-                style={{
-                  color: receiptAttached ? colors.positive : colors.textSecondary,
-                  marginLeft: 8,
-                }}
-              >
-                {receiptAttached ? 'Receipt Attached ✓' : 'Attach Receipt Image'}
+          {/* Receipt Attachment Section */}
+          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1, flexDirection: 'column', alignItems: 'stretch' }]}>
+            <View style={styles.receiptHeaderRow}>
+              <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 80 }}>
+                RECEIPT
               </AppText>
+              <TouchableOpacity
+                activeOpacity={0.7}
+                onPress={() => promptReceiptOptions(uri => setReceiptUri(uri))}
+                style={styles.attachBtn}
+              >
+                <CategoryIcon
+                  name="Camera"
+                  size={16}
+                  color={receiptUri ? colors.positive : colors.textPrimary}
+                />
+                <AppText
+                  variant="bodyMedium"
+                  style={{
+                    color: receiptUri ? colors.positive : colors.textPrimary,
+                    marginLeft: 6,
+                    fontWeight: '600',
+                  }}
+                >
+                  {receiptUri ? 'Change Photo' : 'Attach Photo / Receipt'}
+                </AppText>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+
+            {receiptUri ? (
+              <View style={[styles.receiptPreviewBox, { borderColor: colors.border, backgroundColor: colors.background, borderRadius: radius.xs }]}>
+                <Image source={{ uri: receiptUri }} style={styles.receiptThumb} resizeMode="cover" />
+                <View style={styles.receiptInfo}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <CategoryIcon name="CheckCircle2" size={14} color={colors.positive} />
+                    <AppText variant="labelSmall" style={{ color: colors.positive, fontWeight: '700', marginLeft: 4 }}>
+                      ATTACHED
+                    </AppText>
+                  </View>
+                  <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>
+                    Ready to save with transaction
+                  </AppText>
+                  <TouchableOpacity
+                    onPress={() => setReceiptUri(undefined)}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                    style={{ marginTop: 6 }}
+                  >
+                    <AppText variant="labelSmall" style={{ color: colors.coral, fontWeight: '700' }}>
+                      REMOVE RECEIPT
+                    </AppText>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : null}
+          </View>
         </View>
 
         {/* Save Button */}
@@ -639,5 +670,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     borderWidth: 1,
+  },
+  receiptHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  attachBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 4,
+  },
+  receiptPreviewBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    marginTop: 10,
+    borderWidth: 1,
+  },
+  receiptThumb: {
+    width: 64,
+    height: 64,
+    borderRadius: 4,
+  },
+  receiptInfo: {
+    flex: 1,
+    marginLeft: 12,
+    justifyContent: 'center',
   },
 });

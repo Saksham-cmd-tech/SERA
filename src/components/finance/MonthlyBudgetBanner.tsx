@@ -18,13 +18,13 @@ interface MonthlyBudgetBannerProps {
 }
 
 export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
-  monthName = 'SEPTEMBER',
-  totalBudget,
-  totalSpent: _totalSpent,
-  totalRemaining,
+  monthName = 'CURRENT MONTH',
+  totalBudget = 0,
+  totalSpent: _totalSpent = 0,
+  totalRemaining = 0,
   isOverrun = false,
-  overrunAmount = 3240,
-  overrunCategory = 'DINING',
+  overrunAmount = 0,
+  overrunCategory = '',
   onPressDetails,
 }) => {
   const { colors, spacing, radius, currencySymbol, isPrivacyMode } = useAppTheme();
@@ -117,8 +117,8 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
         </View>
       </View>
 
-      {/* Coral Warning Overrun Section (From Reference Screenshot 1) */}
-      {isOverrun && (
+      {/* Coral Warning Overrun Section */}
+      {isOverrun && overrunAmount > 0 && (
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={onPressDetails}

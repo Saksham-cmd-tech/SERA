@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { AppSettings } from '../types';
 import { db } from '../database/database';
 import { SEED_SETTINGS } from '../database/migrations/initialSeed';
+import { accountRepository } from '../database/repositories/accountRepository';
+import { budgetRepository } from '../database/repositories/budgetRepository';
 
 interface SettingsState {
   settings: AppSettings;
@@ -15,10 +17,12 @@ interface SettingsState {
   completeOnboarding: (
     currency: string,
     currencySymbol: string,
+    userName: string,
     initialBalance: number,
     accountName: string,
     monthlyBudget: number
   ) => Promise<void>;
+  resetToNewUser: () => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
@@ -76,8 +80,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   completeOnboarding: async (
     currency: string,
     currencySymbol: string,
-    _initialBalance: number,
-    _accountName: string,
+    userName: string,
+    initialBalance: number,
+    accountName: string,
     monthlyBudget: number
   ) => {
     const current = get().settings;
@@ -85,10 +90,39 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       ...current,
       currency,
       currencySymbol,
+      userName: userName.trim() || 'You',
       monthlyBudgetGoal: monthlyBudget,
       hasCompletedOnboarding: true,
     };
     set({ settings: updated });
     await db.saveSettings(updated);
+
+    // Save starting account
+    const accounts = await accountRepository.getAll();
+    const primaryAccountName = accountName.trim() || 'Primary Bank';
+    if (accounts.length > 0) {
+      accounts[0].name = primaryAccountName;
+      accounts[0].balance = initialBalance;
+      accounts[0].currency = currency;
+      await db.saveAccounts(accounts);
+    } else {
+      await accountRepository.create({
+        name: primaryAccountName,
+        type: 'bank',
+        balance: initialBalance,
+        currency,
+        institution: 'Primary Bank',
+      });
+    }
+
+    // Set starting monthly budget
+    if (monthlyBudget > 0) {
+      await budgetRepository.setTotalBudget(monthlyBudget);
+    }
+  },
+
+  resetToNewUser: async () => {
+    await db.initDatabase(true);
+    set({ settings: SEED_SETTINGS });
   },
 }));

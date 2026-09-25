@@ -31,6 +31,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
     setCurrency,
     setPinCode,
     updateSettings,
+    resetToNewUser,
   } = useSettingsStore();
 
   const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
@@ -49,15 +50,14 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
   const handleResetData = () => {
     Alert.alert(
       'Reset All Data',
-      'This will reset all balances, transactions, and budgets back to default demo state.',
+      'This will wipe all transactions, accounts, and budgets, and return to the onboarding screen.',
       [
         { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Reset to Demo',
+          text: 'Reset Everything',
           style: 'destructive',
           onPress: async () => {
-            await db.seedInitialData();
-            Alert.alert('Reset Complete', 'Demo financial data restored.');
+            await resetToNewUser();
           },
         },
       ]
@@ -342,9 +342,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
 
           <TouchableOpacity onPress={handleResetData} style={styles.rowItem}>
             <AppText variant="bodyLarge" style={{ color: colors.coral, fontWeight: '600' }}>
-              Restore Demo Data
+              Reset & Return to Onboarding
             </AppText>
-            <CategoryIcon name="Trash2" size={16} color={colors.coral} />
+            <CategoryIcon name="RotateCcw" size={16} color={colors.coral} />
           </TouchableOpacity>
         </View>
       </ScrollView>

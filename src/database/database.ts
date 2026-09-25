@@ -33,7 +33,7 @@ const STORAGE_KEYS = {
   SUBSCRIPTIONS: '@money_tracker_subscriptions_v1',
   RECURRING_TRANSACTIONS: '@money_tracker_recurring_transactions_v1',
   SETTINGS: '@money_tracker_settings_v1',
-  INITIALIZED: '@money_tracker_initialized_v1',
+  INITIALIZED: '@money_tracker_initialized_v2',
 };
 
 type Listener = () => void;

@@ -11,27 +11,22 @@ export type RootStackParamList = {
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
-export const RootNavigator: React.FC = () => {
-  const settings = useSettingsStore(state => state.settings);
-  const isLoading = useSettingsStore(state => state.isLoading);
 
-  if (isLoading) {
-    return null;
-  }
+export const RootNavigator: React.FC = () => {
+  const hasCompletedOnboarding = useSettingsStore(
+    state => state.settings?.hasCompletedOnboarding ?? false
+  );
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {!settings.hasCompletedOnboarding ? (
+      {!hasCompletedOnboarding ? (
         <Stack.Screen name="Onboarding">
-          {props => (
-            <OnboardingScreen
-              {...props}
-              onComplete={() => props.navigation.replace('Main')}
-            />
-          )}
+          {props => <OnboardingScreen {...props} onComplete={() => {}} />}
         </Stack.Screen>
-      ) : null}
-      <Stack.Screen name="Main" component={MainTabNavigator} />
+      ) : (
+        <Stack.Screen name="Main" component={MainTabNavigator} />
+      )}
     </Stack.Navigator>
   );
 };
+
