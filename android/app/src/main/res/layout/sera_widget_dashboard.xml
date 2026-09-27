@@ -22,7 +22,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
                 android:letterSpacing="0.1"
+                android:maxLines="1"
                 android:text="SERA • NET WORTH"
                 android:textColor="#88A08B"
                 android:textSize="10sp"
@@ -48,7 +50,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
                 android:letterSpacing="0.1"
+                android:maxLines="1"
                 android:text="THIS MONTH"
                 android:textColor="#88A08B"
                 android:textSize="10sp"
@@ -77,7 +81,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
         android:letterSpacing="0.1"
+        android:maxLines="1"
         android:text="RECENT ACTIVITY"
         android:textColor="#7A8F7D"
         android:textSize="10sp"
@@ -104,7 +110,8 @@
             android:id="@+id/widget_dash_tx_amt_1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-₹420"
+            android:maxLines="1"
+            android:text="-₹250"
             android:textColor="#E8988C"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -123,7 +130,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Nature Basket Groceries"
+            android:text="Swiggy Delivery"
             android:textColor="#FFFFFF"
             android:textSize="12sp" />
 
@@ -131,17 +138,24 @@
             android:id="@+id/widget_dash_tx_amt_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="-₹980"
+            android:maxLines="1"
+            android:text="-₹350"
             android:textColor="#E8988C"
             android:textSize="12sp"
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- Flexible spacer for resizing -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
     <!-- Bottom Actions Row -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
         <TextView
@@ -151,6 +165,7 @@
             android:layout_weight="1"
             android:background="@drawable/widget_button_bg"
             android:gravity="center"
+            android:maxLines="1"
             android:paddingTop="7dp"
             android:paddingBottom="7dp"
             android:text="+ Expense"
@@ -166,6 +181,7 @@
             android:layout_weight="1"
             android:background="@drawable/widget_button_bg"
             android:gravity="center"
+            android:maxLines="1"
             android:paddingTop="7dp"
             android:paddingBottom="7dp"
             android:text="+ Income"
@@ -181,6 +197,7 @@
             android:layout_weight="1"
             android:background="@drawable/widget_button_bg"
             android:gravity="center"
+            android:maxLines="1"
             android:paddingTop="7dp"
             android:paddingBottom="7dp"
             android:text="⇄ Transfer"

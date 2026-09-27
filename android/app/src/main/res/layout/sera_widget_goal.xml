@@ -10,17 +10,24 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:ellipsize="end"
         android:letterSpacing="0.1"
+        android:maxLines="1"
         android:text="SERA • SAVINGS GOAL"
         android:textColor="#88A08B"
         android:textSize="10sp"
         android:textStyle="bold" />
 
+    <!-- Top flexible spacer -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.5" />
+
     <TextView
         android:id="@+id/widget_goal_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Emergency Fund"
@@ -33,6 +40,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:text="₹25,000 of ₹50,000"
         android:textColor="#C5C8B5"
         android:textSize="12sp" />
@@ -52,8 +61,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
+        android:maxLines="1"
         android:text="50% completed"
         android:textColor="#7CA982"
         android:textSize="11sp"
         android:textStyle="bold" />
+
+    <!-- Bottom flexible spacer -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 </LinearLayout>

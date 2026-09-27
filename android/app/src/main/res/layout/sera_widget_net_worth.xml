@@ -18,7 +18,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:ellipsize="end"
             android:letterSpacing="0.1"
+            android:maxLines="1"
             android:text="SERA • TOTAL NET WORTH"
             android:textColor="#88A08B"
             android:textSize="11sp"
@@ -29,6 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/widget_button_bg"
+            android:maxLines="1"
             android:paddingStart="10dp"
             android:paddingTop="5dp"
             android:paddingEnd="10dp"
@@ -50,11 +53,17 @@
         android:textSize="26sp"
         android:textStyle="bold" />
 
+    <!-- Flexible spacer for resizing -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
     <!-- Accounts Snapshot List -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="8dp"
         android:orientation="vertical">
 
         <LinearLayout
@@ -77,7 +86,8 @@
                 android:id="@+id/widget_acc_bal_1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="₹35,000"
+                android:maxLines="1"
+                android:text="₹38,600"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -104,6 +114,7 @@
                 android:id="@+id/widget_acc_bal_2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:maxLines="1"
                 android:text="₹10,000"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp"
