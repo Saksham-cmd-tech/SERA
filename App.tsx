@@ -1,6 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { StatusBar, View, StyleSheet, Modal, TextInput, Alert } from 'react-native';
-import { NavigationContainer, LinkingOptions, getStateFromPath } from '@react-navigation/native';
+import {
+  StatusBar,
+  View,
+  StyleSheet,
+  Modal,
+  TextInput,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
+import {
+  NavigationContainer,
+  LinkingOptions,
+  getStateFromPath,
+  createNavigationContainerRef,
+} from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { db } from './src/database/database';
@@ -15,7 +28,9 @@ import { useAppTheme } from './src/hooks/useAppTheme';
 import { AppText } from './src/components/common/AppText';
 import { AppButton } from './src/components/common/AppButton';
 import { FinanceGrid } from './src/components/common/FinanceGrid';
+import { CategoryIcon } from './src/components/common/CategoryIcon';
 import { notificationService } from './src/services/notificationService';
+import { smsService, DetectedSmsTransaction } from './src/services/smsService';
 
 export default function App(): React.JSX.Element {
   const [dbReady, setDbReady] = useState(false);
@@ -94,39 +109,35 @@ export default function App(): React.JSX.Element {
   );
 }
 
+export const navigationRef = createNavigationContainerRef<any>();
+
 const linking: LinkingOptions<any> = {
   prefixes: ['sera://'],
   getStateFromPath: (path, options) => {
-    const cleanPath = path.replace(/^\/+/, '').split('?')[0];
-    if (cleanPath === 'add-expense') {
-      return {
-        routes: [
-          {
-            name: 'Main',
-            state: {
-              index: 1,
-              routes: [
-                { name: 'HomeTab' },
-                {
-                  name: 'TransactionsTab',
-                  state: {
-                    index: 1,
-                    routes: [
-                      { name: 'TransactionsMain' },
-                      { name: 'AddTransaction', params: { initialType: 'expense' } },
-                    ],
-                  },
-                },
-                { name: 'BudgetsTab' },
-                { name: 'GoalsTab' },
-                { name: 'MoreTab' },
-              ],
-            },
-          },
-        ],
-      };
+    const [pathOnly, queryString] = path.replace(/^\/+/, '').split('?');
+    const cleanPath = pathOnly;
+    const queryParams: Record<string, string> = {};
+    if (queryString) {
+      queryString.split('&').forEach(part => {
+        const [k, v] = part.split('=');
+        if (k) {
+          try {
+            queryParams[decodeURIComponent(k)] = decodeURIComponent(v || '');
+          } catch (e) {
+            queryParams[k] = v || '';
+          }
+        }
+      });
     }
-    if (cleanPath === 'add-income') {
+
+    if (cleanPath === 'add-expense' || cleanPath === 'add-income') {
+      const isIncome = cleanPath === 'add-income' || queryParams.type === 'income';
+      const initialAmount = queryParams.amount ? parseFloat(queryParams.amount) : undefined;
+      const initialMerchant = queryParams.merchant || undefined;
+      const initialCategoryId = queryParams.category || undefined;
+      const initialNote = queryParams.note || undefined;
+      const autoPromptConfirm = queryParams.autoPrompt === 'true';
+
       return {
         routes: [
           {
@@ -141,7 +152,17 @@ const linking: LinkingOptions<any> = {
                     index: 1,
                     routes: [
                       { name: 'TransactionsMain' },
-                      { name: 'AddTransaction', params: { initialType: 'income' } },
+                      {
+                        name: 'AddTransaction',
+                        params: {
+                          initialType: isIncome ? 'income' : 'expense',
+                          initialAmount,
+                          initialMerchant,
+                          initialCategoryId,
+                          initialNote,
+                          autoPromptConfirm,
+                        },
+                      },
                     ],
                   },
                 },
@@ -197,14 +218,123 @@ function AppContent({
   setEnteredPin: (v: string) => void;
   onUnlock: () => void;
 }): React.JSX.Element {
-  const { colors, isDark } = useAppTheme();
+  const { colors, isDark, currencySymbol, radius, spacing } = useAppTheme();
+  const [detectedSms, setDetectedSms] = useState<DetectedSmsTransaction | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = smsService.subscribeToSmsEvents((data: DetectedSmsTransaction) => {
+      setDetectedSms(data);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const handleAcceptSms = () => {
+    if (!detectedSms) return;
+    const sms = detectedSms;
+    setDetectedSms(null);
+
+    if (navigationRef.isReady()) {
+      navigationRef.navigate('TransactionsTab', {
+        screen: 'AddTransaction',
+        params: {
+          initialType: sms.type,
+          initialAmount: sms.amount,
+          initialMerchant: sms.merchant,
+          initialCategoryId: sms.categoryId,
+          initialNote: 'Auto-detected SMS',
+          autoPromptConfirm: true,
+        },
+      });
+    }
+  };
 
   return (
     <View style={[styles.appWrapper, { backgroundColor: colors.background }]}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      <NavigationContainer linking={linking}>
+      <NavigationContainer ref={navigationRef} linking={linking}>
         <RootNavigator />
       </NavigationContainer>
+
+      {/* In-App Realtime SMS Detection Modal */}
+      <Modal visible={!!detectedSms} transparent animationType="fade">
+        <View style={[styles.inAppModalBackdrop, { backgroundColor: colors.overlay }]}>
+          <View
+            style={[
+              styles.inAppModalCard,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+                borderRadius: radius.md,
+                padding: spacing.lg,
+              },
+            ]}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+              <View style={[styles.pulseIcon, { backgroundColor: colors.cardDark }]}>
+                <CategoryIcon name="Zap" size={16} color={colors.accent} strokeWidth={2.4} />
+              </View>
+              <View style={{ marginLeft: 10 }}>
+                <AppText variant="label" style={{ color: colors.positive, letterSpacing: 1.5, fontWeight: '700' }}>
+                  SMS TRANSACTION DETECTED
+                </AppText>
+                <AppText variant="cardTitle" style={{ color: colors.textPrimary }}>
+                  Record this {detectedSms?.type || 'expense'}?
+                </AppText>
+              </View>
+            </View>
+
+            <View
+              style={[
+                styles.detectedDetailsBox,
+                {
+                  backgroundColor: colors.background,
+                  borderColor: colors.border,
+                  padding: spacing.md,
+                  borderRadius: radius.xs,
+                  marginBottom: spacing.md,
+                },
+              ]}
+            >
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
+                <AppText variant="displayMedium" style={{ color: colors.textPrimary, fontWeight: '700' }}>
+                  {currencySymbol}{detectedSms?.amountStr}
+                </AppText>
+                <AppText variant="bodyMedium" style={{ color: colors.textPrimary, fontWeight: '600' }}>
+                  {detectedSms?.merchant}
+                </AppText>
+              </View>
+              {!!detectedSms?.rawText && (
+                <AppText
+                  variant="metadata"
+                  numberOfLines={2}
+                  style={{ color: colors.textSecondary, marginTop: 8 }}
+                >
+                  "{detectedSms.rawText}"
+                </AppText>
+              )}
+            </View>
+
+            <AppButton
+              title="ADD TO SERA"
+              onPress={handleAcceptSms}
+              variant="primary"
+              size="large"
+            />
+
+            <TouchableOpacity
+              onPress={() => setDetectedSms(null)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={{ marginTop: 12, alignItems: 'center', paddingVertical: 4 }}
+            >
+              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                DISMISS
+              </AppText>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       {/* Security PIN Lock Screen */}
       <Modal visible={isLocked} transparent={false} animationType="fade">
@@ -281,5 +411,26 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderWidth: 1,
     borderRadius: 4,
+  },
+  inAppModalBackdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  inAppModalCard: {
+    width: '100%',
+    maxWidth: 380,
+    borderWidth: 1,
+  },
+  pulseIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  detectedDetailsBox: {
+    borderWidth: 1,
   },
 });

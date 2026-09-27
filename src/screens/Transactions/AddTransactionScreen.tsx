@@ -37,6 +37,10 @@ interface AddTransactionScreenProps {
     params?: {
       initialType?: TransactionType;
       initialCategoryId?: string;
+      initialAmount?: number;
+      initialMerchant?: string;
+      initialNote?: string;
+      autoPromptConfirm?: boolean;
     };
   };
 }
@@ -58,8 +62,10 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
 
   // Form State
   const [type, setType] = useState<TransactionType>(initialType);
-  const [amountStr, setAmountStr] = useState<string>('0');
-  const [merchant, setMerchant] = useState<string>('');
+  const [amountStr, setAmountStr] = useState<string>(
+    route?.params?.initialAmount ? route.params.initialAmount.toString() : '0'
+  );
+  const [merchant, setMerchant] = useState<string>(route?.params?.initialMerchant || '');
   const [categoryId, setCategoryId] = useState<string>(
     initialCategoryId || settings.defaultCategoryId || (categories[0]?.id || 'cat-food')
   );
@@ -71,7 +77,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
   );
   const [date, _setDate] = useState<string>(getTodayDateString());
   const [time, _setTime] = useState<string>(getCurrentTimeString());
-  const [notes, setNotes] = useState<string>('');
+  const [notes, setNotes] = useState<string>(route?.params?.initialNote || '');
   const [receiptUri, setReceiptUri] = useState<string | undefined>(undefined);
   const [keypadVisible, setKeypadVisible] = useState<boolean>(true);
   const [categoryModalVisible, setCategoryModalVisible] = useState<boolean>(false);
@@ -79,6 +85,37 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
   const [targetAccountField, setTargetAccountField] = useState<'from' | 'to'>('from');
   const [smartFillVisible, setSmartFillVisible] = useState<boolean>(false);
   const [smartInput, setSmartInput] = useState<string>('');
+  const [showSmsBanner, setShowSmsBanner] = useState<boolean>(
+    !!(route?.params?.autoPromptConfirm && route?.params?.initialAmount)
+  );
+
+  useEffect(() => {
+    if (route?.params?.initialAmount) {
+      setAmountStr(route.params.initialAmount.toString());
+    }
+    if (route?.params?.initialMerchant) {
+      setMerchant(route.params.initialMerchant);
+    }
+    if (route?.params?.initialNote) {
+      setNotes(route.params.initialNote);
+    }
+    if (route?.params?.initialCategoryId) {
+      setCategoryId(route.params.initialCategoryId);
+    }
+    if (route?.params?.initialType) {
+      setType(route.params.initialType);
+    }
+    if (route?.params?.autoPromptConfirm && route?.params?.initialAmount) {
+      setShowSmsBanner(true);
+    }
+  }, [
+    route?.params?.initialAmount,
+    route?.params?.initialMerchant,
+    route?.params?.initialNote,
+    route?.params?.initialCategoryId,
+    route?.params?.initialType,
+    route?.params?.autoPromptConfirm,
+  ]);
 
   const parsedResult: ParsedExpenseResult | null = smartInput.trim()
     ? parseExpenseText(smartInput, categories, accounts)
@@ -248,7 +285,55 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           { paddingHorizontal: spacing.screenPadding },
         ]}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
+        {/* SMS Auto-Detection Confirmation Banner */}
+        {showSmsBanner && (
+          <View
+            style={[
+              styles.smsDetectedBanner,
+              {
+                backgroundColor: 'rgba(52, 106, 62, 0.12)',
+                borderColor: colors.accent,
+                borderRadius: radius.xs,
+                padding: spacing.md,
+                marginBottom: spacing.md,
+              },
+            ]}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <CategoryIcon name="Zap" size={16} color={colors.positive} strokeWidth={2.4} />
+              <AppText variant="label" style={{ color: colors.positive, marginLeft: 8, letterSpacing: 1.2, fontWeight: '700' }}>
+                SMS TRANSACTION DETECTED
+              </AppText>
+            </View>
+            <AppText variant="bodyMedium" style={{ color: colors.textPrimary, marginTop: 4 }}>
+              Pre-filled {currencySymbol}{amountStr} at {merchant || 'Merchant'}.
+            </AppText>
+            <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
+              <TouchableOpacity
+                onPress={() => {
+                  handleSave();
+                  setShowSmsBanner(false);
+                }}
+                style={[styles.bannerConfirmBtn, { backgroundColor: colors.cardDark }]}
+              >
+                <AppText variant="labelSmall" style={{ color: colors.textInverted, fontWeight: '700' }}>
+                  CONFIRM & SAVE NOW
+                </AppText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => setShowSmsBanner(false)}
+                style={[styles.bannerDismissBtn, { borderColor: colors.border }]}
+              >
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                  EDIT DETAILS
+                </AppText>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
         {/* Type Segmented Selector */}
         <View style={{ marginBottom: spacing.md }}>
           <SegmentedControl
@@ -1010,5 +1095,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 2,
+  },
+  smsDetectedBanner: {
+    borderWidth: 1,
+  },
+  bannerConfirmBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+  },
+  bannerDismissBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 4,
+    borderWidth: 1,
   },
 });

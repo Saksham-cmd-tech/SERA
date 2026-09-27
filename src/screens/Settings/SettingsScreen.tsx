@@ -23,6 +23,7 @@ import { notificationService } from '../../services/notificationService';
 import { budgetRepository } from '../../database/repositories/budgetRepository';
 import { formatCurrency } from '../../utils/currency';
 import { db } from '../../database/database';
+import { smsService } from '../../services/smsService';
 
 interface SettingsScreenProps {
   navigation: any;
@@ -41,9 +42,19 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
     resetToNewUser,
   } = useSettingsStore();
 
+  const [smsDetectionEnabled, setSmsDetectionEnabled] = useState(true);
+  const [hasSmsPerm, setHasSmsPerm] = useState(false);
+
   useFocusEffect(
     useCallback(() => {
       loadSettings();
+      async function checkSms() {
+        const perm = await smsService.hasPermission();
+        const enabled = await smsService.isDetectionEnabled();
+        setHasSmsPerm(perm);
+        setSmsDetectionEnabled(enabled);
+      }
+      checkSms();
     }, [loadSettings])
   );
 
@@ -405,6 +416,99 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
               <CategoryIcon name="Bell" size={16} color={colors.positive} />
               <AppText variant="bodyLarge" style={{ color: colors.positive, fontWeight: '600', marginLeft: 10 }}>
                 Send Test System Notification
+              </AppText>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+
+        {/* SECTION: SMS AUTO-DETECTION */}
+        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 6 }}>
+          SMS TRANSACTION AUTO-DETECTION
+        </AppText>
+        <View
+          style={[
+            styles.sectionCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              borderRadius: radius.xs,
+              marginBottom: spacing.md,
+            },
+          ]}
+        >
+          {/* SMS Detection Toggle */}
+          <View style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
+                  Bank SMS Detection
+                </AppText>
+                <View
+                  style={{
+                    backgroundColor: hasSmsPerm ? 'rgba(52, 106, 62, 0.15)' : 'rgba(217, 83, 79, 0.15)',
+                    paddingHorizontal: 6,
+                    paddingVertical: 2,
+                    borderRadius: 2,
+                    marginLeft: 8,
+                  }}
+                >
+                  <AppText
+                    variant="labelSmall"
+                    style={{
+                      color: hasSmsPerm ? colors.accent : colors.coral,
+                      fontSize: 9,
+                      fontWeight: '700',
+                    }}
+                  >
+                    {hasSmsPerm ? 'ACTIVE' : 'PERMISSION NEEDED'}
+                  </AppText>
+                </View>
+              </View>
+              <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>
+                Auto-detect bank debit alerts & push prompt to record expense
+              </AppText>
+            </View>
+            <Switch
+              value={smsDetectionEnabled && hasSmsPerm}
+              onValueChange={async (val) => {
+                if (val) {
+                  const perm = await smsService.requestPermission();
+                  setHasSmsPerm(perm);
+                  if (perm) {
+                    await smsService.setDetectionEnabled(true);
+                    setSmsDetectionEnabled(true);
+                  } else {
+                    Alert.alert(
+                      'SMS Permission Required',
+                      'Please allow SMS permission so SERA can detect bank transactions locally.'
+                    );
+                  }
+                } else {
+                  await smsService.setDetectionEnabled(false);
+                  setSmsDetectionEnabled(false);
+                }
+              }}
+              trackColor={{ false: colors.border, true: colors.cardDark }}
+              thumbColor={smsDetectionEnabled && hasSmsPerm ? colors.accent : '#F4F4F4'}
+            />
+          </View>
+
+          {/* Test SMS Detection Action */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={async () => {
+              await smsService.simulateSmsDetection(
+                'Debited Rs 350.00 from a/c **1234 to Swiggy UPI Ref 882910 on 27-Sep-26. Avail Bal: Rs 14,200.',
+                'VK-HDFCBK'
+              );
+            }}
+            style={styles.rowItem}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <CategoryIcon name="Zap" size={16} color={colors.positive} strokeWidth={2.4} />
+              <AppText variant="bodyLarge" style={{ color: colors.positive, fontWeight: '600', marginLeft: 10 }}>
+                Test Bank SMS Detection
               </AppText>
             </View>
             <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />

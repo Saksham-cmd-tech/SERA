@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" />
 
     <application
       android:name=".MainApplication"
@@ -23,6 +25,23 @@
         <intent-filter>
           <action android:name="com.moneytracker.ACTION_NOTIFICATION" />
           <action android:name="android.intent.action.BOOT_COMPLETED" />
+        </intent-filter>
+      </receiver>
+
+      <receiver
+        android:name=".SmsReceiver"
+        android:exported="true"
+        android:permission="android.permission.BROADCAST_SMS">
+        <intent-filter android:priority="999">
+          <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+        </intent-filter>
+      </receiver>
+
+      <receiver
+        android:name=".SmsActionReceiver"
+        android:exported="false">
+        <intent-filter>
+          <action android:name="com.moneytracker.ACTION_SMS_DISMISS" />
         </intent-filter>
       </receiver>
 
