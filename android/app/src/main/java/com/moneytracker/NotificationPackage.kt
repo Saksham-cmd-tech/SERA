@@ -12,7 +12,8 @@ class NotificationPackage : ReactPackage {
         return listOf(
             NotificationModule(reactContext),
             SmsModule(reactContext),
-            BiometricModule(reactContext)
+            BiometricModule(reactContext),
+            WidgetModule(reactContext)
         )
     }
 

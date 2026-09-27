@@ -8,6 +8,7 @@ import {
   Alert,
   TouchableOpacity,
   AppState,
+  Linking,
 } from 'react-native';
 import {
   NavigationContainer,
@@ -33,6 +34,7 @@ import { CategoryIcon } from './src/components/common/CategoryIcon';
 import { notificationService } from './src/services/notificationService';
 import { smsService, DetectedSmsTransaction } from './src/services/smsService';
 import { biometricService } from './src/services/biometricService';
+import { widgetService } from './src/services/widgetService';
 
 export default function App(): React.JSX.Element {
   const [dbReady, setDbReady] = useState(false);
@@ -65,6 +67,15 @@ export default function App(): React.JSX.Element {
       ]);
       console.log('--- APP SETUP: COMPLETE ---');
       setDbReady(true);
+
+      // Sync data to Android Home Screen Widgets
+      widgetService.syncWidgets({
+        currencySymbol: useSettingsStore.getState().settings.currencySymbol,
+        accounts: useAccountStore.getState().accounts,
+        transactions: useTransactionStore.getState().transactions,
+        budgetSummary: useBudgetStore.getState().summary,
+        goals: useGoalStore.getState().goals,
+      });
     }
     setup();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -252,6 +263,72 @@ const linking: LinkingOptions<any> = {
         ],
       };
     }
+    if (cleanPath === 'budgets') {
+      return {
+        routes: [
+          {
+            name: 'Main',
+            state: {
+              index: 2,
+              routes: [
+                { name: 'HomeTab' },
+                { name: 'TransactionsTab' },
+                { name: 'BudgetsTab' },
+                { name: 'GoalsTab' },
+                { name: 'MoreTab' },
+              ],
+            },
+          },
+        ],
+      };
+    }
+    if (cleanPath === 'goals') {
+      return {
+        routes: [
+          {
+            name: 'Main',
+            state: {
+              index: 3,
+              routes: [
+                { name: 'HomeTab' },
+                { name: 'TransactionsTab' },
+                { name: 'BudgetsTab' },
+                { name: 'GoalsTab' },
+                { name: 'MoreTab' },
+              ],
+            },
+          },
+        ],
+      };
+    }
+    if (cleanPath === 'accounts') {
+      return {
+        routes: [
+          {
+            name: 'Main',
+            state: {
+              index: 4,
+              routes: [
+                { name: 'HomeTab' },
+                { name: 'TransactionsTab' },
+                { name: 'BudgetsTab' },
+                { name: 'GoalsTab' },
+                {
+                  name: 'MoreTab',
+                  state: {
+                    index: 1,
+                    routes: [
+                      { name: 'Settings' },
+                      { name: 'ManageAccounts' },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      };
+    }
     return getStateFromPath(path, options);
   },
 };
@@ -275,6 +352,79 @@ function AppContent({
 }): React.JSX.Element {
   const { colors, isDark, currencySymbol, radius, spacing } = useAppTheme();
   const [detectedSms, setDetectedSms] = useState<DetectedSmsTransaction | null>(null);
+
+  useEffect(() => {
+    const handleUrl = (event: { url: string }) => {
+      const url = event.url;
+      if (!url) return;
+      const [pathOnly, queryString] = url.replace(/^sera:\/\//, '').replace(/^\/+/, '').split('?');
+      const cleanPath = pathOnly;
+      const queryParams: Record<string, string> = {};
+      if (queryString) {
+        queryString.split('&').forEach(part => {
+          const [k, v] = part.split('=');
+          if (k) {
+            try {
+              queryParams[decodeURIComponent(k)] = decodeURIComponent(v || '');
+            } catch (e) {
+              queryParams[k] = v || '';
+            }
+          }
+        });
+      }
+
+      if (cleanPath === 'add-expense' || cleanPath === 'add-income' || cleanPath === 'add-transfer') {
+        const detectedType =
+          cleanPath === 'add-transfer' || queryParams.type === 'transfer'
+            ? 'transfer'
+            : cleanPath === 'add-income' || queryParams.type === 'income'
+            ? 'income'
+            : 'expense';
+        const initialAmount = queryParams.amount ? parseFloat(queryParams.amount) : undefined;
+        const initialMerchant = queryParams.merchant || undefined;
+        const initialCategoryId = queryParams.category || undefined;
+        const initialNote = queryParams.note || undefined;
+        const autoPromptConfirm = queryParams.autoPrompt === 'true';
+
+        if (navigationRef.isReady()) {
+          navigationRef.navigate('TransactionsTab', {
+            screen: 'AddTransaction',
+            params: {
+              initialType: detectedType,
+              initialAmount,
+              initialMerchant,
+              initialCategoryId,
+              initialNote,
+              autoPromptConfirm,
+            },
+          });
+        }
+      } else if (cleanPath === 'budgets') {
+        if (navigationRef.isReady()) {
+          navigationRef.navigate('BudgetsTab');
+        }
+      } else if (cleanPath === 'goals') {
+        if (navigationRef.isReady()) {
+          navigationRef.navigate('GoalsTab');
+        }
+      } else if (cleanPath === 'accounts') {
+        if (navigationRef.isReady()) {
+          navigationRef.navigate('MoreTab', {
+            screen: 'ManageAccounts',
+          });
+        }
+      } else if (cleanPath === 'subscriptions') {
+        if (navigationRef.isReady()) {
+          navigationRef.navigate('MoreTab', {
+            screen: 'Subscriptions',
+          });
+        }
+      }
+    };
+
+    const sub = Linking.addEventListener('url', handleUrl);
+    return () => sub.remove();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = smsService.subscribeToSmsEvents((data: DetectedSmsTransaction) => {

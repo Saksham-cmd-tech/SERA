@@ -6,4 +6,9 @@
     <string name="shortcut_add_income_long">Record an income in SERA</string>
     <string name="shortcut_subscriptions_short">Subscriptions</string>
     <string name="shortcut_subscriptions_long">View recurring subscriptions</string>
+    <string name="widget_quick_action_desc">SERA 1-Tap Quick Action Dock</string>
+    <string name="widget_budget_desc">SERA Budget &amp; Daily Burn Rate</string>
+    <string name="widget_net_worth_desc">SERA Net Worth &amp; Accounts Snapshot</string>
+    <string name="widget_goal_desc">SERA Savings Goal Tracker</string>
+    <string name="widget_dashboard_desc">SERA Live Financial Dashboard</string>
 </resources>

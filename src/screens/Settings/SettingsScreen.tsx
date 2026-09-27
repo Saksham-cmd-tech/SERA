@@ -25,6 +25,11 @@ import { formatCurrency } from '../../utils/currency';
 import { db } from '../../database/database';
 import { smsService } from '../../services/smsService';
 import { biometricService } from '../../services/biometricService';
+import { widgetService } from '../../services/widgetService';
+import { useAccountStore } from '../../store/useAccountStore';
+import { useTransactionStore } from '../../store/useTransactionStore';
+import { useBudgetStore } from '../../store/useBudgetStore';
+import { useGoalStore } from '../../store/useGoalStore';
 
 interface SettingsScreenProps {
   navigation: any;
@@ -583,6 +588,54 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                 </AppText>
                 <AppText variant="metadata" style={{ color: colors.textSecondary }}>
                   Simulates transfer alert: "Transferred ₹2,000 to Savings via IMPS"
+                </AppText>
+              </View>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+
+        {/* SECTION: HOME SCREEN WIDGETS */}
+        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 6 }}>
+          HOME SCREEN WIDGETS
+        </AppText>
+        <View
+          style={[
+            styles.sectionCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              borderRadius: radius.xs,
+              marginBottom: spacing.xl,
+            },
+          ]}
+        >
+          <TouchableOpacity
+            onPress={async () => {
+              const ok = await widgetService.syncWidgets({
+                currencySymbol,
+                accounts: useAccountStore.getState().accounts,
+                transactions: useTransactionStore.getState().transactions,
+                budgetSummary: useBudgetStore.getState().summary,
+                goals: useGoalStore.getState().goals,
+              });
+              if (ok) {
+                Alert.alert(
+                  'Widgets Synced',
+                  'All 5 SERA widgets have been updated with your latest balances, budgets, and transactions!\n\nTo place them on your home screen, long-press any empty space on your desktop and tap "Widgets" → "SERA".'
+                );
+              }
+            }}
+            style={styles.rowItem}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+              <CategoryIcon name="Zap" size={16} color={colors.accent} strokeWidth={2.4} />
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
+                  Sync All 5 Widgets Now
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  Updates Quick Actions, Budget, Net Worth, Goal &amp; Dashboard
                 </AppText>
               </View>
             </View>

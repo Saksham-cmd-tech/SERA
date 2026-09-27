@@ -46,6 +46,62 @@
         </intent-filter>
       </receiver>
 
+      <!-- SERA Home Screen Widgets -->
+      <receiver
+        android:name=".SeraQuickActionWidgetProvider"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent-filter>
+        <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/sera_widget_quick_action_info" />
+      </receiver>
+
+      <receiver
+        android:name=".SeraBudgetWidgetProvider"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent-filter>
+        <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/sera_widget_budget_info" />
+      </receiver>
+
+      <receiver
+        android:name=".SeraNetWorthWidgetProvider"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent-filter>
+        <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/sera_widget_net_worth_info" />
+      </receiver>
+
+      <receiver
+        android:name=".SeraGoalWidgetProvider"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent-filter>
+        <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/sera_widget_goal_info" />
+      </receiver>
+
+      <receiver
+        android:name=".SeraDashboardWidgetProvider"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent-filter>
+        <meta-data
+          android:name="android.appwidget.provider"
+          android:resource="@xml/sera_widget_dashboard_info" />
+      </receiver>
+
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"

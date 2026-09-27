@@ -24,7 +24,9 @@ import { useCategoryStore } from '../../store/useCategoryStore';
 import { useAccountStore } from '../../store/useAccountStore';
 import { useBudgetStore } from '../../store/useBudgetStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
+import { useGoalStore } from '../../store/useGoalStore';
 import { notificationService } from '../../services/notificationService';
+import { widgetService } from '../../services/widgetService';
 import { TransactionType } from '../../types';
 import { getCurrentTimeString, getTodayDateString } from '../../utils/date';
 import { formatCurrency } from '../../utils/currency';
@@ -269,6 +271,14 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           }
         }
       }
+
+      widgetService.syncWidgets({
+        currencySymbol,
+        accounts: useAccountStore.getState().accounts,
+        transactions: useTransactionStore.getState().transactions,
+        budgetSummary: useBudgetStore.getState().summary,
+        goals: useGoalStore.getState().goals,
+      });
 
       navigation.goBack();
     } catch (e: any) {
