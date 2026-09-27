@@ -15,6 +15,7 @@ import { useTransactionStore } from '../../store/useTransactionStore';
 import { useCategoryStore } from '../../store/useCategoryStore';
 import { useAccountStore } from '../../store/useAccountStore';
 import { formatCurrency } from '../../utils/currency';
+import { formatMonthYear } from '../../utils/date';
 
 interface ReportsScreenProps {
   navigation: any;
@@ -28,7 +29,12 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
 
   const [selectedMonth, setSelectedMonth] = useState<'current' | 'previous'>('current');
 
-  const monthLabel = selectedMonth === 'current' ? 'SEPTEMBER 2026' : 'AUGUST 2026';
+  const now = useMemo(() => new Date(), []);
+  const prevMonthDate = useMemo(() => new Date(now.getFullYear(), now.getMonth() - 1, 1), [now]);
+  const currentMonthLabel = useMemo(() => formatMonthYear(now), [now]);
+  const prevMonthLabel = useMemo(() => formatMonthYear(prevMonthDate), [prevMonthDate]);
+
+  const monthLabel = selectedMonth === 'current' ? currentMonthLabel : prevMonthLabel;
 
   // Calculate report metrics
   const income = selectedMonth === 'current' ? (financialSummary?.totalIncome ?? 0) : 0;
@@ -95,7 +101,7 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
               variant="labelSmall"
               style={{ color: selectedMonth === 'current' ? colors.textInverted : colors.textPrimary }}
             >
-              SEPTEMBER 2026 (CURRENT)
+              {currentMonthLabel}
             </AppText>
           </TouchableOpacity>
 
@@ -107,7 +113,7 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
               variant="labelSmall"
               style={{ color: selectedMonth === 'previous' ? colors.textInverted : colors.textPrimary }}
             >
-              AUGUST 2026
+              {prevMonthLabel}
             </AppText>
           </TouchableOpacity>
         </View>
@@ -175,10 +181,16 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
           </View>
 
           <View style={[styles.metricRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="cardTitle" style={{ color: colors.textSecondary, fontSize: 16 }}>
+            <AppText variant="cardTitle" style={{ color: colors.textSecondary, fontSize: 15, marginRight: 12 }}>
               Largest Transaction
             </AppText>
-            <AppText variant="bodyLarge" privacySensitive style={{ color: colors.textPrimary, fontWeight: '700' }}>
+            <AppText
+              variant="bodyLarge"
+              privacySensitive
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={{ color: colors.textPrimary, fontWeight: '700', flex: 1, textAlign: 'right' }}
+            >
               {largestTx ? `${largestTx.merchant} — ${formatCurrency(largestTx.amount, currencySymbol, isPrivacyMode, false)}` : 'None'}
             </AppText>
           </View>

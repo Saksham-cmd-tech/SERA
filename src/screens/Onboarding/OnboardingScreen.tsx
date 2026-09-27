@@ -77,7 +77,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
       await completeOnboarding(
         selectedCurrency,
         currentCurrencySymbol,
-        userName.trim() || 'Alexander',
+        userName.trim() || 'User',
         parsedBalance,
         accountName.trim() || 'Primary Bank',
         parsedBudget
@@ -376,7 +376,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               <TextInput
                 value={userName}
                 onChangeText={setUserName}
-                placeholder="e.g. Alexander"
+                placeholder="e.g. John Doe"
                 placeholderTextColor={colors.textMuted}
                 style={[
                   styles.input,

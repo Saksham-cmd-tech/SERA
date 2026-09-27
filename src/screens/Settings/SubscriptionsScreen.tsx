@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -10,6 +10,7 @@ import {
   Switch,
   RefreshControl,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from '../../components/common/AppText';
@@ -32,17 +33,25 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
   const accounts = useAccountStore(state => state.accounts);
   const categories = useCategoryStore(state => state.categories);
 
+  const getInitialNextDate = () => {
+    const d = new Date();
+    d.setMonth(d.getMonth() + 1);
+    return d.toISOString().split('T')[0];
+  };
+
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [name, setName] = useState('');
-  const [amount, setAmount] = useState('649');
+  const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState<'monthly' | 'yearly'>('monthly');
-  const [nextBillingDate, setNextBillingDate] = useState('2026-10-18');
+  const [nextBillingDate, setNextBillingDate] = useState(getInitialNextDate());
   const [reminder, setReminder] = useState(true);
 
-  useEffect(() => {
-    loadSubscriptions();
-  }, [loadSubscriptions]);
+  useFocusEffect(
+    useCallback(() => {
+      loadSubscriptions();
+    }, [loadSubscriptions])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -67,7 +76,7 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
       frequency,
       nextBillingDate,
       categoryId: categories.find(c => c.name === 'Subscriptions')?.id || categories[0]?.id || 'cat-subscriptions',
-      accountId: accounts[0]?.id || 'acc-hdfc',
+      accountId: accounts[0]?.id || '',
       reminderEnabled: reminder,
     });
 
@@ -211,6 +220,24 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
             </View>
           </View>
         ))}
+
+        {summary.subscriptions.length === 0 && (
+          <View
+            style={{
+              padding: spacing.lg,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.surface,
+              borderRadius: radius.xs,
+              alignItems: 'center',
+              marginBottom: spacing.md,
+            }}
+          >
+            <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+              No recurring subscriptions recorded yet.
+            </AppText>
+          </View>
+        )}
 
         <AppButton
           title="+ ADD SUBSCRIPTION"

@@ -42,11 +42,11 @@ export const Header: React.FC<HeaderProps> = ({
             hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
             style={styles.backButton}
           >
-            <CategoryIcon name="ChevronRight" size={22} color={colors.textPrimary} />
+            <CategoryIcon name="ChevronLeft" size={22} color={colors.textPrimary} />
           </TouchableOpacity>
         ) : showAvatar ? (
           <TouchableOpacity onPress={onPressAvatar} activeOpacity={0.8}>
-            <Avatar size={36} name={avatarName || 'Alexander'} />
+            <Avatar size={36} name={avatarName || 'User'} />
           </TouchableOpacity>
         ) : null}
 
@@ -121,7 +121,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   backButton: {
-    transform: [{ rotate: '180deg' }],
     padding: 4,
   },
   centerCol: {

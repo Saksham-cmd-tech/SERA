@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import {
   View,
   SectionList,
@@ -8,6 +8,7 @@ import {
   Modal,
   RefreshControl,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from '../../components/common/AppText';
@@ -44,6 +45,12 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
   const [searchVisible, setSearchVisible] = useState(false);
   const [filterModalVisible, setFilterModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadTransactions();
+    }, [loadTransactions])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);

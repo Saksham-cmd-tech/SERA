@@ -43,7 +43,7 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
   );
 
   const [amountStr, setAmountStr] = useState<string>(
-    selectedCategory.budgetLimit ? selectedCategory.budgetLimit.toString() : '8000'
+    selectedCategory?.budgetLimit ? selectedCategory.budgetLimit.toString() : '0'
   );
   const [keypadVisible, setKeypadVisible] = useState<boolean>(true);
   const [period, setPeriod] = useState<'monthly' | 'weekly'>('monthly');

@@ -61,14 +61,43 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
       .sort((a, b) => b.amount - a.amount);
   }, [transactions, categories, colors]);
 
-  // Monthly cash flow dummy comparison for minimal bar display
-  const monthlyFlow = [
-    { month: 'MAY', income: 72000, expense: 38000 },
-    { month: 'JUN', income: 75000, expense: 41000 },
-    { month: 'JUL', income: 78000, expense: 39500 },
-    { month: 'AUG', income: 82000, expense: 44000 },
-    { month: 'SEP', income: 85000, expense: 42350 },
-  ];
+  // Monthly cash flow dynamically derived from recorded transactions
+  const monthlyFlow = useMemo(() => {
+    const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+    const now = new Date();
+    const result = [];
+
+    for (let i = 4; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const year = d.getFullYear();
+      const monthNum = d.getMonth() + 1;
+      const monthPrefix = `${year}-${String(monthNum).padStart(2, '0')}`;
+      const monthName = monthNames[d.getMonth()];
+
+      let income = 0;
+      let expense = 0;
+
+      for (const tx of transactions) {
+        if (tx.date.startsWith(monthPrefix)) {
+          if (tx.type === 'income') income += tx.amount;
+          else if (tx.type === 'expense') expense += tx.amount;
+        }
+      }
+
+      result.push({
+        month: monthName,
+        income,
+        expense,
+      });
+    }
+
+    return result;
+  }, [transactions]);
+
+  const maxFlowAmount = useMemo(() => {
+    const maxVal = Math.max(0, ...monthlyFlow.map(m => Math.max(m.income, m.expense)));
+    return maxVal > 0 ? maxVal : 1;
+  }, [monthlyFlow]);
 
   return (
     <SafeAreaView
@@ -200,8 +229,8 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
           </AppText>
           <View style={styles.barChartContainer}>
             {monthlyFlow.map(m => {
-              const incomeHeight = (m.income / 90000) * 80;
-              const expenseHeight = (m.expense / 90000) * 80;
+              const incomeHeight = m.income > 0 ? Math.max(4, (m.income / maxFlowAmount) * 80) : 0;
+              const expenseHeight = m.expense > 0 ? Math.max(4, (m.expense / maxFlowAmount) * 80) : 0;
               return (
                 <View key={m.month} style={styles.chartCol}>
                   <View style={styles.barsPair}>

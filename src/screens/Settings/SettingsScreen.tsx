@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -9,13 +9,17 @@ import {
   Modal,
   TextInput,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from '../../components/common/AppText';
 import { Header } from '../../components/navigation/Header';
+import { Avatar } from '../../components/common/Avatar';
 import { CategoryIcon } from '../../components/common/CategoryIcon';
 import { AppButton } from '../../components/common/AppButton';
 import { useSettingsStore } from '../../store/useSettingsStore';
+import { budgetRepository } from '../../database/repositories/budgetRepository';
+import { formatCurrency } from '../../utils/currency';
 import { db } from '../../database/database';
 
 interface SettingsScreenProps {
@@ -26,6 +30,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
   const { colors, spacing, radius, currencySymbol, isPrivacyMode, isDark } = useAppTheme();
   const {
     settings,
+    loadSettings,
     togglePrivacyMode,
     toggleDarkMode,
     setCurrency,
@@ -34,6 +39,15 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
     resetToNewUser,
   } = useSettingsStore();
 
+  useFocusEffect(
+    useCallback(() => {
+      loadSettings();
+    }, [loadSettings])
+  );
+
+  const [profileModalVisible, setProfileModalVisible] = useState(false);
+  const [editName, setEditName] = useState(settings.userName || '');
+  const [editBudget, setEditBudget] = useState(settings.monthlyBudgetGoal ? String(settings.monthlyBudgetGoal) : '');
   const [currencyModalVisible, setCurrencyModalVisible] = useState(false);
   const [pinModalVisible, setPinModalVisible] = useState(false);
   const [enteredPin, setEnteredPin] = useState('');
@@ -75,13 +89,31 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
     }
   };
 
+  const handleSaveProfile = async () => {
+    const trimmed = editName.trim();
+    if (!trimmed) {
+      Alert.alert('Required', 'Please enter your name.');
+      return;
+    }
+    const parsedBudget = parseFloat(editBudget) || 0;
+    await updateSettings({
+      userName: trimmed,
+      monthlyBudgetGoal: parsedBudget,
+    });
+    if (parsedBudget > 0) {
+      await budgetRepository.setTotalBudget(parsedBudget);
+    }
+    setProfileModalVisible(false);
+    Alert.alert('Profile Saved', 'Your profile details have been updated.');
+  };
+
   return (
     <SafeAreaView
       edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
       <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header showBack onPressBack={() => navigation.goBack()} subtitle="PREFERENCES" title="Settings" />
+        <Header subtitle="PREFERENCES" title="Settings" />
       </View>
 
       <ScrollView
@@ -92,7 +124,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
         showsVerticalScrollIndicator={false}
       >
         {/* Profile Card */}
-        <View
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => {
+            setEditName(settings.userName || '');
+            setEditBudget(settings.monthlyBudgetGoal ? String(settings.monthlyBudgetGoal) : '');
+            setProfileModalVisible(true);
+          }}
           style={[
             styles.profileCard,
             {
@@ -105,26 +143,23 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
           ]}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View
-              style={[
-                styles.avatarLarge,
-                { backgroundColor: colors.cardDark, borderColor: colors.border },
-              ]}
-            >
-              <AppText variant="cardTitle" style={{ color: colors.textInverted }}>
-                AW
-              </AppText>
-            </View>
-            <View style={{ marginLeft: 12 }}>
-              <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 18 }}>
-                {settings.userName || 'Alexander Wright'}
-              </AppText>
-              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+            <Avatar size={48} name={settings.userName || 'User'} uri={settings.userAvatarUri} />
+            <View style={{ marginLeft: 12, flex: 1 }}>
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 18 }}>
+                  {settings.userName || 'User'}
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  EDIT ✎
+                </AppText>
+              </View>
+              <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>
                 Primary Currency: {settings.currency} ({currencySymbol})
+                {settings.monthlyBudgetGoal > 0 ? ` • Budget: ${formatCurrency(settings.monthlyBudgetGoal, currencySymbol, isPrivacyMode, false)}` : ''}
               </AppText>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* SECTION: FINANCE & STATEMENTS */}
         <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 6 }}>
@@ -169,12 +204,25 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
 
           <TouchableOpacity
             onPress={() => navigation.navigate('Accounts')}
-            style={styles.rowItem}
+            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <CategoryIcon name="Wallet" size={16} color={colors.textPrimary} />
               <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 10 }}>
                 Manage Accounts & Net Worth
+              </AppText>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Analytics')}
+            style={styles.rowItem}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <CategoryIcon name="SlidersHorizontal" size={16} color={colors.textPrimary} />
+              <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 10 }}>
+                Financial Analytics & Insights
               </AppText>
             </View>
             <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
@@ -475,6 +523,82 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
           </View>
         </TouchableOpacity>
       </Modal>
+
+      {/* Edit Profile Modal */}
+      <Modal
+        visible={profileModalVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setProfileModalVisible(false)}
+      >
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setProfileModalVisible(false)}
+          style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
+        >
+          <TouchableOpacity
+            activeOpacity={1}
+            style={[
+              styles.sheet,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+                borderRadius: radius.md,
+                padding: spacing.lg,
+              },
+            ]}
+          >
+            <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
+              Edit Profile & Budget
+            </AppText>
+
+            <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginBottom: 4 }}>
+              YOUR NAME
+            </AppText>
+            <TextInput
+              value={editName}
+              onChangeText={setEditName}
+              placeholder="Your name"
+              placeholderTextColor={colors.textMuted}
+              style={[
+                styles.inputField,
+                {
+                  backgroundColor: colors.background,
+                  borderColor: colors.border,
+                  color: colors.textPrimary,
+                },
+              ]}
+            />
+
+            <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginTop: 14, marginBottom: 4 }}>
+              MONTHLY BUDGET GOAL ({currencySymbol})
+            </AppText>
+            <TextInput
+              value={editBudget}
+              onChangeText={setEditBudget}
+              placeholder="e.g. 35000"
+              placeholderTextColor={colors.textMuted}
+              keyboardType="numeric"
+              style={[
+                styles.inputField,
+                {
+                  backgroundColor: colors.background,
+                  borderColor: colors.border,
+                  color: colors.textPrimary,
+                },
+              ]}
+            />
+
+            <AppButton
+              title="SAVE CHANGES"
+              onPress={handleSaveProfile}
+              variant="primary"
+              size="large"
+              style={{ marginTop: spacing.lg }}
+            />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -533,5 +657,12 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderWidth: 1,
     borderRadius: 4,
+  },
+  inputField: {
+    borderWidth: 1,
+    borderRadius: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
   },
 });

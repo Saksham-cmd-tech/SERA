@@ -43,6 +43,12 @@ import {
   Upload,
   AlertTriangle,
   Menu,
+  RotateCcw,
+  ChevronLeft,
+  Maximize2,
+  X,
+  CheckCircle2,
+  ShieldAlert,
 } from 'lucide-react-native';
 
 export type IconName =
@@ -88,7 +94,13 @@ export type IconName =
   | 'Download'
   | 'Upload'
   | 'AlertTriangle'
-  | 'Menu';
+  | 'Menu'
+  | 'RotateCcw'
+  | 'ChevronLeft'
+  | 'Maximize2'
+  | 'X'
+  | 'CheckCircle2'
+  | 'ShieldAlert';
 
 interface CategoryIconProps {
   name: string;
@@ -188,6 +200,18 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
       return <AlertTriangle {...iconProps} />;
     case 'Menu':
       return <Menu {...iconProps} />;
+    case 'RotateCcw':
+      return <RotateCcw {...iconProps} />;
+    case 'ChevronLeft':
+      return <ChevronLeft {...iconProps} />;
+    case 'Maximize2':
+      return <Maximize2 {...iconProps} />;
+    case 'X':
+      return <X {...iconProps} />;
+    case 'CheckCircle2':
+      return <CheckCircle2 {...iconProps} />;
+    case 'ShieldAlert':
+      return <ShieldAlert {...iconProps} />;
     case 'MoreHorizontal':
       return <MoreHorizontal {...iconProps} />;
     case 'Tag':

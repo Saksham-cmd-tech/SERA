@@ -26,12 +26,22 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
   const accounts = useAccountStore(state => state.accounts);
 
   const [name, setName] = useState('');
-  const [targetAmountStr, setTargetAmountStr] = useState('120000');
-  const [currentAmountStr, setCurrentAmountStr] = useState('0');
-  const [targetDate, setTargetDate] = useState('2027-06-30');
-  const [monthlyContributionStr, setMonthlyContributionStr] = useState('8500');
+  const [targetAmountStr, setTargetAmountStr] = useState('');
+  const [currentAmountStr, setCurrentAmountStr] = useState('');
+  const [targetDate, setTargetDate] = useState(() => {
+    const d = new Date();
+    d.setFullYear(d.getFullYear() + 1);
+    return d.toISOString().split('T')[0];
+  });
+  const [monthlyContributionStr, setMonthlyContributionStr] = useState('');
   const [selectedIcon, setSelectedIcon] = useState('Laptop');
-  const [selectedAccountId, setSelectedAccountId] = useState(accounts[0]?.id || 'acc-hdfc');
+  const [selectedAccountId, setSelectedAccountId] = useState(accounts[0]?.id || '');
+
+  React.useEffect(() => {
+    if (!selectedAccountId && accounts.length > 0) {
+      setSelectedAccountId(accounts[0].id);
+    }
+  }, [accounts, selectedAccountId]);
 
   const iconsList = ['Laptop', 'Plane', 'Shield', 'Home', 'Car', 'Heart', 'GraduationCap', 'Wallet'];
 
@@ -48,6 +58,12 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
 
     const current = parseFloat(currentAmountStr) || 0;
     const monthly = parseFloat(monthlyContributionStr) || Math.round(target / 12);
+    const accountId = selectedAccountId || accounts[0]?.id;
+
+    if (!accountId) {
+      Alert.alert('No Account', 'Please create an account before creating a savings goal.');
+      return;
+    }
 
     await createGoal({
       name: name.trim(),
@@ -55,7 +71,7 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
       currentAmount: current,
       targetDate,
       monthlyContribution: monthly,
-      accountId: selectedAccountId,
+      accountId,
       icon: selectedIcon,
       color: '#E4CF55',
     });
@@ -142,7 +158,7 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
             <TextInput
               value={name}
               onChangeText={setName}
-              placeholder="e.g. MacBook Pro M4, Japan Trip"
+              placeholder="e.g. MacBook Pro, Trip"
               placeholderTextColor={colors.textMuted}
               style={[styles.input, { color: colors.textPrimary }]}
             />
@@ -185,7 +201,7 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
             <TextInput
               value={monthlyContributionStr}
               onChangeText={setMonthlyContributionStr}
-              placeholder="8500"
+              placeholder={targetAmountStr ? String(Math.round(parseFloat(targetAmountStr) / 12 || 0)) : 'e.g. 5000'}
               placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
               style={[styles.input, { color: colors.textPrimary }]}

@@ -9,6 +9,8 @@ import { transactionRepository } from '../database/repositories/transactionRepos
 import { formatCurrency } from '../utils/currency';
 import { useBudgetStore } from './useBudgetStore';
 import { useAccountStore } from './useAccountStore';
+import { useSettingsStore } from './useSettingsStore';
+import { useCategoryStore } from './useCategoryStore';
 
 interface TransactionState {
   transactions: Transaction[];
@@ -146,14 +148,18 @@ function generateInsights(
     }
   }
 
+  const currency = useSettingsStore.getState().settings.currencySymbol || '₹';
+  const categories = useCategoryStore.getState().categories;
+
   if (largestCatId) {
-    const catName = largestCatId.replace('cat-', '').toUpperCase();
+    const matchedCategory = categories.find(c => c.id === largestCatId);
+    const catName = (matchedCategory ? matchedCategory.name : largestCatId.replace('cat-', '')).toUpperCase();
     insights.push({
       id: 'ins-largest',
       type: 'info',
       title: 'PRIMARY OUTFLOW',
       description: `Your highest expense this month is ${catName}.`,
-      metric: formatCurrency(largestAmount, '₹'),
+      metric: formatCurrency(largestAmount, currency),
     });
   }
 
@@ -174,16 +180,16 @@ function generateInsights(
       id: 'ins-overrun',
       type: 'warning',
       title: 'BUDGET LIMIT EXCEEDED',
-      description: `Spending in ${summary.overrunCategory || 'Budget'} exceeded the allocation by ${formatCurrency(summary.overrunAmount || 0, '₹')}.`,
-      metric: formatCurrency(summary.overrunAmount || 0, '₹'),
+      description: `Spending in ${summary.overrunCategory || 'Budget'} exceeded the allocation by ${formatCurrency(summary.overrunAmount || 0, currency)}.`,
+      metric: formatCurrency(summary.overrunAmount || 0, currency),
     });
   } else if (summary && summary.budgetRemaining > 0) {
     insights.push({
       id: 'ins-under',
       type: 'positive',
       title: 'WITHIN ALLOCATION',
-      description: `You have ${formatCurrency(summary.budgetRemaining, '₹')} remaining in your monthly budget.`,
-      metric: formatCurrency(summary.budgetRemaining, '₹'),
+      description: `You have ${formatCurrency(summary.budgetRemaining, currency)} remaining in your monthly budget.`,
+      metric: formatCurrency(summary.budgetRemaining, currency),
     });
   }
 

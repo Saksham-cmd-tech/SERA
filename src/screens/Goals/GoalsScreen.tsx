@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -9,6 +9,7 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from '../../components/common/AppText';
@@ -35,9 +36,11 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
   const [contributionAmount, setContributionAmount] = useState('');
   const [contributionNotes, setContributionNotes] = useState('');
 
-  useEffect(() => {
-    loadGoals();
-  }, [loadGoals]);
+  useFocusEffect(
+    useCallback(() => {
+      loadGoals();
+    }, [loadGoals])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);

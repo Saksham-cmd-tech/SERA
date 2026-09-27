@@ -105,7 +105,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         {/* Header: Avatar, Greeting, and 6-dot Menu */}
         <Header
           showAvatar
-          avatarName={settings.userName || 'Alexander'}
+          avatarName={settings.userName || 'User'}
           onPressAvatar={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
           subtitle={settings.userName ? `HELLO, ${settings.userName.toUpperCase()}` : 'GOOD MORNING'}
           title="Overview"
@@ -200,7 +200,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
             SPENDING BREAKDOWN
           </AppText>
-          <TouchableOpacity onPress={() => navigation.navigate('MoreTab', { screen: 'Analytics' })}>
+          <TouchableOpacity onPress={() => navigation.navigate('Analytics')}>
             <AppText variant="labelSmall" style={{ color: colors.textPrimary, fontWeight: '700' }}>
               ANALYTICS ↗
             </AppText>

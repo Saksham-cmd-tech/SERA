@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -58,10 +58,10 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
     initialCategoryId || settings.defaultCategoryId || (categories[0]?.id || 'cat-food')
   );
   const [accountId, setAccountId] = useState<string>(
-    settings.defaultAccountId || (accounts[0]?.id || 'acc-hdfc')
+    settings.defaultAccountId || accounts[0]?.id || ''
   );
   const [toAccountId, setToAccountId] = useState<string>(
-    accounts[1]?.id || accounts[0]?.id || 'acc-cash'
+    accounts[1]?.id || accounts[0]?.id || ''
   );
   const [date, _setDate] = useState<string>(getTodayDateString());
   const [time, _setTime] = useState<string>(getCurrentTimeString());
@@ -71,6 +71,19 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
   const [categoryModalVisible, setCategoryModalVisible] = useState<boolean>(false);
   const [accountModalVisible, setAccountModalVisible] = useState<boolean>(false);
   const [targetAccountField, setTargetAccountField] = useState<'from' | 'to'>('from');
+
+  useEffect(() => {
+    if (accounts.length > 0) {
+      if (!accountId || !accounts.some(a => a.id === accountId)) {
+        const defaultAcc = accounts.find(a => a.id === settings.defaultAccountId) || accounts[0];
+        setAccountId(defaultAcc.id);
+      }
+      if (!toAccountId || !accounts.some(a => a.id === toAccountId)) {
+        const secondary = accounts.find(a => a.id !== (settings.defaultAccountId || accounts[0]?.id)) || accounts[0];
+        setToAccountId(secondary.id);
+      }
+    }
+  }, [accounts, settings.defaultAccountId, accountId, toAccountId]);
 
   const selectedCategory = categories.find(c => c.id === categoryId);
   const selectedAccount = accounts.find(a => a.id === accountId);
@@ -114,6 +127,24 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
       return;
     }
 
+    const effectiveAccountId = accounts.some(a => a.id === accountId) ? accountId : accounts[0]?.id;
+    if (!effectiveAccountId) {
+      Alert.alert('No Account', 'Please add or select a valid account first.');
+      return;
+    }
+
+    let effectiveToAccountId: string | undefined = undefined;
+    if (type === 'transfer') {
+      effectiveToAccountId = accounts.some(a => a.id === toAccountId && a.id !== effectiveAccountId)
+        ? toAccountId
+        : accounts.find(a => a.id !== effectiveAccountId)?.id;
+
+      if (!effectiveToAccountId) {
+        Alert.alert('Invalid Transfer', 'You need at least two accounts to perform a transfer.');
+        return;
+      }
+    }
+
     const finalMerchant =
       merchant.trim() ||
       (type === 'transfer'
@@ -125,13 +156,13 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
         type,
         amount: numAmount,
         categoryId: type === 'transfer' ? 'cat-other' : categoryId,
-        accountId,
-        toAccountId: type === 'transfer' ? toAccountId : undefined,
+        accountId: effectiveAccountId,
+        toAccountId: effectiveToAccountId,
         merchant: finalMerchant,
         description: notes.trim() || undefined,
         date,
         time,
-        currency: selectedAccount?.currency || 'INR',
+        currency: selectedAccount?.currency || settings.currency || 'INR',
         receiptUri: receiptUri || undefined,
       });
 

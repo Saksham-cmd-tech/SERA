@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -9,6 +9,7 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from '../../components/common/AppText';
@@ -17,6 +18,7 @@ import { AccountCard } from '../../components/finance/AccountCard';
 import { CategoryIcon } from '../../components/common/CategoryIcon';
 import { AppButton } from '../../components/common/AppButton';
 import { useAccountStore } from '../../store/useAccountStore';
+import { useSettingsStore } from '../../store/useSettingsStore';
 import { AccountType } from '../../types';
 import { formatCurrency } from '../../utils/currency';
 
@@ -27,6 +29,7 @@ interface AccountsScreenProps {
 export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) => {
   const { colors, spacing, radius, currencySymbol, isPrivacyMode } = useAppTheme();
   const { accounts, netWorth, loadAccounts, createAccount, isLoading } = useAccountStore();
+  const settings = useSettingsStore(state => state.settings);
 
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -35,9 +38,11 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
   const [type, setType] = useState<AccountType>('bank');
   const [institution, setInstitution] = useState('');
 
-  useEffect(() => {
-    loadAccounts();
-  }, [loadAccounts]);
+  useFocusEffect(
+    useCallback(() => {
+      loadAccounts();
+    }, [loadAccounts])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -56,7 +61,7 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
       name: name.trim(),
       type,
       balance: bal,
-      currency: 'INR',
+      currency: settings.currency || 'INR',
       institution: institution.trim() || undefined,
     });
 

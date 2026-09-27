@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -32,14 +32,26 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
   const { colors, spacing, radius, currencySymbol } = useAppTheme();
   const { accounts, transferFunds } = useAccountStore();
 
-  const defaultFromId = route?.params?.defaultFromId || accounts[0]?.id || 'acc-hdfc';
+  const defaultFromId = route?.params?.defaultFromId || accounts[0]?.id || '';
   const defaultToId =
-    accounts.find(a => a.id !== defaultFromId)?.id || accounts[1]?.id || accounts[0]?.id;
+    accounts.find(a => a.id !== defaultFromId)?.id || accounts[1]?.id || '';
 
   const [fromAccountId, setFromAccountId] = useState(defaultFromId);
   const [toAccountId, setToAccountId] = useState(defaultToId);
-  const [amountStr, setAmountStr] = useState('20000');
+  const [amountStr, setAmountStr] = useState('');
   const [notes, setNotes] = useState('');
+
+  useEffect(() => {
+    if (accounts.length > 0) {
+      if (!fromAccountId || !accounts.some(a => a.id === fromAccountId)) {
+        setFromAccountId(accounts[0].id);
+      }
+      if (!toAccountId || !accounts.some(a => a.id === toAccountId) || toAccountId === fromAccountId) {
+        const alt = accounts.find(a => a.id !== (fromAccountId || accounts[0].id));
+        if (alt) setToAccountId(alt.id);
+      }
+    }
+  }, [accounts, fromAccountId, toAccountId]);
 
   const fromAccount = accounts.find(a => a.id === fromAccountId);
   const toAccount = accounts.find(a => a.id === toAccountId);
