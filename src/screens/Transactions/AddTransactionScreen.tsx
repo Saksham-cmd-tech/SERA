@@ -20,7 +20,9 @@ import { CategoryIcon } from '../../components/common/CategoryIcon';
 import { useTransactionStore } from '../../store/useTransactionStore';
 import { useCategoryStore } from '../../store/useCategoryStore';
 import { useAccountStore } from '../../store/useAccountStore';
+import { useBudgetStore } from '../../store/useBudgetStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
+import { notificationService } from '../../services/notificationService';
 import { TransactionType } from '../../types';
 import { getCurrentTimeString, getTodayDateString } from '../../utils/date';
 import { formatCurrency } from '../../utils/currency';
@@ -49,6 +51,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
   const categories = useCategoryStore(state => state.categories);
   const accounts = useAccountStore(state => state.accounts);
   const settings = useSettingsStore(state => state.settings);
+  const budgetSummary = useBudgetStore(state => state.summary);
 
   // Form State
   const [type, setType] = useState<TransactionType>(initialType);
@@ -165,6 +168,21 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
         currency: selectedAccount?.currency || settings.currency || 'INR',
         receiptUri: receiptUri || undefined,
       });
+
+      if (type === 'expense' && (settings.budgetAlertsEnabled ?? true)) {
+        const cat = budgetSummary?.categoryAnalysis?.find(c => c.categoryId === categoryId);
+        if (cat && cat.limitAmount > 0) {
+          const newSpent = cat.spentAmount + numAmount;
+          if (newSpent >= cat.limitAmount) {
+            notificationService.sendBudgetAlert(
+              selectedCategory?.name || 'Category',
+              newSpent,
+              cat.limitAmount,
+              currencySymbol
+            );
+          }
+        }
+      }
 
       navigation.goBack();
     } catch (e: any) {

@@ -147,6 +147,9 @@ export interface AppSettings {
   hasCompletedOnboarding: boolean;
   userName: string;
   userAvatarUri?: string;
+  notificationsEnabled?: boolean;
+  dailyReminderEnabled?: boolean;
+  budgetAlertsEnabled?: boolean;
 }
 
 export interface TransactionFilterOptions {

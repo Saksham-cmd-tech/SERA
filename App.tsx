@@ -15,6 +15,7 @@ import { useAppTheme } from './src/hooks/useAppTheme';
 import { AppText } from './src/components/common/AppText';
 import { AppButton } from './src/components/common/AppButton';
 import { FinanceGrid } from './src/components/common/FinanceGrid';
+import { notificationService } from './src/services/notificationService';
 
 export default function App(): React.JSX.Element {
   const [dbReady, setDbReady] = useState(false);
@@ -33,6 +34,8 @@ export default function App(): React.JSX.Element {
     async function setup() {
       console.log('--- APP SETUP: INITIALIZING DB ---');
       await db.initDatabase();
+      console.log('--- APP SETUP: INITIALIZING NOTIFICATIONS ---');
+      await notificationService.init();
       console.log('--- APP SETUP: LOADING STORES ---');
       await Promise.all([
         loadSettings(),

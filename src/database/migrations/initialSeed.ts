@@ -89,4 +89,7 @@ export const SEED_SETTINGS: AppSettings = {
   hasCompletedOnboarding: false,
   userName: '',
   userAvatarUri: undefined,
+  notificationsEnabled: true,
+  dailyReminderEnabled: true,
+  budgetAlertsEnabled: true,
 };

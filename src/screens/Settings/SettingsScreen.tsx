@@ -19,6 +19,7 @@ import { CategoryIcon } from '../../components/common/CategoryIcon';
 import { AppButton } from '../../components/common/AppButton';
 import { SeraLogo } from '../../components/common/SeraLogo';
 import { useSettingsStore } from '../../store/useSettingsStore';
+import { notificationService } from '../../services/notificationService';
 import { budgetRepository } from '../../database/repositories/budgetRepository';
 import { formatCurrency } from '../../utils/currency';
 import { db } from '../../database/database';
@@ -297,6 +298,117 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
               thumbColor={isPrivacyMode ? colors.accent : '#F4F4F4'}
             />
           </View>
+        </View>
+
+        {/* SECTION: SYSTEM NOTIFICATIONS */}
+        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 6 }}>
+          SYSTEM NOTIFICATIONS
+        </AppText>
+        <View
+          style={[
+            styles.sectionCard,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              borderRadius: radius.xs,
+              marginBottom: spacing.md,
+            },
+          ]}
+        >
+          {/* Master Notifications Toggle */}
+          <View style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
+                Push Notifications
+              </AppText>
+              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                Native Android channels & background alerts
+              </AppText>
+            </View>
+            <Switch
+              value={settings.notificationsEnabled ?? true}
+              onValueChange={async (val) => {
+                if (val) {
+                  const granted = await notificationService.requestPermission();
+                  await updateSettings({ notificationsEnabled: granted });
+                } else {
+                  await notificationService.cancelAll();
+                  await notificationService.cancelDailyReminder();
+                  await updateSettings({ notificationsEnabled: false, dailyReminderEnabled: false });
+                }
+              }}
+              trackColor={{ false: colors.border, true: colors.cardDark }}
+              thumbColor={(settings.notificationsEnabled ?? true) ? colors.accent : '#F4F4F4'}
+            />
+          </View>
+
+          {/* Daily 8:00 PM Reminder */}
+          <View style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
+                Daily Expense Reminder
+              </AppText>
+              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                Scheduled alarm at 8:00 PM every day
+              </AppText>
+            </View>
+            <Switch
+              value={settings.dailyReminderEnabled ?? true}
+              disabled={!(settings.notificationsEnabled ?? true)}
+              onValueChange={async (val) => {
+                if (val) {
+                  await notificationService.scheduleDailyReminder(20, 0);
+                  await updateSettings({ dailyReminderEnabled: true });
+                } else {
+                  await notificationService.cancelDailyReminder();
+                  await updateSettings({ dailyReminderEnabled: false });
+                }
+              }}
+              trackColor={{ false: colors.border, true: colors.cardDark }}
+              thumbColor={(settings.dailyReminderEnabled ?? true) ? colors.accent : '#F4F4F4'}
+            />
+          </View>
+
+          {/* Budget Overrun Alerts */}
+          <View style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}>
+            <View style={{ flex: 1, paddingRight: 10 }}>
+              <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
+                Budget Overrun Warnings
+              </AppText>
+              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                Instant alert when category limit is exceeded
+              </AppText>
+            </View>
+            <Switch
+              value={settings.budgetAlertsEnabled ?? true}
+              disabled={!(settings.notificationsEnabled ?? true)}
+              onValueChange={async (val) => {
+                await updateSettings({ budgetAlertsEnabled: val });
+              }}
+              trackColor={{ false: colors.border, true: colors.cardDark }}
+              thumbColor={(settings.budgetAlertsEnabled ?? true) ? colors.accent : '#F4F4F4'}
+            />
+          </View>
+
+          {/* Send Test Notification Button */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={async () => {
+              const success = await notificationService.sendTestNotification();
+              if (success) {
+                Alert.alert('Notification Sent', 'Check your Android status bar for the SERA system notification!');
+              }
+            }}
+            style={styles.rowItem}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <CategoryIcon name="Bell" size={16} color={colors.positive} />
+              <AppText variant="bodyLarge" style={{ color: colors.positive, fontWeight: '600', marginLeft: 10 }}>
+                Send Test System Notification
+              </AppText>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
+          </TouchableOpacity>
         </View>
 
         {/* SECTION: SECURITY */}

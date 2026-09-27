@@ -49,6 +49,7 @@ import {
   X,
   CheckCircle2,
   ShieldAlert,
+  Bell,
 } from 'lucide-react-native';
 
 export type IconName =
@@ -100,7 +101,8 @@ export type IconName =
   | 'Maximize2'
   | 'X'
   | 'CheckCircle2'
-  | 'ShieldAlert';
+  | 'ShieldAlert'
+  | 'Bell';
 
 interface CategoryIconProps {
   name: string;
@@ -212,6 +214,8 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
       return <CheckCircle2 {...iconProps} />;
     case 'ShieldAlert':
       return <ShieldAlert {...iconProps} />;
+    case 'Bell':
+      return <Bell {...iconProps} />;
     case 'MoreHorizontal':
       return <MoreHorizontal {...iconProps} />;
     case 'Tag':
