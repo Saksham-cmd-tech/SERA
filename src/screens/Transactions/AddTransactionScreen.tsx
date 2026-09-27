@@ -244,6 +244,17 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
         receiptUri: receiptUri || undefined,
       });
 
+      if (settings.notificationsEnabled ?? true) {
+        notificationService.sendTransactionAlert(
+          type,
+          numAmount,
+          finalMerchant,
+          selectedAccount?.name || 'Account',
+          selectedToAccount?.name,
+          currencySymbol
+        );
+      }
+
       if (type === 'expense' && (settings.budgetAlertsEnabled ?? true)) {
         const cat = budgetSummary?.categoryAnalysis?.find(c => c.categoryId === categoryId);
         if (cat && cat.limitAmount > 0) {
@@ -304,11 +315,15 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <CategoryIcon name="Zap" size={16} color={colors.positive} strokeWidth={2.4} />
               <AppText variant="label" style={{ color: colors.positive, marginLeft: 8, letterSpacing: 1.2, fontWeight: '700' }}>
-                SMS TRANSACTION DETECTED
+                SMS {type === 'transfer' ? 'TRANSFER' : type === 'income' ? 'INCOME' : 'EXPENSE'} DETECTED
               </AppText>
             </View>
             <AppText variant="bodyMedium" style={{ color: colors.textPrimary, marginTop: 4 }}>
-              Pre-filled {currencySymbol}{amountStr} at {merchant || 'Merchant'}.
+              {type === 'transfer'
+                ? `Pre-filled ${currencySymbol}${amountStr} transferred to ${merchant || 'Account'}.`
+                : type === 'income'
+                ? `Pre-filled ${currencySymbol}${amountStr} received from ${merchant || 'Source'}.`
+                : `Pre-filled ${currencySymbol}${amountStr} sent to ${merchant || 'Merchant'}.`}
             </AppText>
             <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
               <TouchableOpacity

@@ -83,6 +83,12 @@ export function parseExpenseText(
   const lower = text.toLowerCase();
 
   // 1. Detect Transaction Type
+  const transferKeywords = [
+    'transferred to', 'transfer to', 'transferred from', 'transfer from',
+    'fund transfer', 'funds transfer', 'self transfer', 'a/c transfer',
+    'ac transfer', 'trf to', 'account to account', 'imps', 'neft', 'rtgs',
+    'transferred', 'transfer', 'moved to',
+  ];
   const incomeKeywords = [
     'credited', 'credit', 'received', 'salary', 'deposited', 'deposit',
     'refund', 'cashback', 'bonus', 'incoming', 'added to',
@@ -93,10 +99,13 @@ export function parseExpenseText(
   ];
 
   let detectedType: TransactionType = 'expense';
+  const hasTransfer = transferKeywords.some(k => lower.includes(k));
   const hasIncome = incomeKeywords.some(k => lower.includes(k));
   const hasExpense = expenseKeywords.some(k => lower.includes(k));
 
-  if (hasIncome && !hasExpense) {
+  if (hasTransfer && !hasIncome) {
+    detectedType = 'transfer';
+  } else if (hasIncome && !hasExpense) {
     detectedType = 'income';
   } else {
     detectedType = 'expense';

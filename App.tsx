@@ -130,8 +130,13 @@ const linking: LinkingOptions<any> = {
       });
     }
 
-    if (cleanPath === 'add-expense' || cleanPath === 'add-income') {
-      const isIncome = cleanPath === 'add-income' || queryParams.type === 'income';
+    if (cleanPath === 'add-expense' || cleanPath === 'add-income' || cleanPath === 'add-transfer') {
+      const detectedType =
+        cleanPath === 'add-transfer' || queryParams.type === 'transfer'
+          ? 'transfer'
+          : cleanPath === 'add-income' || queryParams.type === 'income'
+          ? 'income'
+          : 'expense';
       const initialAmount = queryParams.amount ? parseFloat(queryParams.amount) : undefined;
       const initialMerchant = queryParams.merchant || undefined;
       const initialCategoryId = queryParams.category || undefined;
@@ -155,7 +160,7 @@ const linking: LinkingOptions<any> = {
                       {
                         name: 'AddTransaction',
                         params: {
-                          initialType: isIncome ? 'income' : 'expense',
+                          initialType: detectedType,
                           initialAmount,
                           initialMerchant,
                           initialCategoryId,
@@ -280,7 +285,7 @@ function AppContent({
                   SMS TRANSACTION DETECTED
                 </AppText>
                 <AppText variant="cardTitle" style={{ color: colors.textPrimary }}>
-                  Record this {detectedSms?.type || 'expense'}?
+                  Record this {detectedSms?.type === 'transfer' ? 'transfer' : detectedSms?.type === 'income' ? 'income' : 'expense'}?
                 </AppText>
               </View>
             </View>
@@ -317,7 +322,13 @@ function AppContent({
             </View>
 
             <AppButton
-              title="ADD TO SERA"
+              title={
+                detectedSms?.type === 'transfer'
+                  ? 'ADD TRANSFER TO SERA'
+                  : detectedSms?.type === 'income'
+                  ? 'ADD INCOME TO SERA'
+                  : 'ADD EXPENSE TO SERA'
+              }
               onPress={handleAcceptSms}
               variant="primary"
               size="large"

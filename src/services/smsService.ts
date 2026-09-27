@@ -12,7 +12,7 @@ export interface DetectedSmsTransaction {
   amount: number;
   amountStr: string;
   merchant: string;
-  type: 'expense' | 'income';
+  type: 'expense' | 'income' | 'transfer';
   categoryId?: string;
   rawText: string;
 }
@@ -112,6 +112,45 @@ class SmsService {
       console.warn('Error simulating SMS detection:', e);
       return false;
     }
+  }
+
+  /**
+   * Simulates Money Sent (Debit / Expense) SMS
+   */
+  async simulateExpenseSms(
+    amount: number = 420,
+    merchant: string = 'Blue Tokai Coffee'
+  ): Promise<boolean> {
+    return this.simulateSmsDetection(
+      `Debited Rs ${amount}.00 from a/c **1234 to ${merchant} UPI Ref 882910 on 27-Sep-26. Avail Bal: Rs 13,780.`,
+      'VK-HDFCBK'
+    );
+  }
+
+  /**
+   * Simulates Money Received (Credit / Income) SMS
+   */
+  async simulateIncomeSms(
+    amount: number = 4500,
+    sender: string = 'Ramesh Sharma'
+  ): Promise<boolean> {
+    return this.simulateSmsDetection(
+      `Credited Rs ${amount}.00 to a/c **1234 on 27-Sep-26 by ${sender} via UPI Ref 991122. Avail Bal: Rs 18,280.`,
+      'VK-HDFCBK'
+    );
+  }
+
+  /**
+   * Simulates Money Transferred (Transfer) SMS
+   */
+  async simulateTransferSms(
+    amount: number = 2000,
+    toAccount: string = 'Savings a/c **5678'
+  ): Promise<boolean> {
+    return this.simulateSmsDetection(
+      `Transferred Rs ${amount}.00 from a/c **1234 to ${toAccount} via IMPS Ref 773344 on 27-Sep-26. Avail Bal: Rs 16,280.`,
+      'VK-HDFCBK'
+    );
   }
 
   /**

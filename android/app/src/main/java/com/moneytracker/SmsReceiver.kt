@@ -74,17 +74,34 @@ class SmsReceiver : BroadcastReceiver() {
                 return
             }
 
-            // 3. Determine transaction type (expense vs income)
-            val isIncome = (lower.contains("credited") || lower.contains("credit") ||
+            // 3. Determine transaction type (transfer vs receive/income vs sent/expense)
+            val isTransfer = lower.contains("transferred to") || lower.contains("transfer to") ||
+                    lower.contains("transferred from") || lower.contains("transfer from") ||
+                    lower.contains("fund transfer") || lower.contains("funds transfer") ||
+                    lower.contains("self transfer") || lower.contains("a/c transfer") ||
+                    lower.contains("ac transfer") || lower.contains("trf to") ||
+                    lower.contains("account to account") || lower.contains("imps ref") ||
+                    lower.contains("neft ref") || lower.contains("rtgs ref") ||
+                    (lower.contains("transferred") && !lower.contains("credited") && !lower.contains("received")) ||
+                    (lower.contains("transfer") && !lower.contains("credited") && !lower.contains("received"))
+
+            val isIncome = !isTransfer && (
+                    lower.contains("credited") || lower.contains("credit") ||
                     lower.contains("deposited") || lower.contains("received") ||
-                    lower.contains("refund") || lower.contains("salary")) &&
-                    !lower.contains("debited") && !lower.contains("spent")
-            val type = if (isIncome) "income" else "expense"
+                    lower.contains("refund") || lower.contains("salary") ||
+                    lower.contains("cashback") || lower.contains("inward")
+            ) && !lower.contains("debited") && !lower.contains("spent")
+
+            val type = when {
+                isTransfer -> "transfer"
+                isIncome -> "income"
+                else -> "expense"
+            }
 
             // 4. Extract Amount
             val amountRegexes = listOf(
                 Regex("""(?:rs\.?|inr|₹|\$)\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE),
-                Regex("""(?:spent|debited|paid|credited|purchase of|sent|amount of)\s*(?:rs\.?|inr|₹|\$)?\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE),
+                Regex("""(?:spent|debited|paid|credited|purchase of|sent|amount of|transfer of|transferred)\s*(?:rs\.?|inr|₹|\$)?\s*([0-9,]+(?:\.[0-9]{1,2})?)""", RegexOption.IGNORE_CASE),
                 Regex("""([0-9,]+(?:\.[0-9]{1,2})?)\s*(?:rs\.?|inr|₹)""", RegexOption.IGNORE_CASE)
             )
 
@@ -108,11 +125,11 @@ class SmsReceiver : BroadcastReceiver() {
                 return
             }
 
-            // 5. Extract Merchant / Payee
+            // 5. Extract Merchant / Payee / Destination
             var merchant = ""
             val merchantPatterns = listOf(
-                Regex("""(?:to|towards|at|for|vpa)\s+([A-Za-z0-9\s&.\-_]{2,30}?)(?:\s+(?:on|ref|upi|txn|by|via|avail|bal|card|a\/c|ending|\.|\,)|$)""", RegexOption.IGNORE_CASE),
-                Regex("""transfer to\s+([A-Za-z0-9\s&.\-_]{2,30}?)(?:\s+(?:on|ref|upi|txn|by|via|\.|\,)|$)""", RegexOption.IGNORE_CASE),
+                Regex("""(?:transfer(?:red)?\s+(?:to|from)?|sent to|paid to|to|towards|at|for|vpa|from|by|credited by|received from)\s+([A-Za-z0-9\s&.\-_]{2,30}?)(?:\s+(?:on|ref|upi|txn|by|via|avail|bal|card|a\/c|ending|\.|\,)|$)""", RegexOption.IGNORE_CASE),
+                Regex("""(?:to\s+a\/c\s*(?:no\.?)?\s*|account\s*)([A-Za-z0-9*]{4,16})""", RegexOption.IGNORE_CASE),
                 Regex("""(?:info:?|ref:?)\s*([A-Za-z0-9\s&.\-_]{2,25})""", RegexOption.IGNORE_CASE)
             )
 
@@ -132,32 +149,41 @@ class SmsReceiver : BroadcastReceiver() {
 
             if (merchant.isEmpty()) {
                 merchant = when {
-                    sender.contains("HDFC", ignoreCase = true) -> "HDFC Card/UPI"
-                    sender.contains("SBI", ignoreCase = true) -> "SBI Card/UPI"
-                    sender.contains("ICICI", ignoreCase = true) -> "ICICI Card/UPI"
+                    sender.contains("HDFC", ignoreCase = true) -> if (type == "transfer") "HDFC Bank Transfer" else if (type == "income") "HDFC Credit" else "HDFC Card/UPI"
+                    sender.contains("SBI", ignoreCase = true) -> if (type == "transfer") "SBI Bank Transfer" else if (type == "income") "SBI Credit" else "SBI Card/UPI"
+                    sender.contains("ICICI", ignoreCase = true) -> if (type == "transfer") "ICICI Bank Transfer" else if (type == "income") "ICICI Credit" else "ICICI Card/UPI"
                     sender.contains("AXIS", ignoreCase = true) -> "Axis Bank"
                     sender.contains("KOTAK", ignoreCase = true) -> "Kotak Bank"
                     sender.contains("PAYTM", ignoreCase = true) -> "Paytm"
                     sender.contains("CHASE", ignoreCase = true) -> "Chase Bank"
-                    else -> if (type == "income") "Direct Credit" else "Card / UPI Debit"
+                    else -> when (type) {
+                        "transfer" -> "Account Transfer"
+                        "income" -> "Direct Credit / Income"
+                        else -> "Card / UPI Debit"
+                    }
                 }
             }
 
             // 6. Map Category
             val lowerMerchant = (merchant + " " + body).lowercase()
             val categoryId = when {
+                type == "transfer" -> "cat-other"
+                type == "income" -> "cat-income-salary"
+
                 lowerMerchant.contains("swiggy") || lowerMerchant.contains("zomato") ||
                         lowerMerchant.contains("mcdonald") || lowerMerchant.contains("starbucks") ||
                         lowerMerchant.contains("subway") || lowerMerchant.contains("kfc") ||
                         lowerMerchant.contains("burger") || lowerMerchant.contains("cafe") ||
+                        lowerMerchant.contains("coffee") || lowerMerchant.contains("tea") ||
                         lowerMerchant.contains("restaurant") || lowerMerchant.contains("food") ||
                         lowerMerchant.contains("dining") -> "cat-food"
 
                 lowerMerchant.contains("uber") || lowerMerchant.contains("ola") ||
                         lowerMerchant.contains("rapido") || lowerMerchant.contains("metro") ||
                         lowerMerchant.contains("fuel") || lowerMerchant.contains("petrol") ||
-                        lowerMerchant.contains("indianoil") || lowerMerchant.contains("shell") ||
-                        lowerMerchant.contains("irctc") || lowerMerchant.contains("transport") -> "cat-transport"
+                        lowerMerchant.contains("diesel") || lowerMerchant.contains("indianoil") ||
+                        lowerMerchant.contains("shell") || lowerMerchant.contains("irctc") ||
+                        lowerMerchant.contains("transport") -> "cat-transport"
 
                 lowerMerchant.contains("blinkit") || lowerMerchant.contains("zepto") ||
                         lowerMerchant.contains("instamart") || lowerMerchant.contains("bigbasket") ||
@@ -178,8 +204,6 @@ class SmsReceiver : BroadcastReceiver() {
                         lowerMerchant.contains("vi") || lowerMerchant.contains("bill") ||
                         lowerMerchant.contains("recharge") || lowerMerchant.contains("broadband") -> "cat-bills"
 
-                type == "income" -> "cat-income-salary"
-
                 else -> "cat-food"
             }
 
@@ -189,16 +213,29 @@ class SmsReceiver : BroadcastReceiver() {
             // 8. Build notification
             val notifId = (System.currentTimeMillis() % 100000).toInt()
             val currencySymbol = "₹"
-            val titleText = if (type == "income") {
-                "SERA • Add Income: $currencySymbol$amountStr?"
-            } else {
-                "SERA • Add Expense: $currencySymbol$amountStr?"
+            val titleText = when (type) {
+                "transfer" -> "SERA • Money Transferred: $currencySymbol$amountStr?"
+                "income" -> "SERA • Money Received: $currencySymbol$amountStr?"
+                else -> "SERA • Money Sent: $currencySymbol$amountStr?"
             }
-            val contentText = "$merchant ($currencySymbol$amountStr) • Tap to add to SERA"
+            val contentText = when (type) {
+                "transfer" -> "$merchant ($currencySymbol$amountStr) • Tap to record transfer"
+                "income" -> "$merchant ($currencySymbol$amountStr) • Tap to add income"
+                else -> "$merchant ($currencySymbol$amountStr) • Tap to add expense"
+            }
+            val bigPrompt = when (type) {
+                "transfer" -> "$merchant ($currencySymbol$amountStr)\nTransfer detected from bank SMS. Would you like to record this transfer in SERA?"
+                "income" -> "$merchant ($currencySymbol$amountStr)\nIncome/Credit detected from bank SMS. Would you like to record this income in SERA?"
+                else -> "$merchant ($currencySymbol$amountStr)\nExpense/Debit detected from bank SMS. Would you like to record this expense in SERA?"
+            }
 
             val encodedMerchant = try { URLEncoder.encode(merchant, "UTF-8") } catch (e: Exception) { merchant }
             val encodedNote = try { URLEncoder.encode("Auto-detected SMS", "UTF-8") } catch (e: Exception) { "Auto-detected" }
-            val deepLinkPath = if (type == "income") "add-income" else "add-expense"
+            val deepLinkPath = when (type) {
+                "transfer" -> "add-transfer"
+                "income" -> "add-income"
+                else -> "add-expense"
+            }
             val deepLinkUri = Uri.parse("sera://$deepLinkPath?amount=$amountStr&merchant=$encodedMerchant&type=$type&category=$categoryId&note=$encodedNote&autoPrompt=true")
 
             val tapIntent = Intent(Intent.ACTION_VIEW, deepLinkUri, context, MainActivity::class.java).apply {
@@ -222,7 +259,11 @@ class SmsReceiver : BroadcastReceiver() {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
 
-            val actionAddTitle = if (type == "income") "ADD INCOME" else "ADD EXPENSE"
+            val actionAddTitle = when (type) {
+                "transfer" -> "ADD TRANSFER"
+                "income" -> "ADD INCOME"
+                else -> "ADD EXPENSE"
+            }
 
             val largeIcon = try {
                 BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher_round)
@@ -236,7 +277,7 @@ class SmsReceiver : BroadcastReceiver() {
                 .setContentText(contentText)
                 .setStyle(
                     NotificationCompat.BigTextStyle()
-                        .bigText("$merchant ($currencySymbol$amountStr)\nDetected from bank SMS alert. Would you like to record this into SERA?")
+                        .bigText(bigPrompt)
                 )
                 .setSubText("SERA SMS AUTO-DETECT")
                 .setAutoCancel(true)

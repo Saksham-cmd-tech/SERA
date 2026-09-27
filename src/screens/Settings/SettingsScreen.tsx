@@ -410,13 +410,41 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                 Alert.alert('Notification Sent', 'Check your Android status bar for the SERA system notification!');
               }
             }}
-            style={styles.rowItem}
+            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <CategoryIcon name="Bell" size={16} color={colors.positive} />
               <AppText variant="bodyLarge" style={{ color: colors.positive, fontWeight: '600', marginLeft: 10 }}>
                 Send Test System Notification
               </AppText>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
+          </TouchableOpacity>
+
+          {/* Test All 3 Transaction Alerts */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={async () => {
+              await notificationService.sendTransactionAlert('expense', 420, 'Blue Tokai Coffee', 'Primary Bank');
+              setTimeout(() => {
+                notificationService.sendTransactionAlert('income', 4500, 'Ramesh Sharma', 'Primary Bank');
+              }, 600);
+              setTimeout(() => {
+                notificationService.sendTransactionAlert('transfer', 2000, 'Savings Account', 'Primary Bank', 'Savings Account');
+              }, 1200);
+            }}
+            style={styles.rowItem}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+              <CategoryIcon name="Zap" size={16} color={colors.accent} />
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
+                  Test All 3 Transaction Notifications
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  Pushes Sent (₹420), Received (₹4,500), and Transfer (₹2,000)
+                </AppText>
+              </View>
             </View>
             <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
           </TouchableOpacity>
@@ -494,22 +522,68 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             />
           </View>
 
-          {/* Test SMS Detection Action */}
+          {/* Test SMS Detection: Sent / Expense */}
           <TouchableOpacity
             activeOpacity={0.7}
             onPress={async () => {
-              await smsService.simulateSmsDetection(
-                'Debited Rs 350.00 from a/c **1234 to Swiggy UPI Ref 882910 on 27-Sep-26. Avail Bal: Rs 14,200.',
-                'VK-HDFCBK'
-              );
+              await smsService.simulateExpenseSms(420, 'Blue Tokai Coffee');
+            }}
+            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+              <CategoryIcon name="ArrowUpRight" size={16} color={colors.coral} strokeWidth={2.4} />
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
+                  Test Money Sent SMS (Expense)
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  Simulates debit alert: "Debited ₹420 to Blue Tokai Coffee"
+                </AppText>
+              </View>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
+          </TouchableOpacity>
+
+          {/* Test SMS Detection: Received / Income */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={async () => {
+              await smsService.simulateIncomeSms(4500, 'Ramesh Sharma');
+            }}
+            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+              <CategoryIcon name="ArrowDownLeft" size={16} color={colors.positive} strokeWidth={2.4} />
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
+                  Test Money Received SMS (Income)
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  Simulates credit alert: "Credited ₹4,500 by Ramesh Sharma"
+                </AppText>
+              </View>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
+          </TouchableOpacity>
+
+          {/* Test SMS Detection: Transferred / Transfer */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={async () => {
+              await smsService.simulateTransferSms(2000, 'Savings a/c **5678');
             }}
             style={styles.rowItem}
           >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <CategoryIcon name="Zap" size={16} color={colors.positive} strokeWidth={2.4} />
-              <AppText variant="bodyLarge" style={{ color: colors.positive, fontWeight: '600', marginLeft: 10 }}>
-                Test Bank SMS Detection
-              </AppText>
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+              <CategoryIcon name="Repeat" size={16} color={colors.accent} strokeWidth={2.4} />
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
+                  Test Transfer SMS (Transfer)
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  Simulates transfer alert: "Transferred ₹2,000 to Savings via IMPS"
+                </AppText>
+              </View>
             </View>
             <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
           </TouchableOpacity>

@@ -158,6 +158,40 @@ class NotificationService {
   }
 
   /**
+   * Sends an instant notification when a transaction (sent, received, or transfer) is recorded
+   */
+  async sendTransactionAlert(
+    type: 'expense' | 'income' | 'transfer',
+    amount: number,
+    merchant: string,
+    accountName: string,
+    toAccountName?: string,
+    currencySymbol: string = '₹'
+  ): Promise<boolean> {
+    const formattedAmount = `${currencySymbol}${amount.toLocaleString()}`;
+    let title = '';
+    let message = '';
+
+    if (type === 'transfer') {
+      title = `SERA • ${formattedAmount} Transferred`;
+      message = `Moved ${formattedAmount} from ${accountName} to ${toAccountName || 'Account'}.`;
+    } else if (type === 'income') {
+      title = `SERA • ${formattedAmount} Received`;
+      message = `Credited ${formattedAmount} from ${merchant} to ${accountName}.`;
+    } else {
+      title = `SERA • ${formattedAmount} Sent`;
+      message = `Paid ${formattedAmount} to ${merchant} from ${accountName}.`;
+    }
+
+    return this.sendNotification({
+      title,
+      message,
+      channelId: 'sera_general',
+      id: Math.floor(Math.random() * 50000) + 20000,
+    });
+  }
+
+  /**
    * Schedules a daily recurring expense logging reminder (e.g. 20:00)
    */
   async scheduleDailyReminder(hour: number = 20, minute: number = 0): Promise<boolean> {
