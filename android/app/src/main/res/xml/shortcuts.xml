@@ -1,0 +1,41 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="add_expense"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_add_expense"
+        android:shortcutShortLabel="@string/shortcut_add_expense_short"
+        android:shortcutLongLabel="@string/shortcut_add_expense_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.moneytracker"
+            android:targetClass="com.moneytracker.MainActivity"
+            android:data="sera://add-expense" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="add_income"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_add_income"
+        android:shortcutShortLabel="@string/shortcut_add_income_short"
+        android:shortcutLongLabel="@string/shortcut_add_income_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.moneytracker"
+            android:targetClass="com.moneytracker.MainActivity"
+            android:data="sera://add-income" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="subscriptions"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_subscriptions"
+        android:shortcutShortLabel="@string/shortcut_subscriptions_short"
+        android:shortcutLongLabel="@string/shortcut_subscriptions_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.moneytracker"
+            android:targetClass="com.moneytracker.MainActivity"
+            android:data="sera://subscriptions" />
+        <categories android:name="android.shortcut.conversation" />
+    </shortcut>
+</shortcuts>

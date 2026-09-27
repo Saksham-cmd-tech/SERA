@@ -50,6 +50,8 @@ import {
   CheckCircle2,
   ShieldAlert,
   Bell,
+  Zap,
+  Sparkles,
 } from 'lucide-react-native';
 
 export type IconName =
@@ -102,7 +104,9 @@ export type IconName =
   | 'X'
   | 'CheckCircle2'
   | 'ShieldAlert'
-  | 'Bell';
+  | 'Bell'
+  | 'Zap'
+  | 'Sparkles';
 
 interface CategoryIconProps {
   name: string;
@@ -120,6 +124,10 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({
   const iconProps = { size, color, strokeWidth };
 
   switch (name) {
+    case 'Zap':
+      return <Zap {...iconProps} />;
+    case 'Sparkles':
+      return <Sparkles {...iconProps} />;
     case 'Utensils':
       return <Utensils {...iconProps} />;
     case 'ShoppingBag':

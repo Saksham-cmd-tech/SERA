@@ -20,7 +20,10 @@ import { AppButton } from '../../components/common/AppButton';
 import { useSubscriptionStore } from '../../store/useSubscriptionStore';
 import { useAccountStore } from '../../store/useAccountStore';
 import { useCategoryStore } from '../../store/useCategoryStore';
+import { useTransactionStore } from '../../store/useTransactionStore';
+import { Subscription } from '../../types';
 import { formatCurrency } from '../../utils/currency';
+import { getCurrentTimeString, getTodayDateString } from '../../utils/date';
 
 interface SubscriptionsScreenProps {
   navigation: any;
@@ -28,10 +31,11 @@ interface SubscriptionsScreenProps {
 
 export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ navigation }) => {
   const { colors, spacing, radius, currencySymbol, isPrivacyMode } = useAppTheme();
-  const { summary, loadSubscriptions, createSubscription, deleteSubscription, isLoading } =
+  const { summary, loadSubscriptions, createSubscription, updateSubscription, deleteSubscription, isLoading } =
     useSubscriptionStore();
   const accounts = useAccountStore(state => state.accounts);
   const categories = useCategoryStore(state => state.categories);
+  const createTransaction = useTransactionStore(state => state.createTransaction);
 
   const getInitialNextDate = () => {
     const d = new Date();
@@ -90,6 +94,77 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
       { text: 'Cancel', style: 'cancel' },
       { text: 'Delete', style: 'destructive', onPress: () => deleteSubscription(id) },
     ]);
+  };
+
+  const advanceNextBillingDate = (currentDateStr: string, freq: 'monthly' | 'yearly'): string => {
+    const d = new Date(currentDateStr);
+    if (isNaN(d.getTime())) {
+      const today = new Date();
+      if (freq === 'yearly') {
+        today.setFullYear(today.getFullYear() + 1);
+      } else {
+        today.setMonth(today.getMonth() + 1);
+      }
+      return today.toISOString().split('T')[0];
+    }
+    if (freq === 'yearly') {
+      d.setFullYear(d.getFullYear() + 1);
+    } else {
+      d.setMonth(d.getMonth() + 1);
+    }
+    return d.toISOString().split('T')[0];
+  };
+
+  const getDueStatus = (dueDateStr: string) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const due = new Date(dueDateStr);
+    due.setHours(0, 0, 0, 0);
+    const diffDays = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return { text: '⚡ DUE TODAY', isUrgent: true };
+    if (diffDays === 1) return { text: '⚠️ DUE TOMORROW', isUrgent: true };
+    if (diffDays < 0) return { text: `OVERDUE (${Math.abs(diffDays)}d)`, isUrgent: true };
+    if (diffDays <= 7) return { text: `IN ${diffDays} DAYS`, isUrgent: false };
+    return { text: `IN ${diffDays} DAYS`, isUrgent: false };
+  };
+
+  const handleLogExpense = (sub: Subscription) => {
+    Alert.alert(
+      'Log Subscription Expense',
+      `Record ${formatCurrency(sub.amount, currencySymbol, false, false)} for "${sub.name}" as an expense and advance billing date?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Log & Advance',
+          onPress: async () => {
+            const effectiveAccountId = accounts.some(a => a.id === sub.accountId)
+              ? sub.accountId
+              : accounts[0]?.id || 'acc-primary';
+
+            await createTransaction({
+              type: 'expense',
+              amount: sub.amount,
+              categoryId: sub.categoryId || 'cat-subscriptions',
+              accountId: effectiveAccountId,
+              merchant: sub.name,
+              description: `Recurring ${sub.frequency} subscription`,
+              date: getTodayDateString(),
+              time: getCurrentTimeString(),
+              currency: accounts.find(a => a.id === effectiveAccountId)?.currency || 'INR',
+            });
+
+            const nextDate = advanceNextBillingDate(sub.nextBillingDate, sub.frequency);
+            await updateSubscription(sub.id, { nextBillingDate: nextDate });
+
+            Alert.alert(
+              'Subscription Paid',
+              `Logged ${formatCurrency(sub.amount, currencySymbol, false, false)} to expenses. Next billing date: ${nextDate}.`
+            );
+          },
+        },
+      ]
+    );
   };
 
   return (
@@ -172,45 +247,99 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
           ACTIVE SUBSCRIPTIONS ({summary.subscriptions.length})
         </AppText>
 
-        {summary.subscriptions.map(sub => (
-          <View
-            key={sub.id}
-            style={[
-              styles.subItem,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                borderRadius: radius.xs,
-                padding: spacing.md,
-                marginBottom: spacing.xs,
-              },
-            ]}
-          >
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-              <View>
-                <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 16 }}>
-                  {sub.name}
-                </AppText>
-                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                  Next due: {sub.nextBillingDate} • {sub.frequency}
-                </AppText>
+        {summary.subscriptions.map(sub => {
+          const dueStatus = getDueStatus(sub.nextBillingDate);
+          return (
+            <View
+              key={sub.id}
+              style={[
+                styles.subItem,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  borderRadius: radius.xs,
+                  padding: spacing.md,
+                  marginBottom: spacing.xs,
+                },
+              ]}
+            >
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                <View style={{ flex: 1, marginRight: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 16 }}>
+                      {sub.name}
+                    </AppText>
+                    <View
+                      style={[
+                        styles.dueBadge,
+                        {
+                          backgroundColor: dueStatus.isUrgent ? 'rgba(217, 83, 79, 0.15)' : 'rgba(52, 106, 62, 0.12)',
+                          borderColor: dueStatus.isUrgent ? colors.coral : colors.accent,
+                        },
+                      ]}
+                    >
+                      <AppText
+                        variant="labelSmall"
+                        style={{
+                          color: dueStatus.isUrgent ? colors.coral : colors.accent,
+                          fontSize: 9,
+                          fontWeight: '700',
+                        }}
+                      >
+                        {dueStatus.text}
+                      </AppText>
+                    </View>
+                  </View>
+                  <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 4 }}>
+                    Next due: {sub.nextBillingDate} • {sub.frequency}
+                  </AppText>
+                </View>
+
+                <View style={{ alignItems: 'flex-end' }}>
+                  <AppText
+                    variant="amountSmall"
+                    privacySensitive
+                    style={{ color: colors.textPrimary, fontWeight: '700' }}
+                  >
+                    {formatCurrency(sub.amount, currencySymbol, isPrivacyMode, false)}
+                    <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                      {' '}/{sub.frequency === 'monthly' ? 'mo' : 'yr'}
+                    </AppText>
+                  </AppText>
+                </View>
               </View>
 
-              <View style={{ alignItems: 'flex-end' }}>
-                <AppText
-                  variant="amountSmall"
-                  privacySensitive
-                  style={{ color: colors.textPrimary, fontWeight: '700' }}
+              {/* Action Buttons: 1-Tap Log & Delete */}
+              <View
+                style={[
+                  styles.subActionsRow,
+                  {
+                    borderTopColor: colors.border,
+                    borderTopWidth: 1,
+                    marginTop: 10,
+                    paddingTop: 8,
+                  },
+                ]}
+              >
+                <TouchableOpacity
+                  onPress={() => handleLogExpense(sub)}
+                  style={[
+                    styles.markPaidBtn,
+                    {
+                      backgroundColor: colors.cardDark,
+                    },
+                  ]}
                 >
-                  {formatCurrency(sub.amount, currencySymbol, isPrivacyMode, false)}
-                  <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                    {' '}/{sub.frequency === 'monthly' ? 'mo' : 'yr'}
+                  <CategoryIcon name="Zap" size={12} color={colors.accent} strokeWidth={2.4} />
+                  <AppText variant="labelSmall" style={{ color: colors.textInverted, marginLeft: 6, fontWeight: '700' }}>
+                    MARK PAID (LOG EXPENSE)
                   </AppText>
-                </AppText>
+                </TouchableOpacity>
+
                 <TouchableOpacity
                   onPress={() => handleDelete(sub.id, sub.name)}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
-                  style={{ marginTop: 4 }}
+                  style={{ paddingVertical: 4, paddingHorizontal: 8 }}
                 >
                   <AppText variant="metadata" style={{ color: colors.coral }}>
                     Remove
@@ -218,8 +347,8 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                 </TouchableOpacity>
               </View>
             </View>
-          </View>
-        ))}
+          );
+        })}
 
         {summary.subscriptions.length === 0 && (
           <View
@@ -430,5 +559,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginTop: 14,
+  },
+  dueBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 2,
+    borderWidth: 1,
+    marginLeft: 8,
+  },
+  subActionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  markPaidBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 4,
   },
 });

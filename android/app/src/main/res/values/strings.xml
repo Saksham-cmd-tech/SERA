@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">SERA</string>
+    <string name="shortcut_add_expense_short">Add Expense</string>
+    <string name="shortcut_add_expense_long">Record an expense in SERA</string>
+    <string name="shortcut_add_income_short">Add Income</string>
+    <string name="shortcut_add_income_long">Record an income in SERA</string>
+    <string name="shortcut_subscriptions_short">Subscriptions</string>
+    <string name="shortcut_subscriptions_long">View recurring subscriptions</string>
 </resources>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StatusBar, View, StyleSheet, Modal, TextInput, Alert } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, LinkingOptions, getStateFromPath } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { db } from './src/database/database';
@@ -94,6 +94,98 @@ export default function App(): React.JSX.Element {
   );
 }
 
+const linking: LinkingOptions<any> = {
+  prefixes: ['sera://'],
+  getStateFromPath: (path, options) => {
+    const cleanPath = path.replace(/^\/+/, '').split('?')[0];
+    if (cleanPath === 'add-expense') {
+      return {
+        routes: [
+          {
+            name: 'Main',
+            state: {
+              index: 1,
+              routes: [
+                { name: 'HomeTab' },
+                {
+                  name: 'TransactionsTab',
+                  state: {
+                    index: 1,
+                    routes: [
+                      { name: 'TransactionsMain' },
+                      { name: 'AddTransaction', params: { initialType: 'expense' } },
+                    ],
+                  },
+                },
+                { name: 'BudgetsTab' },
+                { name: 'GoalsTab' },
+                { name: 'MoreTab' },
+              ],
+            },
+          },
+        ],
+      };
+    }
+    if (cleanPath === 'add-income') {
+      return {
+        routes: [
+          {
+            name: 'Main',
+            state: {
+              index: 1,
+              routes: [
+                { name: 'HomeTab' },
+                {
+                  name: 'TransactionsTab',
+                  state: {
+                    index: 1,
+                    routes: [
+                      { name: 'TransactionsMain' },
+                      { name: 'AddTransaction', params: { initialType: 'income' } },
+                    ],
+                  },
+                },
+                { name: 'BudgetsTab' },
+                { name: 'GoalsTab' },
+                { name: 'MoreTab' },
+              ],
+            },
+          },
+        ],
+      };
+    }
+    if (cleanPath === 'subscriptions') {
+      return {
+        routes: [
+          {
+            name: 'Main',
+            state: {
+              index: 4,
+              routes: [
+                { name: 'HomeTab' },
+                { name: 'TransactionsTab' },
+                { name: 'BudgetsTab' },
+                { name: 'GoalsTab' },
+                {
+                  name: 'MoreTab',
+                  state: {
+                    index: 1,
+                    routes: [
+                      { name: 'Settings' },
+                      { name: 'Subscriptions' },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      };
+    }
+    return getStateFromPath(path, options);
+  },
+};
+
 function AppContent({
   isLocked,
   enteredPin,
@@ -110,7 +202,7 @@ function AppContent({
   return (
     <View style={[styles.appWrapper, { backgroundColor: colors.background }]}>
       <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-      <NavigationContainer>
+      <NavigationContainer linking={linking}>
         <RootNavigator />
       </NavigationContainer>
 

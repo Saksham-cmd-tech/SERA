@@ -8,6 +8,8 @@ import {
   Modal,
   Alert,
   Image,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
@@ -27,6 +29,7 @@ import { TransactionType } from '../../types';
 import { getCurrentTimeString, getTodayDateString } from '../../utils/date';
 import { formatCurrency } from '../../utils/currency';
 import { promptReceiptOptions } from '../../utils/receiptPicker';
+import { parseExpenseText, ParsedExpenseResult } from '../../utils/expenseParser';
 
 interface AddTransactionScreenProps {
   navigation: any;
@@ -74,6 +77,41 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
   const [categoryModalVisible, setCategoryModalVisible] = useState<boolean>(false);
   const [accountModalVisible, setAccountModalVisible] = useState<boolean>(false);
   const [targetAccountField, setTargetAccountField] = useState<'from' | 'to'>('from');
+  const [smartFillVisible, setSmartFillVisible] = useState<boolean>(false);
+  const [smartInput, setSmartInput] = useState<string>('');
+
+  const parsedResult: ParsedExpenseResult | null = smartInput.trim()
+    ? parseExpenseText(smartInput, categories, accounts)
+    : null;
+
+  const handleApplySmartFill = (res?: ParsedExpenseResult | null) => {
+    const toApply = res || parsedResult;
+    if (!toApply || !toApply.amount || toApply.amount <= 0) {
+      Alert.alert(
+        'No Amount Detected',
+        'Could not find a valid expense amount in the text. Please make sure the text includes an amount (e.g. ₹350 or 450).'
+      );
+      return;
+    }
+
+    setType(toApply.type);
+    setAmountStr(toApply.amount.toString());
+    if (toApply.merchant) {
+      setMerchant(toApply.merchant);
+    }
+    if (toApply.categoryId) {
+      setCategoryId(toApply.categoryId);
+    }
+    if (toApply.accountId) {
+      setAccountId(toApply.accountId);
+    }
+    if (toApply.notes) {
+      setNotes(toApply.notes);
+    }
+    setSmartFillVisible(false);
+    setSmartInput('');
+    setKeypadVisible(false);
+  };
 
   useEffect(() => {
     if (accounts.length > 0) {
@@ -223,6 +261,43 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
             onSelect={val => setType(val)}
           />
         </View>
+
+        {/* Smart Fill / Paste SMS Action Bar */}
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={() => setSmartFillVisible(true)}
+          style={[
+            styles.smartFillBar,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              borderRadius: radius.xs,
+              paddingVertical: 10,
+              paddingHorizontal: spacing.md,
+              marginBottom: spacing.md,
+            },
+          ]}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={[styles.smartIconWrap, { backgroundColor: colors.cardDark }]}>
+              <CategoryIcon name="Zap" size={12} color={colors.accent} strokeWidth={2.4} />
+            </View>
+            <AppText
+              variant="labelSmall"
+              style={{
+                color: colors.textPrimary,
+                fontWeight: '700',
+                marginLeft: 8,
+                letterSpacing: 1.2,
+              }}
+            >
+              SMART FILL / PASTE SMS
+            </AppText>
+          </View>
+          <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+            Auto-Detect →
+          </AppText>
+        </TouchableOpacity>
 
         {/* Large Amount Display */}
         <TouchableOpacity
@@ -638,6 +713,159 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           </View>
         </TouchableOpacity>
       </Modal>
+
+      {/* Smart Fill / SMS Paste Modal */}
+      <Modal
+        visible={smartFillVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setSmartFillVisible(false)}
+      >
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={[styles.modalBackdrop, { backgroundColor: colors.overlay }]}
+        >
+          <View
+            style={[
+              styles.pickerSheet,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+                padding: spacing.lg,
+                maxHeight: '85%',
+              },
+            ]}
+          >
+            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <CategoryIcon name="Zap" size={18} color={colors.accent} strokeWidth={2.4} />
+                  <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginLeft: 8 }}>
+                    Smart Expense Auto-Fill
+                  </AppText>
+                </View>
+                <TouchableOpacity onPress={() => setSmartFillVisible(false)} hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                  <CategoryIcon name="X" size={18} color={colors.textSecondary} />
+                </TouchableOpacity>
+              </View>
+
+              <AppText variant="metadata" style={{ color: colors.textSecondary, marginBottom: 10 }}>
+                Paste bank SMS or type e.g. "Dinner at Subway 420":
+              </AppText>
+
+              <TextInput
+                value={smartInput}
+                onChangeText={setSmartInput}
+                placeholder="e.g. Paid INR 350.00 to Swiggy UPI Ref 123456..."
+                placeholderTextColor={colors.textMuted}
+                multiline
+                numberOfLines={3}
+                style={[
+                  styles.smartTextInput,
+                  {
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                    color: colors.textPrimary,
+                  },
+                ]}
+              />
+
+              {/* Quick Sample Chips */}
+              <View style={{ marginTop: 10 }}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginBottom: 6 }}>
+                  OR TAP A TEST SAMPLE:
+                </AppText>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ flexDirection: 'row', gap: 6 }}>
+                  {[
+                    'Swiggy debited INR 350.00 via UPI',
+                    'Uber ride ₹280 paid by Card',
+                    'Amazon order Rs. 1499 debited',
+                    'Coffee at Starbucks 250',
+                    'Salary credited Rs 75000',
+                  ].map(sample => (
+                    <TouchableOpacity
+                      key={sample}
+                      onPress={() => setSmartInput(sample)}
+                      style={[
+                        styles.sampleChip,
+                        {
+                          backgroundColor: colors.background,
+                          borderColor: colors.border,
+                        },
+                      ]}
+                    >
+                      <AppText variant="metadata" style={{ color: colors.textPrimary, fontSize: 11 }}>
+                        {sample}
+                      </AppText>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+
+              {/* Live Parse Preview Card */}
+              {parsedResult && parsedResult.success && (
+                <View
+                  style={[
+                    styles.previewCard,
+                    {
+                      backgroundColor: colors.background,
+                      borderColor: colors.border,
+                      marginTop: 14,
+                      padding: 12,
+                      borderRadius: radius.xs,
+                    },
+                  ]}
+                >
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                      DETECTED DETAILS
+                    </AppText>
+                    <View style={[styles.confidenceBadge, { backgroundColor: colors.accent }]}>
+                      <AppText variant="labelSmall" style={{ color: colors.cardDark, fontWeight: '700', fontSize: 10 }}>
+                        {parsedResult.type.toUpperCase()} • {parsedResult.confidence.toUpperCase()} CONFIDENCE
+                      </AppText>
+                    </View>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginTop: 8 }}>
+                    <AppText variant="displayMedium" style={{ color: colors.textPrimary, fontWeight: '700' }}>
+                      {currencySymbol}{parsedResult.amount}
+                    </AppText>
+                    <AppText variant="bodyMedium" style={{ color: colors.textPrimary, fontWeight: '600' }}>
+                      {parsedResult.merchant}
+                    </AppText>
+                  </View>
+
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: colors.border }}>
+                    <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                      Category: <AppText variant="metadata" style={{ color: colors.textPrimary, fontWeight: '600' }}>{parsedResult.categoryName || 'General'}</AppText>
+                    </AppText>
+                    <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                      Account: <AppText variant="metadata" style={{ color: colors.textPrimary, fontWeight: '600' }}>{parsedResult.accountName || 'Primary'}</AppText>
+                    </AppText>
+                  </View>
+
+                  <AppButton
+                    title="APPLY TO TRANSACTION"
+                    onPress={() => handleApplySmartFill()}
+                    variant="primary"
+                    size="medium"
+                    style={{ marginTop: 12 }}
+                  />
+                </View>
+              )}
+
+              {!parsedResult?.success && smartInput.trim().length > 0 && (
+                <View style={{ marginTop: 12, padding: 8, backgroundColor: colors.background, borderRadius: radius.xs }}>
+                  <AppText variant="metadata" style={{ color: colors.coral, textAlign: 'center' }}>
+                    Searching for amount in text... (e.g. include ₹350 or 450)
+                  </AppText>
+                </View>
+              )}
+            </ScrollView>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </SafeAreaView>
   );
 };
@@ -747,5 +975,40 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 12,
     justifyContent: 'center',
+  },
+  smartFillBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  smartIconWrap: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  smartTextInput: {
+    borderWidth: 1,
+    borderRadius: 4,
+    padding: 10,
+    fontSize: 14,
+    minHeight: 70,
+    textAlignVertical: 'top',
+  },
+  sampleChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderWidth: 1,
+    borderRadius: 4,
+  },
+  previewCard: {
+    borderWidth: 1,
+  },
+  confidenceBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 2,
   },
 });
