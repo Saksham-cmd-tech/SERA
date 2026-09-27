@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
+import { View, StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import { AppText } from './AppText';
 import { useAppTheme } from '../../hooks/useAppTheme';
 
@@ -11,6 +11,8 @@ interface SeraLogoProps {
   direction?: 'row' | 'column';
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  badgeBgColor?: string;
+  badgeTextColor?: string;
 }
 
 export const SeraLogo: React.FC<SeraLogoProps> = ({
@@ -21,8 +23,13 @@ export const SeraLogo: React.FC<SeraLogoProps> = ({
   direction = 'row',
   style,
   textStyle,
+  badgeBgColor,
+  badgeTextColor,
 }) => {
   const { colors } = useAppTheme();
+
+  const circleBg = badgeBgColor || colors.positive;
+  const symbolColor = badgeTextColor || colors.textInverted;
 
   return (
     <View
@@ -32,18 +39,31 @@ export const SeraLogo: React.FC<SeraLogoProps> = ({
         style,
       ]}
     >
-      <Image
-        source={require('../../assets/sera_logo.png')}
+      <View
         style={[
-          styles.logoImage,
+          styles.badgeCircle,
           {
             width: size,
             height: size,
             borderRadius: size / 2,
+            backgroundColor: circleBg,
+            borderColor: colors.border,
           },
         ]}
-        resizeMode="contain"
-      />
+      >
+        <AppText
+          style={[
+            styles.symbol,
+            {
+              color: symbolColor,
+              fontSize: size * 0.54,
+              lineHeight: size * 0.64,
+            },
+          ]}
+        >
+          $
+        </AppText>
+      </View>
 
       {(showText || showTagline) && (
         <View
@@ -92,8 +112,18 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
   },
-  logoImage: {
-    backgroundColor: 'transparent',
+  badgeCircle: {
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  symbol: {
+    fontWeight: '800',
+    fontFamily: 'Courier',
+    textAlign: 'center',
+    textAlignVertical: 'center',
+    includeFontPadding: false,
   },
   textRow: {
     marginLeft: 10,
