@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   StatusBar,
   View,
@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
   TouchableOpacity,
+  AppState,
 } from 'react-native';
 import {
   NavigationContainer,
@@ -31,6 +32,7 @@ import { FinanceGrid } from './src/components/common/FinanceGrid';
 import { CategoryIcon } from './src/components/common/CategoryIcon';
 import { notificationService } from './src/services/notificationService';
 import { smsService, DetectedSmsTransaction } from './src/services/smsService';
+import { biometricService } from './src/services/biometricService';
 
 export default function App(): React.JSX.Element {
   const [dbReady, setDbReady] = useState(false);
@@ -68,13 +70,47 @@ export default function App(): React.JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const isSecurityActive = (settings.pinLockEnabled && !!settings.pinCode) || !!settings.biometricEnabled;
+
   useEffect(() => {
-    if (settings.pinLockEnabled && settings.pinCode) {
+    if (isSecurityActive) {
       setIsLocked(true);
     } else {
       setIsLocked(false);
     }
-  }, [settings.pinLockEnabled, settings.pinCode]);
+  }, [isSecurityActive]);
+
+  const triggerBiometricUnlock = useCallback(async () => {
+    if (!settings.biometricEnabled) return;
+    const res = await biometricService.authenticate(
+      'SERA Security',
+      'Unlock SERA',
+      'Touch the fingerprint sensor or glance at the screen to unlock',
+      settings.pinLockEnabled ? 'Use PIN' : 'Cancel'
+    );
+    if (res.success) {
+      setIsLocked(false);
+      setEnteredPin('');
+    }
+  }, [settings.biometricEnabled, settings.pinLockEnabled]);
+
+  useEffect(() => {
+    if (isLocked && settings.biometricEnabled && dbReady) {
+      const timer = setTimeout(() => {
+        triggerBiometricUnlock();
+      }, 400);
+      return () => clearTimeout(timer);
+    }
+  }, [isLocked, settings.biometricEnabled, dbReady, triggerBiometricUnlock]);
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', nextState => {
+      if (nextState === 'active' && isSecurityActive) {
+        setIsLocked(true);
+      }
+    });
+    return () => sub.remove();
+  }, [isSecurityActive]);
 
   const handleUnlock = () => {
     if (enteredPin === settings.pinCode) {
@@ -104,7 +140,15 @@ export default function App(): React.JSX.Element {
 
   return (
     <SafeAreaProvider>
-      <AppContent isLocked={isLocked} enteredPin={enteredPin} setEnteredPin={setEnteredPin} onUnlock={handleUnlock} />
+      <AppContent
+        isLocked={isLocked}
+        enteredPin={enteredPin}
+        setEnteredPin={setEnteredPin}
+        onUnlock={handleUnlock}
+        onBiometricUnlock={triggerBiometricUnlock}
+        biometricEnabled={!!settings.biometricEnabled}
+        pinLockEnabled={!!settings.pinLockEnabled && !!settings.pinCode}
+      />
     </SafeAreaProvider>
   );
 }
@@ -217,11 +261,17 @@ function AppContent({
   enteredPin,
   setEnteredPin,
   onUnlock,
+  onBiometricUnlock,
+  biometricEnabled,
+  pinLockEnabled,
 }: {
   isLocked: boolean;
   enteredPin: string;
   setEnteredPin: (v: string) => void;
   onUnlock: () => void;
+  onBiometricUnlock: () => void;
+  biometricEnabled: boolean;
+  pinLockEnabled: boolean;
 }): React.JSX.Element {
   const { colors, isDark, currencySymbol, radius, spacing } = useAppTheme();
   const [detectedSms, setDetectedSms] = useState<DetectedSmsTransaction | null>(null);
@@ -254,6 +304,80 @@ function AppContent({
       });
     }
   };
+
+  if (isLocked) {
+    return (
+      <View style={[styles.lockContainer, { backgroundColor: colors.background }]}>
+        <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
+        <FinanceGrid
+          barsCount={20}
+          height={40}
+          minHeight={10}
+          color={colors.gridLine}
+          activeColor={colors.textPrimary}
+          progress={0.7}
+          style={{ marginBottom: 20 }}
+        />
+        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 2, marginBottom: 8 }}>
+          APPLICATION PROTECTED
+        </AppText>
+        <AppText variant="pageHeading" style={{ color: colors.textPrimary, marginBottom: 24 }}>
+          {pinLockEnabled ? 'Enter 4-Digit PIN' : 'Biometric Security'}
+        </AppText>
+
+        {pinLockEnabled && (
+          <>
+            <TextInput
+              value={enteredPin}
+              onChangeText={setEnteredPin}
+              placeholder="••••"
+              placeholderTextColor={colors.textMuted}
+              keyboardType="numeric"
+              maxLength={4}
+              secureTextEntry
+              style={[
+                styles.lockPinInput,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  color: colors.textPrimary,
+                },
+              ]}
+              autoFocus={!biometricEnabled}
+            />
+
+            <AppButton
+              title="UNLOCK WITH PIN"
+              onPress={onUnlock}
+              variant="primary"
+              size="large"
+              style={{ marginTop: 20, width: 220 }}
+            />
+          </>
+        )}
+
+        {biometricEnabled && (
+          <TouchableOpacity
+            onPress={onBiometricUnlock}
+            activeOpacity={0.7}
+            style={[
+              styles.biometricLockBtn,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+                marginTop: pinLockEnabled ? 16 : 0,
+              },
+            ]}
+          >
+            <CategoryIcon name="Shield" size={20} color={colors.accent} strokeWidth={2.2} />
+            <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600', marginLeft: 10 }}>
+              Unlock with Biometrics
+            </AppText>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  }
 
   return (
     <View style={[styles.appWrapper, { backgroundColor: colors.background }]}>
@@ -346,55 +470,6 @@ function AppContent({
           </View>
         </View>
       </Modal>
-
-      {/* Security PIN Lock Screen */}
-      <Modal visible={isLocked} transparent={false} animationType="fade">
-        <View style={[styles.lockContainer, { backgroundColor: colors.background }]}>
-          <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-          <FinanceGrid
-            barsCount={20}
-            height={40}
-            minHeight={10}
-            color={colors.gridLine}
-            activeColor={colors.textPrimary}
-            progress={0.7}
-            style={{ marginBottom: 20 }}
-          />
-          <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 2, marginBottom: 8 }}>
-            APPLICATION PROTECTED
-          </AppText>
-          <AppText variant="pageHeading" style={{ color: colors.textPrimary, marginBottom: 24 }}>
-            Enter 4-Digit PIN
-          </AppText>
-
-          <TextInput
-            value={enteredPin}
-            onChangeText={setEnteredPin}
-            placeholder="••••"
-            placeholderTextColor={colors.textMuted}
-            keyboardType="numeric"
-            maxLength={4}
-            secureTextEntry
-            style={[
-              styles.lockPinInput,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                color: colors.textPrimary,
-              },
-            ]}
-            autoFocus
-          />
-
-          <AppButton
-            title="UNLOCK APP"
-            onPress={onUnlock}
-            variant="primary"
-            size="large"
-            style={{ marginTop: 24, width: 200 }}
-          />
-        </View>
-      </Modal>
     </View>
   );
 }
@@ -422,6 +497,16 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderWidth: 1,
     borderRadius: 4,
+  },
+  biometricLockBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderWidth: 1,
+    borderRadius: 4,
+    minWidth: 220,
   },
   inAppModalBackdrop: {
     flex: 1,

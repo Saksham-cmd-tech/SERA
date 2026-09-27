@@ -24,6 +24,7 @@ import { budgetRepository } from '../../database/repositories/budgetRepository';
 import { formatCurrency } from '../../utils/currency';
 import { db } from '../../database/database';
 import { smsService } from '../../services/smsService';
+import { biometricService } from '../../services/biometricService';
 
 interface SettingsScreenProps {
   navigation: any;
@@ -628,21 +629,72 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
           </View>
 
           <View style={styles.rowItem}>
-            <View>
+            <View style={{ flex: 1, paddingRight: 10 }}>
               <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
                 Biometric Unlock
               </AppText>
               <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                FaceID / Fingerprint authorization
+                Face / Fingerprint authorization
               </AppText>
             </View>
             <Switch
               value={settings.biometricEnabled}
-              onValueChange={val => updateSettings({ biometricEnabled: val })}
+              onValueChange={async val => {
+                if (val) {
+                  const check = await biometricService.checkBiometrics();
+                  if (!check.available || !check.enrolled) {
+                    Alert.alert(
+                      'Biometrics Unavailable',
+                      check.error || 'No enrolled fingerprint or face unlock detected. Please set up biometrics in your Android Settings first.'
+                    );
+                    return;
+                  }
+                  const auth = await biometricService.authenticate(
+                    'SERA Security',
+                    'Enable Biometric Unlock',
+                    'Verify your fingerprint or face to enable biometric protection',
+                    'Cancel'
+                  );
+                  if (auth.success) {
+                    await updateSettings({ biometricEnabled: true });
+                  } else if (auth.error && auth.error !== 'AUTH_ERROR') {
+                    Alert.alert('Verification Failed', auth.message || 'Could not verify biometrics.');
+                  }
+                } else {
+                  await updateSettings({ biometricEnabled: false });
+                }
+              }}
               trackColor={{ false: colors.border, true: colors.cardDark }}
               thumbColor={settings.biometricEnabled ? colors.accent : '#F4F4F4'}
             />
           </View>
+
+          {settings.biometricEnabled && (
+            <TouchableOpacity
+              onPress={async () => {
+                const res = await biometricService.authenticate(
+                  'SERA Biometric Test',
+                  'Verify Sensor',
+                  'Place your registered finger on the sensor to test biometric unlock',
+                  'Dismiss'
+                );
+                if (res.success) {
+                  Alert.alert('Biometric Verified', 'Biometric sensor recognized your fingerprint successfully!');
+                } else if (res.message && res.error !== 'AUTH_ERROR') {
+                  Alert.alert('Notice', res.message);
+                }
+              }}
+              style={[styles.rowItem, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <CategoryIcon name="Shield" size={16} color={colors.accent} strokeWidth={2.4} />
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600', marginLeft: 10 }}>
+                  Test Biometric Sensor
+                </AppText>
+              </View>
+              <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* SECTION: DATA MANAGEMENT */}

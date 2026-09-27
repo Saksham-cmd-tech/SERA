@@ -11,7 +11,8 @@ class NotificationPackage : ReactPackage {
     override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
         return listOf(
             NotificationModule(reactContext),
-            SmsModule(reactContext)
+            SmsModule(reactContext),
+            BiometricModule(reactContext)
         )
     }
 
