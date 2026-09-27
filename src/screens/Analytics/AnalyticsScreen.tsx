@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from '../../components/common/AppText';
@@ -22,9 +23,16 @@ interface AnalyticsScreenProps {
 
 export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) => {
   const { colors, spacing, radius, currencySymbol, isPrivacyMode } = useAppTheme();
-  const { transactions, financialSummary, insights } = useTransactionStore();
+  const { transactions, financialSummary, insights, loadTransactions } = useTransactionStore();
   const categories = useCategoryStore(state => state.categories);
-  const { netWorth } = useAccountStore();
+  const { netWorth, loadAccounts } = useAccountStore();
+
+  useFocusEffect(
+    useCallback(() => {
+      loadTransactions();
+      loadAccounts();
+    }, [loadTransactions, loadAccounts])
+  );
 
   // Category breakdown calculations
   const categoryBreakdown = useMemo(() => {
@@ -78,7 +86,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Dominant Headline: September Spending */}
+        {/* Dominant Headline: Spending */}
         <View
           style={[
             styles.heroCard,
@@ -92,17 +100,17 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
           ]}
         >
           <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
-            SEPTEMBER SPENDING
+            {new Date().toLocaleString('default', { month: 'long' }).toUpperCase()} SPENDING
           </AppText>
           <AppText
             variant="displayMedium"
             privacySensitive
             style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 2 }}
           >
-            {formatCurrency(financialSummary?.totalExpense || 42350, currencySymbol, isPrivacyMode, false)}
+            {formatCurrency(financialSummary?.totalExpense ?? 0, currencySymbol, isPrivacyMode, false)}
           </AppText>
           <AppText variant="metadata" style={{ color: colors.positive, marginTop: 4 }}>
-            +8.4% compared to August • Savings rate: {financialSummary?.savingsRate || 50.1}%
+            Savings rate: {financialSummary?.savingsRate ?? 0}% • Income: {formatCurrency(financialSummary?.totalIncome ?? 0, currencySymbol, isPrivacyMode, false)}
           </AppText>
 
           {/* Minimalist Architectural Line Graph / Grid */}
@@ -110,12 +118,15 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
             barsCount={32}
             height={50}
             minHeight={16}
-            pattern="reference"
+            pattern="uniform"
             lineWidth={1.5}
             lineSpacing={4}
-            color={colors.gridLine}
             activeColor={colors.textPrimary}
-            progress={0.78}
+            progress={
+              (financialSummary?.totalIncome ?? 0) > 0
+                ? Math.min(1, (financialSummary?.totalExpense ?? 0) / (financialSummary?.totalIncome ?? 1))
+                : (financialSummary?.totalExpense ?? 0) > 0 ? 1 : 0
+            }
             style={{ marginTop: spacing.md }}
           />
         </View>

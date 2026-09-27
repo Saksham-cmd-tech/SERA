@@ -28,7 +28,7 @@ export const FinanceGrid: React.FC<FinanceGridProps> = ({
   style,
 }) => {
   const { colors } = useAppTheme();
-  const baseColor = color || colors.gridLine;
+  const baseColor = color || colors.textPrimary;
   const highlightColor = activeColor || colors.textPrimary;
 
   const heights = useMemo(() => {
@@ -53,10 +53,7 @@ export const FinanceGrid: React.FC<FinanceGridProps> = ({
           break;
         case 'reference':
         default:
-          // Distinct architectural density pattern from reference
-          // Taller in mid-sections, varying heights
-          const factor = Math.abs(Math.sin((i + 1) * 0.45));
-          barH = minHeight + factor * (height - minHeight);
+          barH = height;
           break;
       }
       list.push(Math.round(barH));
@@ -64,7 +61,17 @@ export const FinanceGrid: React.FC<FinanceGridProps> = ({
     return list;
   }, [barsCount, height, minHeight, pattern]);
 
-  const activeBarsIndex = Math.round(barsCount * Math.max(0, Math.min(1, progress)));
+  const activeBarsIndex = useMemo(() => {
+    const clamped = Math.max(0, Math.min(1, progress));
+    if (clamped <= 0) {
+      return 0;
+    }
+    if (clamped >= 1) {
+      return barsCount;
+    }
+    const rounded = Math.round(barsCount * clamped);
+    return Math.max(1, rounded);
+  }, [barsCount, progress]);
 
   return (
     <View style={[styles.container, { height }, style]}>
@@ -80,7 +87,7 @@ export const FinanceGrid: React.FC<FinanceGridProps> = ({
                 height: barHeight,
                 marginRight: idx === barsCount - 1 ? 0 : lineSpacing,
                 backgroundColor: isActive ? highlightColor : baseColor,
-                opacity: isActive ? 0.9 : 0.4,
+                opacity: isActive ? 0.95 : (color ? 0.4 : 0.22),
               },
             ]}
           />

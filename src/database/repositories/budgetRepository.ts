@@ -105,13 +105,14 @@ class BudgetRepository {
       t => t.type === 'expense' && t.date.startsWith(currentYearMonth)
     );
 
-    const totalBudget = budget ? budget.amount : 45000;
+    const settings = await db.getSettings();
+    const totalBudget = budget ? budget.amount : (settings?.monthlyBudgetGoal || 0);
     const totalSpent = roundMoney(
       thisMonthExpenses.reduce((sum, t) => sum + t.amount, 0)
     );
     const totalRemaining = roundMoney(totalBudget - totalSpent);
     const percentageUsed = totalBudget > 0 ? roundMoney((totalSpent / totalBudget) * 100) : 0;
-    const isTotalOverrun = totalSpent > totalBudget;
+    const isTotalOverrun = totalBudget > 0 ? totalSpent > totalBudget : false;
 
     let maxOverrunAmount = 0;
     let worstOverrunCategory: string | undefined;
@@ -150,6 +151,30 @@ class BudgetRepository {
         isOverrun: isOver,
         overrunAmount: overrunAmt,
       });
+    }
+
+    // Also include any categories that had expenses this month but no explicit limit set
+    for (const tx of thisMonthExpenses) {
+      if (!categoryAnalysis.some(ca => ca.categoryId === tx.categoryId)) {
+        const cat = categories.find(c => c.id === tx.categoryId);
+        const spent = roundMoney(
+          thisMonthExpenses
+            .filter(t => t.categoryId === tx.categoryId)
+            .reduce((sum, t) => sum + t.amount, 0)
+        );
+        categoryAnalysis.push({
+          categoryId: tx.categoryId,
+          categoryName: cat ? cat.name : 'Other',
+          categoryIcon: cat ? cat.icon : 'Tag',
+          categoryColor: cat ? cat.color : '#CACDBB',
+          limitAmount: 0,
+          spentAmount: spent,
+          remainingAmount: -spent,
+          percentage: 0,
+          isOverrun: false,
+          overrunAmount: 0,
+        });
+      }
     }
 
     return {

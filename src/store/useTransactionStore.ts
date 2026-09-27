@@ -7,6 +7,8 @@ import {
 } from '../types';
 import { transactionRepository } from '../database/repositories/transactionRepository';
 import { formatCurrency } from '../utils/currency';
+import { useBudgetStore } from './useBudgetStore';
+import { useAccountStore } from './useAccountStore';
 
 interface TransactionState {
   transactions: Transaction[];
@@ -88,24 +90,32 @@ export const useTransactionStore = create<TransactionState>((set, get) => ({
   createTransaction: async data => {
     const newTx = await transactionRepository.create(data);
     await get().loadTransactions();
+    await useBudgetStore.getState().loadBudgetSummary();
+    await useAccountStore.getState().loadAccounts();
     return newTx;
   },
 
   updateTransaction: async (id, updates) => {
     const updated = await transactionRepository.update(id, updates);
     await get().loadTransactions();
+    await useBudgetStore.getState().loadBudgetSummary();
+    await useAccountStore.getState().loadAccounts();
     return updated;
   },
 
   deleteTransaction: async id => {
     const ok = await transactionRepository.delete(id);
     await get().loadTransactions();
+    await useBudgetStore.getState().loadBudgetSummary();
+    await useAccountStore.getState().loadAccounts();
     return ok;
   },
 
   duplicateTransaction: async id => {
     const copy = await transactionRepository.duplicate(id);
     await get().loadTransactions();
+    await useBudgetStore.getState().loadBudgetSummary();
+    await useAccountStore.getState().loadAccounts();
     return copy;
   },
 }));

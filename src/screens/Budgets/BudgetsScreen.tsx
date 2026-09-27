@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   RefreshControl,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from '../../components/common/AppText';
@@ -26,9 +27,11 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
   const { summary, loadBudgetSummary, isLoading } = useBudgetStore();
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadBudgetSummary();
-  }, [loadBudgetSummary]);
+  useFocusEffect(
+    useCallback(() => {
+      loadBudgetSummary();
+    }, [loadBudgetSummary])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -94,7 +97,7 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
                 privacySensitive
                 style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 2 }}
               >
-                {formatCurrency(summary?.totalBudget || 45000, currencySymbol, isPrivacyMode, false)}
+                {formatCurrency(summary?.totalBudget ?? 0, currencySymbol, isPrivacyMode, false)}
               </AppText>
             </View>
 
@@ -102,12 +105,12 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
               barsCount={18}
               height={44}
               minHeight={14}
-              pattern="reference"
+              pattern="uniform"
               lineWidth={1}
               lineSpacing={3}
               color={colors.gridLine}
-              activeColor={colors.textPrimary}
-              progress={(summary?.percentageUsed || 70) / 100}
+              activeColor={summary?.isOverrun ? colors.coral : colors.textPrimary}
+              progress={(summary?.percentageUsed ?? 0) / 100}
             />
           </View>
 
@@ -115,14 +118,14 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
           <View style={[styles.statsRow, { borderTopColor: colors.border, borderTopWidth: 1, marginTop: spacing.md, paddingTop: spacing.sm }]}>
             <View>
               <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                USED
+                USED ({summary?.percentageUsed ?? 0}%)
               </AppText>
               <AppText
                 variant="amountSmall"
                 privacySensitive
                 style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 2 }}
               >
-                {formatCurrency(summary?.totalSpent || 31240, currencySymbol, isPrivacyMode, false)}
+                {formatCurrency(summary?.totalSpent ?? 0, currencySymbol, isPrivacyMode, false)}
               </AppText>
             </View>
 
@@ -134,12 +137,12 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
                 variant="amountSmall"
                 privacySensitive
                 style={{
-                  color: (summary?.totalRemaining || 0) < 0 ? colors.coral : colors.positive,
+                  color: (summary?.totalRemaining ?? 0) < 0 ? colors.coral : colors.positive,
                   fontWeight: '700',
                   marginTop: 2,
                 }}
               >
-                {formatCurrency(summary?.totalRemaining || 13760, currencySymbol, isPrivacyMode, false)}
+                {formatCurrency(summary?.totalRemaining ?? 0, currencySymbol, isPrivacyMode, false)}
               </AppText>
             </View>
           </View>

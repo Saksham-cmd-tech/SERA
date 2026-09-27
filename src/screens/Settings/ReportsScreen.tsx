@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -31,19 +31,28 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
   const monthLabel = selectedMonth === 'current' ? 'SEPTEMBER 2026' : 'AUGUST 2026';
 
   // Calculate report metrics
-  const income = selectedMonth === 'current' ? financialSummary?.totalIncome || 85000 : 78000;
-  const expenses = selectedMonth === 'current' ? financialSummary?.totalExpense || 42350 : 39500;
+  const income = selectedMonth === 'current' ? (financialSummary?.totalIncome ?? 0) : 0;
+  const expenses = selectedMonth === 'current' ? (financialSummary?.totalExpense ?? 0) : 0;
   const savings = income - expenses;
-  const savingsRate = Math.round((savings / income) * 100 * 10) / 10;
+  const savingsRate = income > 0 ? Math.round((savings / income) * 100 * 10) / 10 : 0;
 
   // Largest expense transaction
   const largestTx = transactions
     .filter(t => t.type === 'expense')
-    .sort((a, b) => b.amount - a.amount)[0] || {
-    merchant: 'Apartment Lease',
-    amount: 18000,
-    category: 'Rent',
-  };
+    .sort((a, b) => b.amount - a.amount)[0] || null;
+
+  // Top outflow category
+  const topCategoryName = useMemo(() => {
+    const totals: Record<string, number> = {};
+    for (const t of transactions) {
+      if (t.type === 'expense') {
+        totals[t.categoryId] = (totals[t.categoryId] || 0) + t.amount;
+      }
+    }
+    const topEntry = Object.entries(totals).sort((a, b) => b[1] - a[1])[0];
+    if (!topEntry) return 'None';
+    return categories.find(c => c.id === topEntry[0])?.name || 'Other';
+  }, [transactions, categories]);
 
   const handleExportCSV = () => {
     let csvContent = 'Date,Merchant,Category,Type,Account,Amount,Currency,Notes\n';
@@ -161,7 +170,7 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
               Top Outflow Category
             </AppText>
             <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '700' }}>
-              Housing / Rent
+              {topCategoryName}
             </AppText>
           </View>
 
@@ -170,7 +179,7 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
               Largest Transaction
             </AppText>
             <AppText variant="bodyLarge" privacySensitive style={{ color: colors.textPrimary, fontWeight: '700' }}>
-              {largestTx.merchant} — {formatCurrency(largestTx.amount, currencySymbol, isPrivacyMode, false)}
+              {largestTx ? `${largestTx.merchant} — ${formatCurrency(largestTx.amount, currencySymbol, isPrivacyMode, false)}` : 'None'}
             </AppText>
           </View>
         </View>

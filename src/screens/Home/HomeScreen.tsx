@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   ScrollView,
@@ -7,6 +7,7 @@ import {
   Modal,
   RefreshControl,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from '../../components/common/AppText';
@@ -52,12 +53,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [accountModalVisible, setAccountModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    loadTransactions();
-    loadAccounts();
-    loadBudgetSummary();
-    loadGoals();
-  }, [loadTransactions, loadAccounts, loadBudgetSummary, loadGoals]);
+  useFocusEffect(
+    useCallback(() => {
+      loadTransactions();
+      loadAccounts();
+      loadBudgetSummary();
+      loadGoals();
+    }, [loadTransactions, loadAccounts, loadBudgetSummary, loadGoals])
+  );
 
   const onRefresh = async () => {
     setRefreshing(true);

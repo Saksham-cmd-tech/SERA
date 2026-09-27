@@ -20,7 +20,7 @@ interface MonthlyBudgetBannerProps {
 export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
   monthName = 'CURRENT MONTH',
   totalBudget = 0,
-  totalSpent: _totalSpent = 0,
+  totalSpent = 0,
   totalRemaining = 0,
   isOverrun = false,
   overrunAmount = 0,
@@ -29,10 +29,21 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
 }) => {
   const { colors, spacing, radius, currencySymbol, isPrivacyMode } = useAppTheme();
 
+  const spentRatio = totalBudget > 0 ? Math.min(1, Math.max(0, totalSpent / totalBudget)) : 0;
+  const remainingRatio = totalBudget > 0 ? Math.max(0, Math.min(1, totalRemaining / totalBudget)) : 0;
+  const isBudgetExceeded = isOverrun || (totalBudget > 0 && totalSpent > totalBudget);
+
+  // When money has been spent, show at least 1 consumed bar on remaining (e.g. 17/18 active)
+  const adjustedRemainingProgress = totalSpent > 0 && remainingRatio < 1
+    ? Math.min(0.94, remainingRatio)
+    : remainingRatio;
+
   return (
     <View style={[styles.wrapper, { marginBottom: spacing.lg }]}>
-      {/* Top Main Budget Block */}
-      <View
+      {/* Top Main Budget Block matching reference media_1790320460288 */}
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={onPressDetails}
         style={[
           styles.mainCard,
           {
@@ -58,67 +69,76 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
           {formatCurrency(totalRemaining, currencySymbol, isPrivacyMode, false)}
         </AppText>
 
-        {/* Budget Row with Vertical Rhythm Bars */}
-        <View style={[styles.dataRow, { borderTopColor: colors.border, borderTopWidth: 1 }]}>
-          <View style={styles.dataColLeft}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-              BUDGET
-            </AppText>
-            <AppText
-              variant="amountMedium"
-              privacySensitive
-              style={{ color: colors.textPrimary, marginTop: 2 }}
-            >
-              {formatCurrency(totalBudget, currencySymbol, isPrivacyMode, false)}
-            </AppText>
-          </View>
-          <View style={styles.gridColRight}>
+        {/* Budget Row: 'BUDGET' label on left, totalBudget amount on right */}
+        <View style={styles.budgetRow}>
+          <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.2 }}>
+            BUDGET
+          </AppText>
+          <AppText
+            variant="amountMedium"
+            privacySensitive
+            style={{ color: colors.textPrimary, fontWeight: '700' }}
+          >
+            {formatCurrency(totalBudget, currencySymbol, isPrivacyMode, false)}
+          </AppText>
+        </View>
+
+        {/* Full-width continuous horizontal hairline divider */}
+        <View style={[styles.fullDivider, { backgroundColor: colors.border }]} />
+
+        {/* Below Divider Split Section: Left info + shorter bars, Right tall vertical bars */}
+        <View style={styles.splitSection}>
+          {/* Left Column */}
+          <View style={styles.leftCol}>
+            <View style={styles.leftAmountRow}>
+              <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.2 }}>
+                LEFT
+              </AppText>
+              <AppText
+                variant="amountMedium"
+                privacySensitive
+                style={{
+                  color: isBudgetExceeded ? colors.coral : colors.textPrimary,
+                  fontWeight: '700',
+                  marginLeft: 12,
+                }}
+              >
+                {formatCurrency(totalRemaining, currencySymbol, isPrivacyMode, false)}
+              </AppText>
+            </View>
+
+            {/* Hairline sub-divider under LEFT */}
+            <View style={[styles.subDivider, { backgroundColor: colors.border }]} />
+
+            {/* Shorter Vertical Rhythm Bars (Remaining status) */}
             <FinanceGrid
-              barsCount={20}
-              height={38}
-              minHeight={12}
-              pattern="reference"
+              barsCount={18}
+              height={36}
+              pattern="uniform"
               lineWidth={1}
-              lineSpacing={3}
-              color={colors.gridLine}
-              activeColor={colors.textPrimary}
-              progress={0.7}
+              lineSpacing={3.5}
+              activeColor={isBudgetExceeded ? colors.coral : colors.textPrimary}
+              progress={isBudgetExceeded ? 0 : adjustedRemainingProgress}
+            />
+          </View>
+
+          {/* Right Column: Tall Vertical Rhythm Bars directly hanging from the top divider */}
+          <View style={styles.rightCol}>
+            <FinanceGrid
+              barsCount={18}
+              height={72}
+              pattern="uniform"
+              lineWidth={1}
+              lineSpacing={3.5}
+              activeColor={isBudgetExceeded ? colors.coral : colors.textPrimary}
+              progress={isBudgetExceeded ? 1 : spentRatio}
             />
           </View>
         </View>
+      </TouchableOpacity>
 
-        {/* Left Row with Lower Vertical Rhythm Bars */}
-        <View style={[styles.dataRow, { borderTopColor: colors.border, borderTopWidth: 1, marginTop: spacing.sm }]}>
-          <View style={styles.dataColLeft}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-              LEFT
-            </AppText>
-            <AppText
-              variant="amountMedium"
-              privacySensitive
-              style={{ color: colors.textPrimary, marginTop: 2 }}
-            >
-              {formatCurrency(totalRemaining, currencySymbol, isPrivacyMode, false)}
-            </AppText>
-          </View>
-          <View style={styles.gridColRight}>
-            <FinanceGrid
-              barsCount={16}
-              height={26}
-              minHeight={8}
-              pattern="ascending"
-              lineWidth={1}
-              lineSpacing={3}
-              color={colors.gridLine}
-              activeColor={colors.textPrimary}
-              progress={0.4}
-            />
-          </View>
-        </View>
-      </View>
-
-      {/* Coral Warning Overrun Section */}
-      {isOverrun && overrunAmount > 0 && (
+      {/* Coral Warning Overrun Section from reference */}
+      {isBudgetExceeded && overrunAmount > 0 && (
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={onPressDetails}
@@ -163,17 +183,16 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
                 variant="labelSmall"
                 style={{ color: '#FFDCD1', letterSpacing: 1.4, marginTop: 2 }}
               >
-                {overrunCategory.toUpperCase()}
+                {overrunCategory ? overrunCategory.toUpperCase() : 'GENERAL OVERRUN'}
               </AppText>
             </View>
 
             <FinanceGrid
-              barsCount={14}
+              barsCount={16}
               height={28}
-              minHeight={10}
               pattern="uniform"
               lineWidth={1}
-              lineSpacing={3}
+              lineSpacing={3.5}
               color="rgba(255, 255, 255, 0.35)"
               activeColor="#FFFFFF"
               progress={1}
@@ -192,18 +211,38 @@ const styles = StyleSheet.create({
   mainCard: {
     borderWidth: 1,
   },
-  dataRow: {
+  budgetRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    paddingTop: 8,
+    paddingBottom: 6,
   },
-  dataColLeft: {
-    justifyContent: 'flex-end',
+  fullDivider: {
+    height: 1,
+    width: '100%',
   },
-  gridColRight: {
+  splitSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'flex-end',
+  },
+  leftCol: {
     justifyContent: 'flex-end',
+  },
+  leftAmountRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 8,
+    paddingBottom: 6,
+  },
+  subDivider: {
+    height: 1,
+    width: '100%',
+    marginBottom: 0,
+  },
+  rightCol: {
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
   coralCard: {
     overflow: 'hidden',
