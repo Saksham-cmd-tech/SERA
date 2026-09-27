@@ -17,6 +17,7 @@ import { Header } from '../../components/navigation/Header';
 import { Avatar } from '../../components/common/Avatar';
 import { CategoryIcon } from '../../components/common/CategoryIcon';
 import { AppButton } from '../../components/common/AppButton';
+import { SeraLogo } from '../../components/common/SeraLogo';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { budgetRepository } from '../../database/repositories/budgetRepository';
 import { formatCurrency } from '../../utils/currency';
@@ -113,7 +114,11 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
       <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header subtitle="PREFERENCES" title="Settings" />
+        <Header
+          subtitle="SERA • PREFERENCES"
+          title="Settings"
+          rightAction={<SeraLogo size={28} />}
+        />
       </View>
 
       <ScrollView
@@ -394,6 +399,41 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             </AppText>
             <CategoryIcon name="RotateCcw" size={16} color={colors.coral} />
           </TouchableOpacity>
+        </View>
+
+        {/* BRAND FOOTER: SERA */}
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingVertical: spacing.lg,
+            marginBottom: spacing.xxl,
+          }}
+        >
+          <SeraLogo size={52} showText showTagline direction="column" />
+          <AppText
+            variant="metadata"
+            style={{
+              color: colors.textMuted,
+              marginTop: 10,
+              fontSize: 11,
+              letterSpacing: 0.5,
+              textAlign: 'center',
+            }}
+          >
+            SERA v1.0.0 (Build 1)
+          </AppText>
+          <AppText
+            variant="metadata"
+            style={{
+              color: colors.textMuted,
+              fontSize: 10,
+              marginTop: 2,
+              textAlign: 'center',
+            }}
+          >
+            100% Offline • Private SQLite Encrypted on Device
+          </AppText>
         </View>
       </ScrollView>
 

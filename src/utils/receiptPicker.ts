@@ -15,7 +15,7 @@ async function requestCameraPermission(): Promise<boolean> {
       PermissionsAndroid.PERMISSIONS.CAMERA,
       {
         title: 'Camera Permission',
-        message: 'Money Tracker needs camera access so you can photograph receipts.',
+        message: 'SERA needs camera access so you can photograph receipts.',
         buttonNeutral: 'Ask Later',
         buttonNegative: 'Cancel',
         buttonPositive: 'OK',

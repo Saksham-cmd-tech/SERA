@@ -18,6 +18,7 @@ import { MonthlyBudgetBanner } from '../../components/finance/MonthlyBudgetBanne
 import { TransactionRow } from '../../components/finance/TransactionRow';
 import { CategoryIcon } from '../../components/common/CategoryIcon';
 import { AppButton } from '../../components/common/AppButton';
+import { SeraLogo } from '../../components/common/SeraLogo';
 import { useTransactionStore } from '../../store/useTransactionStore';
 import { useAccountStore } from '../../store/useAccountStore';
 import { useBudgetStore } from '../../store/useBudgetStore';
@@ -102,15 +103,21 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           />
         }
       >
-        {/* Header: Avatar, Greeting, and 6-dot Menu */}
+        {/* Header: Avatar, Greeting, and SERA Logo */}
         <Header
           showAvatar
           avatarName={settings.userName || 'User'}
           onPressAvatar={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
-          subtitle={settings.userName ? `HELLO, ${settings.userName.toUpperCase()}` : 'GOOD MORNING'}
+          subtitle={settings.userName ? `SERA • ${settings.userName.toUpperCase()}` : 'SERA • OVERVIEW'}
           title="Overview"
-          showMenu
-          onPressMenu={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
+          rightAction={
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
+            >
+              <SeraLogo size={32} />
+            </TouchableOpacity>
+          }
         />
 
         {/* Balance Card: Large Dominant Number & Account Switcher */}

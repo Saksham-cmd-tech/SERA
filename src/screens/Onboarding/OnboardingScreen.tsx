@@ -12,6 +12,7 @@ import { AppText } from '../../components/common/AppText';
 import { FinanceGrid } from '../../components/common/FinanceGrid';
 import { AppButton } from '../../components/common/AppButton';
 import { CategoryIcon } from '../../components/common/CategoryIcon';
+import { SeraLogo } from '../../components/common/SeraLogo';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { useAccountStore } from '../../store/useAccountStore';
 import { useBudgetStore } from '../../store/useBudgetStore';
@@ -45,10 +46,10 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
   const slides = [
     {
-      badge: 'ARCHITECTURAL FINANCE',
+      badge: 'SERA • INTENTIONAL FINANCE',
       titleTop: 'TAKE INTENTIONAL',
       titleBottom: 'CONTROL OF MONEY',
-      desc: 'Designed with architectural clarity, muted editorial palettes, and zero clutter. Keep your finances private and offline.',
+      desc: 'Welcome to SERA (Spending & Expense Record App). Built with architectural clarity, muted editorial palettes, zero clutter, and 100% private offline storage.',
       featureIcon: 'SlidersHorizontal',
     },
     {
@@ -203,18 +204,21 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               </View>
 
               {step === 0 && (
-                <View style={styles.gridContainer}>
-                  <FinanceGrid
-                    barsCount={28}
-                    height={70}
-                    minHeight={15}
-                    pattern="reference"
-                    lineWidth={1.5}
-                    lineSpacing={5}
-                    color={colors.gridLine}
-                    activeColor={colors.cardDark}
-                    progress={0.65}
-                  />
+                <View style={{ alignItems: 'center', width: '100%', paddingVertical: 4 }}>
+                  <SeraLogo size={56} showText showTagline direction="column" />
+                  <View style={[styles.gridContainer, { marginTop: 14 }]}>
+                    <FinanceGrid
+                      barsCount={28}
+                      height={44}
+                      minHeight={10}
+                      pattern="reference"
+                      lineWidth={1.5}
+                      lineSpacing={5}
+                      color={colors.gridLine}
+                      activeColor={colors.cardDark}
+                      progress={0.7}
+                    />
+                  </View>
                 </View>
               )}
 
@@ -340,17 +344,20 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               >
                 STEP 4 OF 4 • PERSONAL SETUP
               </AppText>
-              <AppText
-                variant="pageHeading"
-                style={{ color: colors.textPrimary, letterSpacing: -0.5 }}
-              >
-                Welcome to Money Tracker
-              </AppText>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 2 }}>
+                <SeraLogo size={32} style={{ marginRight: 10 }} />
+                <AppText
+                  variant="pageHeading"
+                  style={{ color: colors.textPrimary, letterSpacing: -0.5 }}
+                >
+                  Welcome to SERA
+                </AppText>
+              </View>
               <AppText
                 variant="bodyMedium"
                 style={{ color: colors.textSecondary, marginTop: 4 }}
               >
-                Tailor your currency, opening balance, and monthly target.
+                Spending & Expense Record App • Tailor your currency, opening balance, and monthly target.
               </AppText>
             </View>
 
