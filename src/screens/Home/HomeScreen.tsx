@@ -24,6 +24,8 @@ import { useAccountStore } from '../../store/useAccountStore';
 import { useBudgetStore } from '../../store/useBudgetStore';
 import { useGoalStore } from '../../store/useGoalStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
+import { PendingSmsBanner } from '../../components/sms/PendingSmsBanner';
+import { usePendingSmsStore } from '../../store/usePendingSmsStore';
 import { formatCurrency } from '../../utils/currency';
 
 interface HomeScreenProps {
@@ -60,6 +62,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       loadAccounts();
       loadBudgetSummary();
       loadGoals();
+      usePendingSmsStore.getState().loadPendingItems(false);
     }, [loadTransactions, loadAccounts, loadBudgetSummary, loadGoals])
   );
 
@@ -70,6 +73,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       loadAccounts(),
       loadBudgetSummary(),
       loadGoals(),
+      usePendingSmsStore.getState().loadPendingItems(false),
     ]);
     setRefreshing(false);
   };
@@ -127,6 +131,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           onPressAccountSwitcher={() => setAccountModalVisible(true)}
           onTogglePrivacy={togglePrivacyMode}
         />
+
+        {/* Pending SMS Banner (displays when transactions are pending or for later) */}
+        <PendingSmsBanner />
 
         {/* Quick Action Floating Bar: + Expense, + Income, Transfer */}
         <View

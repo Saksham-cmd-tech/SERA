@@ -25,6 +25,7 @@ import { useAccountStore } from '../../store/useAccountStore';
 import { useBudgetStore } from '../../store/useBudgetStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { useGoalStore } from '../../store/useGoalStore';
+import { usePendingSmsStore } from '../../store/usePendingSmsStore';
 import { notificationService } from '../../services/notificationService';
 import { widgetService } from '../../services/widgetService';
 import { TransactionType } from '../../types';
@@ -37,6 +38,7 @@ interface AddTransactionScreenProps {
   navigation: any;
   route?: {
     params?: {
+      smsId?: string;
       initialType?: TransactionType;
       initialCategoryId?: string;
       initialAmount?: number;
@@ -245,6 +247,11 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
         currency: selectedAccount?.currency || settings.currency || 'INR',
         receiptUri: receiptUri || undefined,
       });
+
+      const routeSmsId = route?.params?.smsId;
+      if (routeSmsId) {
+        usePendingSmsStore.getState().dismissItem(routeSmsId);
+      }
 
       if (settings.notificationsEnabled ?? true) {
         notificationService.sendTransactionAlert(

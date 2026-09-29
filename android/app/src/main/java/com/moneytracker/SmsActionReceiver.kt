@@ -15,11 +15,24 @@ class SmsActionReceiver : BroadcastReceiver() {
                     context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                 notificationManager.cancel(notificationId)
             }
+            val smsId = intent.getStringExtra(EXTRA_SMS_ID)
+            if (!smsId.isNullOrEmpty()) {
+                val list = SmsModule.getPendingList(context)
+                val updated = org.json.JSONArray()
+                for (i in 0 until list.length()) {
+                    val obj = list.getJSONObject(i)
+                    if (obj.optString("id") != smsId) {
+                        updated.put(obj)
+                    }
+                }
+                SmsModule.savePendingList(context, updated)
+            }
         }
     }
 
     companion object {
         const val ACTION_DISMISS = "com.moneytracker.ACTION_SMS_DISMISS"
         const val EXTRA_NOTIFICATION_ID = "extra_notification_id"
+        const val EXTRA_SMS_ID = "extra_sms_id"
     }
 }

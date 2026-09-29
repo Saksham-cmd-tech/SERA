@@ -30,6 +30,7 @@ import { useAccountStore } from '../../store/useAccountStore';
 import { useTransactionStore } from '../../store/useTransactionStore';
 import { useBudgetStore } from '../../store/useBudgetStore';
 import { useGoalStore } from '../../store/useGoalStore';
+import { usePendingSmsStore } from '../../store/usePendingSmsStore';
 
 interface SettingsScreenProps {
   navigation: any;
@@ -578,7 +579,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             onPress={async () => {
               await smsService.simulateTransferSms(2000, 'Savings a/c **5678');
             }}
-            style={styles.rowItem}
+            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
               <CategoryIcon name="Repeat" size={16} color={colors.accent} strokeWidth={2.4} />
@@ -588,6 +589,50 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                 </AppText>
                 <AppText variant="metadata" style={{ color: colors.textSecondary }}>
                   Simulates transfer alert: "Transferred ₹2,000 to Savings via IMPS"
+                </AppText>
+              </View>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
+          </TouchableOpacity>
+
+          {/* Test SMS Detection: Money Sent ("Sent to" - Expense) */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={async () => {
+              await smsService.simulateMoneySentSms(850, 'Rohan Verma');
+            }}
+            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+              <CategoryIcon name="ArrowUpRight" size={16} color={colors.coral} strokeWidth={2.4} />
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
+                  Test "Money Sent" SMS (Expense)
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  Simulates UPI alert: "₹850 sent to Rohan Verma via UPI"
+                </AppText>
+              </View>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
+          </TouchableOpacity>
+
+          {/* Open Pending SMS Card Stack Directly */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => {
+              usePendingSmsStore.getState().openModal();
+            }}
+            style={styles.rowItem}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+              <CategoryIcon name="Zap" size={16} color={colors.positive} strokeWidth={2.4} />
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
+                  Open Pending SMS Card Stack
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  View, add, snooze for later, or dismiss pending SMS cards
                 </AppText>
               </View>
             </View>

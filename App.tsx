@@ -26,6 +26,8 @@ import { useBudgetStore } from './src/store/useBudgetStore';
 import { useGoalStore } from './src/store/useGoalStore';
 import { useCategoryStore } from './src/store/useCategoryStore';
 import { useSubscriptionStore } from './src/store/useSubscriptionStore';
+import { usePendingSmsStore } from './src/store/usePendingSmsStore';
+import { PendingSmsCardStackModal } from './src/components/sms/PendingSmsCardStackModal';
 import { useAppTheme } from './src/hooks/useAppTheme';
 import { AppText } from './src/components/common/AppText';
 import { AppButton } from './src/components/common/AppButton';
@@ -65,6 +67,7 @@ export default function App(): React.JSX.Element {
         loadCategories(),
         loadSubscriptions(),
       ]);
+      await usePendingSmsStore.getState().loadPendingItems(true);
       console.log('--- APP SETUP: COMPLETE ---');
       setDbReady(true);
 
@@ -116,8 +119,11 @@ export default function App(): React.JSX.Element {
 
   useEffect(() => {
     const sub = AppState.addEventListener('change', nextState => {
-      if (nextState === 'active' && isSecurityActive) {
-        setIsLocked(true);
+      if (nextState === 'active') {
+        if (isSecurityActive) {
+          setIsLocked(true);
+        }
+        usePendingSmsStore.getState().loadPendingItems(true);
       }
     });
     return () => sub.remove();
@@ -196,6 +202,7 @@ const linking: LinkingOptions<any> = {
       const initialMerchant = queryParams.merchant || undefined;
       const initialCategoryId = queryParams.category || undefined;
       const initialNote = queryParams.note || undefined;
+      const initialSmsId = queryParams.smsId || undefined;
       const autoPromptConfirm = queryParams.autoPrompt === 'true';
 
       return {
@@ -215,6 +222,7 @@ const linking: LinkingOptions<any> = {
                       {
                         name: 'AddTransaction',
                         params: {
+                          smsId: initialSmsId,
                           initialType: detectedType,
                           initialAmount,
                           initialMerchant,
@@ -351,7 +359,6 @@ function AppContent({
   pinLockEnabled: boolean;
 }): React.JSX.Element {
   const { colors, isDark, currencySymbol, radius, spacing } = useAppTheme();
-  const [detectedSms, setDetectedSms] = useState<DetectedSmsTransaction | null>(null);
 
   useEffect(() => {
     const handleUrl = (event: { url: string }) => {
@@ -384,12 +391,14 @@ function AppContent({
         const initialMerchant = queryParams.merchant || undefined;
         const initialCategoryId = queryParams.category || undefined;
         const initialNote = queryParams.note || undefined;
+        const initialSmsId = queryParams.smsId || undefined;
         const autoPromptConfirm = queryParams.autoPrompt === 'true';
 
         if (navigationRef.isReady()) {
           navigationRef.navigate('TransactionsTab', {
             screen: 'AddTransaction',
             params: {
+              smsId: initialSmsId,
               initialType: detectedType,
               initialAmount,
               initialMerchant,
@@ -428,32 +437,12 @@ function AppContent({
 
   useEffect(() => {
     const unsubscribe = smsService.subscribeToSmsEvents((data: DetectedSmsTransaction) => {
-      setDetectedSms(data);
+      usePendingSmsStore.getState().addIncomingItem(data);
     });
     return () => {
       unsubscribe();
     };
   }, []);
-
-  const handleAcceptSms = () => {
-    if (!detectedSms) return;
-    const sms = detectedSms;
-    setDetectedSms(null);
-
-    if (navigationRef.isReady()) {
-      navigationRef.navigate('TransactionsTab', {
-        screen: 'AddTransaction',
-        params: {
-          initialType: sms.type,
-          initialAmount: sms.amount,
-          initialMerchant: sms.merchant,
-          initialCategoryId: sms.categoryId,
-          initialNote: 'Auto-detected SMS',
-          autoPromptConfirm: true,
-        },
-      });
-    }
-  };
 
   if (isLocked) {
     return (
@@ -536,90 +525,8 @@ function AppContent({
         <RootNavigator />
       </NavigationContainer>
 
-      {/* In-App Realtime SMS Detection Modal */}
-      <Modal visible={!!detectedSms} transparent animationType="fade">
-        <View style={[styles.inAppModalBackdrop, { backgroundColor: colors.overlay }]}>
-          <View
-            style={[
-              styles.inAppModalCard,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                borderRadius: radius.md,
-                padding: spacing.lg,
-              },
-            ]}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-              <View style={[styles.pulseIcon, { backgroundColor: colors.cardDark }]}>
-                <CategoryIcon name="Zap" size={16} color={colors.accent} strokeWidth={2.4} />
-              </View>
-              <View style={{ marginLeft: 10 }}>
-                <AppText variant="label" style={{ color: colors.positive, letterSpacing: 1.5, fontWeight: '700' }}>
-                  SMS TRANSACTION DETECTED
-                </AppText>
-                <AppText variant="cardTitle" style={{ color: colors.textPrimary }}>
-                  Record this {detectedSms?.type === 'transfer' ? 'transfer' : detectedSms?.type === 'income' ? 'income' : 'expense'}?
-                </AppText>
-              </View>
-            </View>
-
-            <View
-              style={[
-                styles.detectedDetailsBox,
-                {
-                  backgroundColor: colors.background,
-                  borderColor: colors.border,
-                  padding: spacing.md,
-                  borderRadius: radius.xs,
-                  marginBottom: spacing.md,
-                },
-              ]}
-            >
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-                <AppText variant="displayMedium" style={{ color: colors.textPrimary, fontWeight: '700' }}>
-                  {currencySymbol}{detectedSms?.amountStr}
-                </AppText>
-                <AppText variant="bodyMedium" style={{ color: colors.textPrimary, fontWeight: '600' }}>
-                  {detectedSms?.merchant}
-                </AppText>
-              </View>
-              {!!detectedSms?.rawText && (
-                <AppText
-                  variant="metadata"
-                  numberOfLines={2}
-                  style={{ color: colors.textSecondary, marginTop: 8 }}
-                >
-                  "{detectedSms.rawText}"
-                </AppText>
-              )}
-            </View>
-
-            <AppButton
-              title={
-                detectedSms?.type === 'transfer'
-                  ? 'ADD TRANSFER TO SERA'
-                  : detectedSms?.type === 'income'
-                  ? 'ADD INCOME TO SERA'
-                  : 'ADD EXPENSE TO SERA'
-              }
-              onPress={handleAcceptSms}
-              variant="primary"
-              size="large"
-            />
-
-            <TouchableOpacity
-              onPress={() => setDetectedSms(null)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={{ marginTop: 12, alignItems: 'center', paddingVertical: 4 }}
-            >
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                DISMISS
-              </AppText>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      {/* Tactile Pending SMS Card Stack Modal */}
+      <PendingSmsCardStackModal />
     </View>
   );
 }
@@ -657,26 +564,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 4,
     minWidth: 220,
-  },
-  inAppModalBackdrop: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  inAppModalCard: {
-    width: '100%',
-    maxWidth: 380,
-    borderWidth: 1,
-  },
-  pulseIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  detectedDetailsBox: {
-    borderWidth: 1,
   },
 });

@@ -10,6 +10,7 @@ import android.net.Uri
 import android.provider.Telephony
 import androidx.core.app.NotificationCompat
 import com.facebook.react.bridge.Arguments
+import org.json.JSONObject
 import java.net.URLEncoder
 
 class SmsReceiver : BroadcastReceiver() {
@@ -74,27 +75,34 @@ class SmsReceiver : BroadcastReceiver() {
                 return
             }
 
-            // 3. Determine transaction type (transfer vs receive/income vs sent/expense)
-            val isTransfer = lower.contains("transferred to") || lower.contains("transfer to") ||
-                    lower.contains("transferred from") || lower.contains("transfer from") ||
-                    lower.contains("fund transfer") || lower.contains("funds transfer") ||
-                    lower.contains("self transfer") || lower.contains("a/c transfer") ||
-                    lower.contains("ac transfer") || lower.contains("trf to") ||
-                    lower.contains("account to account") || lower.contains("imps ref") ||
-                    lower.contains("neft ref") || lower.contains("rtgs ref") ||
-                    (lower.contains("transferred") && !lower.contains("credited") && !lower.contains("received")) ||
-                    (lower.contains("transfer") && !lower.contains("credited") && !lower.contains("received"))
+            // 3. Robust, foolproof transaction type detection
+            // Check for incoming money (Income / Credit)
+            val hasExplicitCredit = lower.contains("credited") || lower.contains("credit to") ||
+                    lower.contains("credit of") || lower.contains("deposited") ||
+                    lower.contains("received from") || lower.contains("received inr") ||
+                    lower.contains("received rs") || lower.contains("received ₹") ||
+                    lower.contains("sent you") || lower.contains("transfer from") ||
+                    lower.contains("trf from") || lower.contains("salary") ||
+                    lower.contains("refund") || lower.contains("cashback") ||
+                    lower.contains("inward")
 
-            val isIncome = !isTransfer && (
-                    lower.contains("credited") || lower.contains("credit") ||
-                    lower.contains("deposited") || lower.contains("received") ||
-                    lower.contains("refund") || lower.contains("salary") ||
-                    lower.contains("cashback") || lower.contains("inward")
-            ) && !lower.contains("debited") && !lower.contains("spent")
+            // Check for outgoing money (Expense / Debit / Money Sent)
+            val hasExplicitDebit = lower.contains("debited") || lower.contains("debit of") ||
+                    lower.contains("spent") || lower.contains("paid") ||
+                    lower.contains("sent to") || lower.contains("transferred to") ||
+                    lower.contains("transfer to") || lower.contains("purchase") ||
+                    lower.contains("charge") || lower.contains("withdrawn")
+
+            // Check for self/internal transfer between own accounts
+            val isSelfTransfer = lower.contains("self transfer") || lower.contains("own account") ||
+                    lower.contains("transfer to self") || lower.contains("between your accounts") ||
+                    (lower.contains("transferred from a/c") && lower.contains("to a/c"))
 
             val type = when {
-                isTransfer -> "transfer"
-                isIncome -> "income"
+                isSelfTransfer -> "transfer"
+                hasExplicitCredit && !hasExplicitDebit -> "income"
+                hasExplicitDebit -> "expense" // In Indian & global banking, debited/spent/sent to is an Expense
+                hasExplicitCredit -> "income"
                 else -> "expense"
             }
 
@@ -125,10 +133,12 @@ class SmsReceiver : BroadcastReceiver() {
                 return
             }
 
-            // 5. Extract Merchant / Payee / Destination
+            // 5. Extract Merchant / Payee / Beneficiary
             var merchant = ""
             val merchantPatterns = listOf(
-                Regex("""(?:transfer(?:red)?\s+(?:to|from)?|sent to|paid to|to|towards|at|for|vpa|from|by|credited by|received from)\s+([A-Za-z0-9\s&.\-_]{2,30}?)(?:\s+(?:on|ref|upi|txn|by|via|avail|bal|card|a\/c|ending|\.|\,)|$)""", RegexOption.IGNORE_CASE),
+                Regex("""(?:sent to|paid to|transferred to|transfer to|to|towards|at|for|vpa)\s+([A-Za-z0-9\s&.\-_@]{2,30}?)(?:\s+(?:on|from|to|ref|upi|txn|by|via|avail|bal|card|a\/c|ending|\.|\,)|$)""", RegexOption.IGNORE_CASE),
+                Regex("""([A-Za-z0-9\s&.\-_]{2,25})\s+sent you""", RegexOption.IGNORE_CASE),
+                Regex("""(?:credited by|received from|transfer from|from)\s+([A-Za-z0-9\s&.\-_@]{2,30}?)(?:\s+(?:on|to|from|ref|upi|txn|by|via|avail|bal|card|a\/c|ending|\.|\,)|$)""", RegexOption.IGNORE_CASE),
                 Regex("""(?:to\s+a\/c\s*(?:no\.?)?\s*|account\s*)([A-Za-z0-9*]{4,16})""", RegexOption.IGNORE_CASE),
                 Regex("""(?:info:?|ref:?)\s*([A-Za-z0-9\s&.\-_]{2,25})""", RegexOption.IGNORE_CASE)
             )
@@ -136,7 +146,8 @@ class SmsReceiver : BroadcastReceiver() {
             for (p in merchantPatterns) {
                 val m = p.find(body)
                 if (m != null && m.groupValues.size > 1) {
-                    val candidate = m.groupValues[1].trim()
+                    var candidate = m.groupValues[1].trim()
+                    candidate = candidate.replace(Regex("""(?i)\s+(?:from|to|by|on|at|via|using)$"""), "").trim()
                     val lowerCand = candidate.lowercase()
                     if (!lowerCand.contains("your a/c") && !lowerCand.contains("account") &&
                         !lowerCand.startsWith("rs") && !lowerCand.startsWith("inr") &&
@@ -207,10 +218,26 @@ class SmsReceiver : BroadcastReceiver() {
                 else -> "cat-food"
             }
 
-            // 7. Ensure notification channel exists
+            // 7. Generate Unique SMS ID and save to Persistent Pending Queue
+            val smsId = "sms_${System.currentTimeMillis()}_${(1000..9999).random()}"
+            val pendingObj = JSONObject().apply {
+                put("id", smsId)
+                put("amount", parsedAmount)
+                put("amountStr", amountStr)
+                put("merchant", merchant)
+                put("type", type)
+                put("categoryId", categoryId)
+                put("rawText", body)
+                put("sender", sender)
+                put("timestamp", System.currentTimeMillis())
+                put("status", "pending")
+            }
+            SmsModule.addPendingSms(context, pendingObj)
+
+            // 8. Ensure notification channel exists
             NotificationModule.createChannels(context)
 
-            // 8. Build notification
+            // 9. Build notification
             val notifId = (System.currentTimeMillis() % 100000).toInt()
             val currencySymbol = "₹"
             val titleText = when (type) {
@@ -226,7 +253,7 @@ class SmsReceiver : BroadcastReceiver() {
             val bigPrompt = when (type) {
                 "transfer" -> "$merchant ($currencySymbol$amountStr)\nTransfer detected from bank SMS. Would you like to record this transfer in SERA?"
                 "income" -> "$merchant ($currencySymbol$amountStr)\nIncome/Credit detected from bank SMS. Would you like to record this income in SERA?"
-                else -> "$merchant ($currencySymbol$amountStr)\nExpense/Debit detected from bank SMS. Would you like to record this expense in SERA?"
+                else -> "$merchant ($currencySymbol$amountStr)\nMoney sent/debit detected from bank SMS. Would you like to record this expense in SERA?"
             }
 
             val encodedMerchant = try { URLEncoder.encode(merchant, "UTF-8") } catch (e: Exception) { merchant }
@@ -236,7 +263,7 @@ class SmsReceiver : BroadcastReceiver() {
                 "income" -> "add-income"
                 else -> "add-expense"
             }
-            val deepLinkUri = Uri.parse("sera://$deepLinkPath?amount=$amountStr&merchant=$encodedMerchant&type=$type&category=$categoryId&note=$encodedNote&autoPrompt=true")
+            val deepLinkUri = Uri.parse("sera://$deepLinkPath?smsId=$smsId&amount=$amountStr&merchant=$encodedMerchant&type=$type&category=$categoryId&note=$encodedNote&autoPrompt=true")
 
             val tapIntent = Intent(Intent.ACTION_VIEW, deepLinkUri, context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -251,6 +278,7 @@ class SmsReceiver : BroadcastReceiver() {
             val dismissIntent = Intent(context, SmsActionReceiver::class.java).apply {
                 action = SmsActionReceiver.ACTION_DISMISS
                 putExtra(SmsActionReceiver.EXTRA_NOTIFICATION_ID, notifId)
+                putExtra(SmsActionReceiver.EXTRA_SMS_ID, smsId)
             }
             val pendingDismissIntent = PendingIntent.getBroadcast(
                 context,
@@ -302,15 +330,19 @@ class SmsReceiver : BroadcastReceiver() {
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.notify(notifId, builder.build())
 
-            // 9. Emit event to React Native JS if active
+            // 10. Emit event to React Native JS if active
             try {
                 val eventData = Arguments.createMap().apply {
+                    putString("id", smsId)
                     putDouble("amount", parsedAmount)
                     putString("amountStr", amountStr)
                     putString("merchant", merchant)
                     putString("type", type)
                     putString("categoryId", categoryId)
                     putString("rawText", body)
+                    putString("sender", sender)
+                    putDouble("timestamp", System.currentTimeMillis().toDouble())
+                    putString("status", "pending")
                 }
                 SmsEventEmitter.emitEvent("onSmsTransactionDetected", eventData)
             } catch (e: Exception) {

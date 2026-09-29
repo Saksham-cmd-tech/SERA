@@ -83,29 +83,52 @@ export function parseExpenseText(
   const lower = text.toLowerCase();
 
   // 1. Detect Transaction Type
-  const transferKeywords = [
-    'transferred to', 'transfer to', 'transferred from', 'transfer from',
-    'fund transfer', 'funds transfer', 'self transfer', 'a/c transfer',
-    'ac transfer', 'trf to', 'account to account', 'imps', 'neft', 'rtgs',
-    'transferred', 'transfer', 'moved to',
-  ];
-  const incomeKeywords = [
-    'credited', 'credit', 'received', 'salary', 'deposited', 'deposit',
-    'refund', 'cashback', 'bonus', 'incoming', 'added to',
-  ];
-  const expenseKeywords = [
-    'debited', 'debit', 'spent', 'paid', 'sent', 'charge', 'deducted',
-    'purchase', 'withdrawn', 'spent at',
-  ];
+  const isSelfTransfer =
+    lower.includes('self transfer') ||
+    lower.includes('own account') ||
+    lower.includes('transfer to self') ||
+    lower.includes('between your accounts') ||
+    (lower.includes('transferred from a/c') && lower.includes('to a/c'));
+
+  const hasExplicitCredit =
+    lower.includes('credited') ||
+    lower.includes('credit to') ||
+    lower.includes('credit of') ||
+    lower.includes('deposited') ||
+    lower.includes('received from') ||
+    lower.includes('received inr') ||
+    lower.includes('received rs') ||
+    lower.includes('received ₹') ||
+    lower.includes('sent you') ||
+    lower.includes('transfer from') ||
+    lower.includes('trf from') ||
+    lower.includes('salary') ||
+    lower.includes('refund') ||
+    lower.includes('cashback') ||
+    lower.includes('inward');
+
+  const hasExplicitDebit =
+    lower.includes('debited') ||
+    lower.includes('debit of') ||
+    lower.includes('spent') ||
+    lower.includes('paid') ||
+    lower.includes('sent to') ||
+    lower.includes('transferred to') ||
+    lower.includes('transfer to') ||
+    lower.includes('purchase') ||
+    lower.includes('charge') ||
+    lower.includes('deducted') ||
+    lower.includes('withdrawn');
 
   let detectedType: TransactionType = 'expense';
-  const hasTransfer = transferKeywords.some(k => lower.includes(k));
-  const hasIncome = incomeKeywords.some(k => lower.includes(k));
-  const hasExpense = expenseKeywords.some(k => lower.includes(k));
-
-  if (hasTransfer && !hasIncome) {
+  if (isSelfTransfer) {
     detectedType = 'transfer';
-  } else if (hasIncome && !hasExpense) {
+  } else if (hasExplicitCredit && !hasExplicitDebit) {
+    detectedType = 'income';
+  } else if (hasExplicitDebit) {
+    // In Indian & global banking, debited / spent / sent to / paid is an Expense
+    detectedType = 'expense';
+  } else if (hasExplicitCredit) {
     detectedType = 'income';
   } else {
     detectedType = 'expense';
@@ -158,16 +181,19 @@ export function parseExpenseText(
 
   // Check SMS beneficiary patterns: "to <MERCHANT> UPI Ref", "at <MERCHANT> on", "info: <MERCHANT>"
   const smsPatterns = [
-    /(?:to|towards|at|vpa)\s+([A-Za-z0-9&.\-_ ]{2,32}?)(?:\s+(?:UPI|Ref|via|on|Bal|dated|using|\.|\n|$))/i,
-    /(?:paid to|transferred to|sent to)\s+([A-Za-z0-9&.\-_ ]{2,32}?)(?:\s+(?:on|via|Ref|Bal|using|\.|\n|$))/i,
+    /(?:to|towards|at|vpa)\s+([A-Za-z0-9&.\-_ ]{2,32}?)(?:\s+(?:UPI|Ref|via|on|from|to|Bal|dated|using|\.|\n|$))/i,
+    /(?:paid to|transferred to|sent to)\s+([A-Za-z0-9&.\-_ ]{2,32}?)(?:\s+(?:on|from|to|via|Ref|Bal|using|\.|\n|$))/i,
+    /([A-Za-z0-9&.\-_ ]{2,25})\s+sent you/i,
+    /(?:credited by|received from|transfer from|from)\s+([A-Za-z0-9&.\-_ ]{2,32}?)(?:\s+(?:UPI|Ref|via|on|from|to|Bal|dated|using|\.|\n|$))/i,
     /(?:merchant|info|store):\s*([A-Za-z0-9&.\-_ ]{2,32})/i,
-    /(?:charge at|purchase at)\s+([A-Za-z0-9&.\-_ ]{2,32}?)(?:\s+(?:on|via|Bal|\.|\n|$))/i,
+    /(?:charge at|purchase at)\s+([A-Za-z0-9&.\-_ ]{2,32}?)(?:\s+(?:on|from|to|via|Bal|\.|\n|$))/i,
   ];
 
   for (const pattern of smsPatterns) {
     const match = text.match(pattern);
     if (match && match[1]) {
-      const candidate = match[1].trim().replace(/[.,;:]$/, '');
+      let candidate = match[1].trim().replace(/[.,;:]$/, '');
+      candidate = candidate.replace(/\s+(?:from|to|by|on|at|via|using)$/i, '').trim();
       if (candidate.length >= 2 && !candidate.toLowerCase().startsWith('your') && !candidate.toLowerCase().startsWith('acct')) {
         merchant = candidate;
         break;
@@ -195,6 +221,7 @@ export function parseExpenseText(
   // Clean merchant name
   if (merchant) {
     merchant = merchant
+      .replace(/\s+(?:from|to|by|on|at|via|using)$/i, '')
       .replace(/\b(ref|upi|bal|inr|rs|a\/c|acct|xx\d+|\*+\d+)\b/gi, '')
       .replace(/\s+/g, ' ')
       .trim();
