@@ -92,7 +92,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:includeFontPadding="false"
-            android:text="₹0"
+            android:text="₹4,290"
             android:textColor="#FFFFFF"
             android:textSize="28sp"
             android:textStyle="bold" />
@@ -107,7 +107,7 @@
             android:includeFontPadding="false"
             android:letterSpacing="0.06"
             android:maxLines="1"
-            android:text="0 Active"
+            android:text="5 Active"
             android:textColor="#94A3B8"
             android:textSize="11sp"
             android:textStyle="bold" />
@@ -154,7 +154,7 @@
                 android:ellipsize="end"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:text="No active bills"
+                android:text="Netflix 4K"
                 android:textColor="#FFFFFF"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -165,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:text=""
+                android:text="₹649"
                 android:textColor="#EB3B2E"
                 android:textSize="13sp"
                 android:textStyle="bold" />
@@ -179,7 +179,7 @@
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:maxLines="1"
-            android:text="No bills due"
+            android:text="Due Oct 24"
             android:textColor="#94A3B8"
             android:textSize="11sp" />
     </LinearLayout>

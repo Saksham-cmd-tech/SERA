@@ -85,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
         android:includeFontPadding="false"
-        android:text="₹0"
+        android:text="₹4,82,500"
         android:textColor="#FFFFFF"
         android:textSize="28sp"
         android:textStyle="bold" />
@@ -121,7 +121,7 @@
                 android:ellipsize="end"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:text="Primary Account"
+                android:text="HDFC Bank"
                 android:textColor="#94A3B8"
                 android:textSize="12sp" />
 
@@ -131,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:text="₹0"
+                android:text="₹3,40,000"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -168,7 +168,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:text="₹0"
+                android:text="₹1,42,500"
                 android:textColor="#FFFFFF"
                 android:textSize="12sp"
                 android:textStyle="bold" />

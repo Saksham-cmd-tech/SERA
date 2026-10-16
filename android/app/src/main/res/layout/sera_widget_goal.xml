@@ -62,7 +62,7 @@
             android:paddingTop="3dp"
             android:paddingEnd="8dp"
             android:paddingBottom="3dp"
-            android:text="0%"
+            android:text="68%"
             android:textColor="#34D399"
             android:textSize="11sp"
             android:textStyle="bold" />
@@ -121,7 +121,7 @@
                 android:ellipsize="end"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:text="₹0 of ₹0"
+                android:text="₹68,000 of ₹1,00,000"
                 android:textColor="#FFFFFF"
                 android:textSize="11sp"
                 android:textStyle="bold" />
@@ -134,7 +134,7 @@
             android:layout_height="8dp"
             android:layout_marginTop="8dp"
             android:max="100"
-            android:progress="0"
+            android:progress="68"
             android:progressDrawable="@drawable/widget_progress_bar" />
     </LinearLayout>
 

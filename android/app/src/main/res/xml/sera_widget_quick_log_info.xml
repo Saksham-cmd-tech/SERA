@@ -11,6 +11,7 @@
     android:updatePeriodMillis="1800000"
     android:initialLayout="@layout/sera_widget_quick_log"
     android:previewLayout="@layout/sera_widget_quick_log"
+    android:previewImage="@drawable/widget_preview_quick_log"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen"
     android:description="@string/widget_quick_log_desc" />

@@ -61,7 +61,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:includeFontPadding="false"
-                android:text="₹0"
+                android:text="₹4,82,500"
                 android:textColor="#FFFFFF"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:includeFontPadding="false"
-                android:text="₹0"
+                android:text="₹24,500"
                 android:textColor="#EB3B2E"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -142,7 +142,7 @@
                 android:ellipsize="end"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:text="No recent transactions"
+                android:text="Apple Store"
                 android:textColor="#E2E8F0"
                 android:textSize="12sp" />
 
@@ -152,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:text=""
+                android:text="-₹12,900"
                 android:textColor="#EB3B2E"
                 android:textSize="12sp"
                 android:textStyle="bold" />
@@ -179,7 +179,7 @@
                 android:ellipsize="end"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:text=""
+                android:text="Client Retainer"
                 android:textColor="#E2E8F0"
                 android:textSize="12sp" />
 
@@ -189,8 +189,8 @@
                 android:layout_height="wrap_content"
                 android:includeFontPadding="false"
                 android:maxLines="1"
-                android:text=""
-                android:textColor="#EB3B2E"
+                android:text="+₹45,000"
+                android:textColor="#34D399"
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>

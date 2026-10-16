@@ -48,7 +48,7 @@
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:maxLines="1"
-            android:text="₹0 Today"
+            android:text="₹1,450 Today"
             android:textColor="#FFFFFF"
             android:textSize="11sp"
             android:textStyle="bold" />
