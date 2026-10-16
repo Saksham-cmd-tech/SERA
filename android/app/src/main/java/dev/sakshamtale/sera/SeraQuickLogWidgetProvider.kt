@@ -19,6 +19,14 @@ class SeraQuickLogWidgetProvider : AppWidgetProvider() {
     companion object {
         fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
             val views = RemoteViews(context.packageName, R.layout.sera_widget_quick_log)
+            val data = SeraWidgetData.getWidgetData(context)
+
+            val spentStr = if (data.has("todaySpentVal")) {
+                "${data.optString("todaySpentVal")} Today"
+            } else {
+                data.optString("todaySpent", "₹0 Today")
+            }
+            views.setTextViewText(R.id.widget_quick_log_spent, spentStr)
 
             // Tap root -> open app
             val openAppIntent = Intent(context, MainActivity::class.java).apply {
