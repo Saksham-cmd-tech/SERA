@@ -7,65 +7,98 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <!-- Header Row -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:letterSpacing="0.1"
-        android:maxLines="1"
-        android:text="SERA • SAVINGS GOAL"
-        android:textColor="#8B97A6"
-        android:textSize="10sp"
-        android:textStyle="bold" />
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/widget_pill_badge_bg"
+            android:letterSpacing="0.12"
+            android:paddingStart="6dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="2dp"
+            android:text="SERA"
+            android:textColor="#94A3B8"
+            android:textSize="9sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ellipsize="end"
+            android:letterSpacing="0.08"
+            android:maxLines="1"
+            android:text="SAVINGS GOAL"
+            android:textColor="#64748B"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <!-- Top flexible spacer -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.5" />
+        android:layout_weight="0.4" />
 
     <TextView
         android:id="@+id/widget_goal_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ellipsize="end"
+        android:includeFontPadding="false"
         android:maxLines="1"
         android:text="Emergency Fund"
-        android:textColor="#F2F5F8"
-        android:textSize="16sp"
+        android:textColor="#F8FAFC"
+        android:textSize="17sp"
         android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/widget_goal_amounts"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="₹0 of ₹0"
-        android:textColor="#E4DFD7"
-        android:textSize="12sp" />
+        android:layout_marginTop="6dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/widget_goal_amounts"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="₹0 of ₹0"
+            android:textColor="#94A3B8"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/widget_goal_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:text="0% completed"
+            android:textColor="#34D399"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/widget_goal_progress"
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
-        android:layout_height="6dp"
-        android:layout_marginTop="8dp"
+        android:layout_height="8dp"
+        android:layout_marginTop="10dp"
         android:max="100"
         android:progress="0"
         android:progressDrawable="@drawable/widget_progress_bar" />
-
-    <TextView
-        android:id="@+id/widget_goal_percent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:maxLines="1"
-        android:text="0% completed"
-        android:textColor="#34D399"
-        android:textSize="11sp"
-        android:textStyle="bold" />
 
     <!-- Bottom flexible spacer -->
     <FrameLayout

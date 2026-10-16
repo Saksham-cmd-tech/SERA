@@ -14,29 +14,52 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <TextView
+        <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:ellipsize="end"
-            android:letterSpacing="0.1"
-            android:maxLines="1"
-            android:text="SERA • MONTHLY BUDGET"
-            android:textColor="#8B97A6"
-            android:textSize="11sp"
-            android:textStyle="bold" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/widget_pill_badge_bg"
+                android:letterSpacing="0.12"
+                android:paddingStart="6dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="6dp"
+                android:paddingBottom="2dp"
+                android:text="SERA"
+                android:textColor="#94A3B8"
+                android:textSize="9sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:letterSpacing="0.08"
+                android:maxLines="1"
+                android:text="BUDGET"
+                android:textColor="#64748B"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/btn_budget_add_expense"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/widget_button_bg"
+            android:background="@drawable/widget_btn_expense_bg"
+            android:includeFontPadding="false"
             android:maxLines="1"
             android:paddingStart="10dp"
             android:paddingTop="5dp"
             android:paddingEnd="10dp"
             android:paddingBottom="5dp"
-            android:text="+ Log Expense"
+            android:text="+ Expense"
             android:textColor="#EB3B2E"
             android:textSize="11sp"
             android:textStyle="bold" />
@@ -46,7 +69,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:baselineAligned="false"
         android:gravity="bottom"
         android:orientation="horizontal">
@@ -55,9 +78,10 @@
             android:id="@+id/widget_budget_remaining"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:includeFontPadding="false"
             android:text="₹0"
-            android:textColor="#F2F5F8"
-            android:textSize="26sp"
+            android:textColor="#F8FAFC"
+            android:textSize="28sp"
             android:textStyle="bold" />
 
         <TextView
@@ -67,10 +91,12 @@
             android:layout_marginStart="8dp"
             android:layout_marginBottom="3dp"
             android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.05"
             android:maxLines="1"
             android:text="LEFT OF ₹0"
-            android:textColor="#8B97A6"
-            android:textSize="12sp"
+            android:textColor="#94A3B8"
+            android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
 
@@ -80,7 +106,7 @@
         style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="8dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="12dp"
         android:max="100"
         android:progress="0"
         android:progressDrawable="@drawable/widget_progress_bar" />
@@ -96,6 +122,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
         android:orientation="horizontal">
 
         <TextView
@@ -104,15 +131,17 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:ellipsize="end"
+            android:includeFontPadding="false"
             android:maxLines="1"
             android:text="Safe spend: ₹0 / day"
-            android:textColor="#E4DFD7"
-            android:textSize="12sp" />
+            android:textColor="#94A3B8"
+            android:textSize="11sp" />
 
         <TextView
             android:id="@+id/widget_budget_spent_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:includeFontPadding="false"
             android:maxLines="1"
             android:text="Spent: ₹0"
             android:textColor="#EB3B2E"

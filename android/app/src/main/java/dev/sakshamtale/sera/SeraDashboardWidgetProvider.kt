@@ -32,8 +32,19 @@ class SeraDashboardWidgetProvider : AppWidgetProvider() {
             views.setTextViewText(R.id.widget_dash_spent, monthSpent)
             views.setTextViewText(R.id.widget_dash_tx_name_1, tx1Name)
             views.setTextViewText(R.id.widget_dash_tx_amt_1, tx1Amt)
+            if (tx1Amt.startsWith("+")) {
+                views.setTextColor(R.id.widget_dash_tx_amt_1, android.graphics.Color.parseColor("#34D399"))
+            } else {
+                views.setTextColor(R.id.widget_dash_tx_amt_1, android.graphics.Color.parseColor("#EB3B2E"))
+            }
+
             views.setTextViewText(R.id.widget_dash_tx_name_2, tx2Name)
             views.setTextViewText(R.id.widget_dash_tx_amt_2, tx2Amt)
+            if (tx2Amt.startsWith("+")) {
+                views.setTextColor(R.id.widget_dash_tx_amt_2, android.graphics.Color.parseColor("#34D399"))
+            } else {
+                views.setTextColor(R.id.widget_dash_tx_amt_2, android.graphics.Color.parseColor("#EB3B2E"))
+            }
 
             // Tap root -> open app
             val openAppIntent = Intent(context, MainActivity::class.java).apply {
