@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SERA</string>
+    <string name="app_name">SERA &#8212; Expense Tracker</string>
     <string name="shortcut_add_expense_short">Add Expense</string>
     <string name="shortcut_add_expense_long">Record an expense in SERA</string>
     <string name="shortcut_add_income_short">Add Income</string>

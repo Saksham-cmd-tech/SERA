@@ -7,8 +7,8 @@
         android:shortcutLongLabel="@string/shortcut_add_expense_long">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.moneytracker"
-            android:targetClass="com.moneytracker.MainActivity"
+            android:targetPackage="dev.sakshamtale.sera"
+            android:targetClass="dev.sakshamtale.sera.MainActivity"
             android:data="sera://add-expense" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
@@ -20,8 +20,8 @@
         android:shortcutLongLabel="@string/shortcut_add_income_long">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.moneytracker"
-            android:targetClass="com.moneytracker.MainActivity"
+            android:targetPackage="dev.sakshamtale.sera"
+            android:targetClass="dev.sakshamtale.sera.MainActivity"
             android:data="sera://add-income" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>
@@ -33,8 +33,8 @@
         android:shortcutLongLabel="@string/shortcut_subscriptions_long">
         <intent
             android:action="android.intent.action.VIEW"
-            android:targetPackage="com.moneytracker"
-            android:targetClass="com.moneytracker.MainActivity"
+            android:targetPackage="dev.sakshamtale.sera"
+            android:targetClass="dev.sakshamtale.sera.MainActivity"
             android:data="sera://subscriptions" />
         <categories android:name="android.shortcut.conversation" />
     </shortcut>

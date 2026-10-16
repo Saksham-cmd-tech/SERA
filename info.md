@@ -1,7 +1,7 @@
-# SERA (Spending & Expense Record App) — Technical Specification & System Architecture
+# SERA — Expense Tracker — Technical Specification & System Architecture
 
 > **Document Status**: Production Ground-Truth Reference  
-> **Source Repository**: `com.moneytracker`  
+> **Package Identifier**: `dev.sakshamtale.sera`  
 > **Verification Date**: October 2026  
 > **Scope**: Exhaustive audit of all existing screens, components, database schemas, state stores, native modules, and workflows implemented in the codebase. Zero speculative or unbuilt features.
 
@@ -474,7 +474,7 @@ sequenceDiagram
 
 ## 8. Native Android Modules & OS Integrations
 
-SERA includes custom native Android Java/Kotlin modules in [`android/app/src/main/java/com/moneytracker/`](file:///Users/saksham/Desktop/Projects/moneyTracker/android/app/src/main/java/com/moneytracker/):
+SERA includes custom native Android Java/Kotlin modules in [`android/app/src/main/java/dev/sakshamtale/sera/`](file:///Users/saksham/Desktop/Projects/moneyTracker/android/app/src/main/java/dev/sakshamtale/sera/):
 
 ### 8.1 Native Notifications (`NotificationModule.kt` & `NotificationReceiver.kt`)
 - **Channels**:
@@ -571,7 +571,7 @@ moneyTracker/
 │   │   ├── sera-release.keystore         # Production release signing key (valid to 2054)
 │   │   └── src/main/
 │   │       ├── AndroidManifest.xml       # Permissions, receivers, widgets, shortcuts, deep links
-│   │       ├── java/com/moneytracker/
+│   │       ├── java/dev/sakshamtale/sera/
 │   │       │   ├── MainActivity.kt       # Activity entry point
 │   │       │   ├── MainApplication.kt    # Package registry
 │   │       │   ├── BiometricModule.kt    # Native biometric hardware prompt bridge

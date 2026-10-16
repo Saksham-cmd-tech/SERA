@@ -22,7 +22,7 @@
         android:name=".NotificationReceiver"
         android:exported="false">
         <intent-filter>
-          <action android:name="com.moneytracker.ACTION_NOTIFICATION" />
+          <action android:name="dev.sakshamtale.sera.ACTION_NOTIFICATION" />
           <action android:name="android.intent.action.BOOT_COMPLETED" />
         </intent-filter>
       </receiver>

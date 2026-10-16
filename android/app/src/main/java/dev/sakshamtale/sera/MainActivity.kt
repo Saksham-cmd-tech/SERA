@@ -1,4 +1,4 @@
-package com.moneytracker
+package dev.sakshamtale.sera
 
 import android.content.Intent
 import com.facebook.react.ReactActivity

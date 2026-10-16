@@ -1,4 +1,4 @@
-package com.moneytracker
+package dev.sakshamtale.sera
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager

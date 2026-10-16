@@ -1,4 +1,4 @@
-# SERA — Spending & Expense Record App
+# SERA — Expense Tracker
 
 <p align="center">
   <strong>Offline-first, cyber-technical personal financial architecture built on React Native.</strong>
@@ -21,7 +21,7 @@
 
 ## Overview
 
-**SERA** (*Spending & Expense Record App*) is a precision personal finance application designed for intentional money management. Built with a high-contrast editorial and cyber-technical aesthetic, SERA operates **100% offline on-device**—eliminating external cloud databases, analytics tracking, and third-party data collection.
+**SERA** (*Expense Tracker*) is a precision personal finance application designed for intentional money management. Built with a high-contrast editorial and cyber-technical aesthetic, SERA operates **100% offline on-device**—eliminating external cloud databases, analytics tracking, and third-party data collection.
 
 ---
 

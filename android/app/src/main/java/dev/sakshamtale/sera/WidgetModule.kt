@@ -1,4 +1,4 @@
-package com.moneytracker
+package dev.sakshamtale.sera
 
 import com.facebook.react.bridge.*
 

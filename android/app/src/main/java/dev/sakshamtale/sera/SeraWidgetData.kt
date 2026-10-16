@@ -1,4 +1,4 @@
-package com.moneytracker
+package dev.sakshamtale.sera
 
 import android.content.Context
 import android.content.SharedPreferences

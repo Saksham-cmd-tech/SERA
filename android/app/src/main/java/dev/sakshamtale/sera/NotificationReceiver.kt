@@ -1,4 +1,4 @@
-package com.moneytracker
+package dev.sakshamtale.sera
 
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -85,6 +85,6 @@ class NotificationReceiver : BroadcastReceiver() {
         const val EXTRA_MESSAGE = "extra_message"
         const val EXTRA_CHANNEL_ID = "extra_channel_id"
         const val EXTRA_ID = "extra_id"
-        const val ACTION_ALARM = "com.moneytracker.ACTION_NOTIFICATION"
+        const val ACTION_ALARM = "dev.sakshamtale.sera.ACTION_NOTIFICATION"
     }
 }

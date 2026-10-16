@@ -1,4 +1,4 @@
-package com.moneytracker
+package dev.sakshamtale.sera
 
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
@@ -9,7 +9,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.RemoteViews
 
-class SeraDashboardWidgetProvider : AppWidgetProvider() {
+class SeraQuickActionWidgetProvider : AppWidgetProvider() {
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         for (appWidgetId in appWidgetIds) {
             updateWidget(context, appWidgetManager, appWidgetId)
@@ -18,22 +18,11 @@ class SeraDashboardWidgetProvider : AppWidgetProvider() {
 
     companion object {
         fun updateWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
-            val views = RemoteViews(context.packageName, R.layout.sera_widget_dashboard)
+            val views = RemoteViews(context.packageName, R.layout.sera_widget_quick_action)
             val data = SeraWidgetData.getWidgetData(context)
 
-            val netWorth = data.optString("netWorth", "₹0")
-            val monthSpent = data.optString("monthSpent", "₹0")
-            val tx1Name = data.optString("tx1Name", "No recent transactions")
-            val tx1Amt = data.optString("tx1Amt", "")
-            val tx2Name = data.optString("tx2Name", "")
-            val tx2Amt = data.optString("tx2Amt", "")
-
-            views.setTextViewText(R.id.widget_dash_net_worth, netWorth)
-            views.setTextViewText(R.id.widget_dash_spent, monthSpent)
-            views.setTextViewText(R.id.widget_dash_tx_name_1, tx1Name)
-            views.setTextViewText(R.id.widget_dash_tx_amt_1, tx1Amt)
-            views.setTextViewText(R.id.widget_dash_tx_name_2, tx2Name)
-            views.setTextViewText(R.id.widget_dash_tx_amt_2, tx2Amt)
+            val todaySpent = data.optString("todaySpent", "₹0 Spent Today")
+            views.setTextViewText(R.id.widget_qa_today_spent, todaySpent)
 
             // Tap root -> open app
             val openAppIntent = Intent(context, MainActivity::class.java).apply {
@@ -41,11 +30,11 @@ class SeraDashboardWidgetProvider : AppWidgetProvider() {
             }
             val openAppPendingIntent = PendingIntent.getActivity(
                 context,
-                500,
+                100,
                 openAppIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            views.setOnClickPendingIntent(R.id.widget_dashboard_root, openAppPendingIntent)
+            views.setOnClickPendingIntent(R.id.widget_quick_action_root, openAppPendingIntent)
 
             // + Expense
             val expenseIntent = Intent(Intent.ACTION_VIEW, Uri.parse("sera://add-expense")).apply {
@@ -53,11 +42,11 @@ class SeraDashboardWidgetProvider : AppWidgetProvider() {
             }
             val expensePendingIntent = PendingIntent.getActivity(
                 context,
-                501,
+                101,
                 expenseIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            views.setOnClickPendingIntent(R.id.btn_dash_expense, expensePendingIntent)
+            views.setOnClickPendingIntent(R.id.btn_qa_expense, expensePendingIntent)
 
             // + Income
             val incomeIntent = Intent(Intent.ACTION_VIEW, Uri.parse("sera://add-income")).apply {
@@ -65,11 +54,11 @@ class SeraDashboardWidgetProvider : AppWidgetProvider() {
             }
             val incomePendingIntent = PendingIntent.getActivity(
                 context,
-                502,
+                102,
                 incomeIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            views.setOnClickPendingIntent(R.id.btn_dash_income, incomePendingIntent)
+            views.setOnClickPendingIntent(R.id.btn_qa_income, incomePendingIntent)
 
             // ⇄ Transfer
             val transferIntent = Intent(Intent.ACTION_VIEW, Uri.parse("sera://add-transfer")).apply {
@@ -77,11 +66,11 @@ class SeraDashboardWidgetProvider : AppWidgetProvider() {
             }
             val transferPendingIntent = PendingIntent.getActivity(
                 context,
-                503,
+                103,
                 transferIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
-            views.setOnClickPendingIntent(R.id.btn_dash_transfer, transferPendingIntent)
+            views.setOnClickPendingIntent(R.id.btn_qa_transfer, transferPendingIntent)
 
             appWidgetManager.updateAppWidget(appWidgetId, views)
         }
@@ -89,7 +78,7 @@ class SeraDashboardWidgetProvider : AppWidgetProvider() {
         fun updateAll(context: Context) {
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val ids = appWidgetManager.getAppWidgetIds(
-                ComponentName(context, SeraDashboardWidgetProvider::class.java)
+                ComponentName(context, SeraQuickActionWidgetProvider::class.java)
             )
             for (id in ids) {
                 updateWidget(context, appWidgetManager, id)
