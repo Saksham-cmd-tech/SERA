@@ -17,6 +17,8 @@ class WidgetModule(private val reactContext: ReactApplicationContext) :
             SeraNetWorthWidgetProvider.updateAll(reactContext)
             SeraGoalWidgetProvider.updateAll(reactContext)
             SeraDashboardWidgetProvider.updateAll(reactContext)
+            SeraSubscriptionWidgetProvider.updateAll(reactContext)
+            SeraQuickLogWidgetProvider.updateAll(reactContext)
 
             promise.resolve(true)
         } catch (e: Exception) {

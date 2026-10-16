@@ -36,6 +36,16 @@ object SeraWidgetData {
         if (data.hasKey("tx2Name")) json.put("tx2Name", data.getString("tx2Name"))
         if (data.hasKey("tx2Amt")) json.put("tx2Amt", data.getString("tx2Amt"))
 
+        if (data.hasKey("todaySpentVal")) json.put("todaySpentVal", data.getString("todaySpentVal"))
+        if (data.hasKey("dailySafeVal")) json.put("dailySafeVal", data.getString("dailySafeVal"))
+        if (data.hasKey("goalRemaining")) json.put("goalRemaining", data.getString("goalRemaining"))
+
+        if (data.hasKey("subMonthlyTotal")) json.put("subMonthlyTotal", data.getString("subMonthlyTotal"))
+        if (data.hasKey("subCount")) json.put("subCount", data.getString("subCount"))
+        if (data.hasKey("subNextName")) json.put("subNextName", data.getString("subNextName"))
+        if (data.hasKey("subNextDate")) json.put("subNextDate", data.getString("subNextDate"))
+        if (data.hasKey("subNextAmt")) json.put("subNextAmt", data.getString("subNextAmt"))
+
         prefs.edit().putString(KEY_WIDGET_DATA, json.toString()).apply()
     }
 

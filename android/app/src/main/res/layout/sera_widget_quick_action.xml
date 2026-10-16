@@ -11,6 +11,7 @@
     android:paddingEnd="16dp"
     android:paddingBottom="12dp">
 
+    <!-- Left: Brand & Today's Metric -->
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -18,35 +19,55 @@
         android:gravity="center_vertical"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/widget_qa_brand"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/widget_pill_badge_bg"
-            android:letterSpacing="0.12"
-            android:paddingStart="6dp"
-            android:paddingTop="2dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="2dp"
-            android:text="SERA"
-            android:textColor="#94A3B8"
-            android:textSize="9sp"
-            android:textStyle="bold" />
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="6dp"
+                android:layout_height="6dp"
+                android:contentDescription="Live"
+                android:src="@drawable/widget_dot_live" />
+
+            <TextView
+                android:id="@+id/widget_qa_brand"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:letterSpacing="0.14"
+                android:text="SERA"
+                android:textColor="#94A3B8"
+                android:textSize="9sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:letterSpacing="0.08"
+                android:text="TODAY"
+                android:textColor="#64748B"
+                android:textSize="9sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/widget_qa_today_spent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="3dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:maxLines="1"
-            android:text="₹0 Spent Today"
-            android:textColor="#F8FAFC"
-            android:textSize="15sp"
+            android:text="₹0"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
             android:textStyle="bold" />
     </LinearLayout>
 
+    <!-- Right: Tactile Action Cluster -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -60,14 +81,15 @@
             android:background="@drawable/widget_btn_expense_bg"
             android:gravity="center"
             android:includeFontPadding="false"
+            android:letterSpacing="0.04"
             android:maxLines="1"
             android:paddingStart="12dp"
-            android:paddingTop="8dp"
+            android:paddingTop="9dp"
             android:paddingEnd="12dp"
-            android:paddingBottom="8dp"
+            android:paddingBottom="9dp"
             android:text="+ Expense"
             android:textColor="#EB3B2E"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="bold" />
 
         <TextView
@@ -78,14 +100,15 @@
             android:background="@drawable/widget_btn_income_bg"
             android:gravity="center"
             android:includeFontPadding="false"
+            android:letterSpacing="0.04"
             android:maxLines="1"
             android:paddingStart="12dp"
-            android:paddingTop="8dp"
+            android:paddingTop="9dp"
             android:paddingEnd="12dp"
-            android:paddingBottom="8dp"
+            android:paddingBottom="9dp"
             android:text="+ Income"
             android:textColor="#34D399"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="bold" />
 
         <TextView
@@ -96,14 +119,15 @@
             android:background="@drawable/widget_btn_neutral_bg"
             android:gravity="center"
             android:includeFontPadding="false"
+            android:letterSpacing="0.04"
             android:maxLines="1"
-            android:paddingStart="12dp"
-            android:paddingTop="8dp"
-            android:paddingEnd="12dp"
-            android:paddingBottom="8dp"
-            android:text="⇄ Transfer"
+            android:paddingStart="10dp"
+            android:paddingTop="9dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="9dp"
+            android:text="⇄ Move"
             android:textColor="#E4DFD7"
-            android:textSize="12sp"
+            android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
 </LinearLayout>

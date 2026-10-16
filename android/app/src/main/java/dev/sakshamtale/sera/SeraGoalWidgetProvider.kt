@@ -28,7 +28,7 @@ class SeraGoalWidgetProvider : AppWidgetProvider() {
             views.setTextViewText(R.id.widget_goal_title, title)
             views.setTextViewText(R.id.widget_goal_amounts, amounts)
             views.setProgressBar(R.id.widget_goal_progress, 100, percent, false)
-            views.setTextViewText(R.id.widget_goal_percent, "$percent% completed")
+            views.setTextViewText(R.id.widget_goal_percent, "$percent%")
 
             // Tap root -> open Goals
             val openGoalsIntent = Intent(Intent.ACTION_VIEW, Uri.parse("sera://goals")).apply {

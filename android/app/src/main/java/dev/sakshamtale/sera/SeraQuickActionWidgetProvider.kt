@@ -21,7 +21,7 @@ class SeraQuickActionWidgetProvider : AppWidgetProvider() {
             val views = RemoteViews(context.packageName, R.layout.sera_widget_quick_action)
             val data = SeraWidgetData.getWidgetData(context)
 
-            val todaySpent = data.optString("todaySpent", "₹0 Spent Today")
+            val todaySpent = if (data.has("todaySpentVal")) data.optString("todaySpentVal") else data.optString("todaySpent", "₹0")
             views.setTextViewText(R.id.widget_qa_today_spent, todaySpent)
 
             // Tap root -> open app

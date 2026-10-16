@@ -74,6 +74,8 @@ export default function App(): React.JSX.Element {
         transactions: useTransactionStore.getState().transactions,
         budgetSummary: useBudgetStore.getState().summary,
         goals: useGoalStore.getState().goals,
+        subscriptions: useSubscriptionStore.getState().summary.subscriptions,
+        subMonthlyTotal: useSubscriptionStore.getState().summary.monthlyTotal,
       });
     }
     setup();

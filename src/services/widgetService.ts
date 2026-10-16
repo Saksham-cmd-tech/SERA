@@ -1,5 +1,5 @@
 import { NativeModules, Platform } from 'react-native';
-import { Account, Transaction, Goal } from '../types';
+import { Account, Transaction, Goal, Subscription } from '../types';
 import { MonthBudgetSummary } from '../database/repositories/budgetRepository';
 
 const { WidgetModule } = NativeModules;
@@ -7,11 +7,13 @@ const { WidgetModule } = NativeModules;
 export interface WidgetSyncData {
   currencySymbol: string;
   todaySpent: string;
+  todaySpentVal: string;
   netWorth: string;
   budgetRemaining: string;
   budgetTotal: string;
   budgetProgress: number;
   dailySafeSpend: string;
+  dailySafeVal: string;
   monthSpent: string;
   acc1Name: string;
   acc1Bal: string;
@@ -20,10 +22,16 @@ export interface WidgetSyncData {
   goalTitle: string;
   goalAmounts: string;
   goalPercent: number;
+  goalRemaining: string;
   tx1Name: string;
   tx1Amt: string;
   tx2Name: string;
   tx2Amt: string;
+  subMonthlyTotal: string;
+  subCount: string;
+  subNextName: string;
+  subNextDate: string;
+  subNextAmt: string;
 }
 
 class WidgetService {
@@ -36,12 +44,16 @@ class WidgetService {
     transactions = [],
     budgetSummary,
     goals = [],
+    subscriptions = [],
+    subMonthlyTotal = 0,
   }: {
     currencySymbol?: string;
     accounts?: Account[];
     transactions?: Transaction[];
     budgetSummary?: MonthBudgetSummary | null;
     goals?: Goal[];
+    subscriptions?: Subscription[];
+    subMonthlyTotal?: number;
   }): Promise<boolean> {
     if (Platform.OS !== 'android' || !WidgetModule) {
       return false;
@@ -78,19 +90,49 @@ class WidgetService {
       const goalPercent = activeGoal && activeGoal.targetAmount > 0
         ? Math.min(100, Math.round((activeGoal.currentAmount / activeGoal.targetAmount) * 100))
         : 0;
+      const goalRemainingVal = activeGoal
+        ? Math.max(0, (activeGoal.targetAmount || 0) - (activeGoal.currentAmount || 0))
+        : 0;
 
       // 6. Recent 2 Transactions
       const tx1 = transactions[0];
       const tx2 = transactions[1];
 
+      // 7. Subscriptions
+      const sortedSubs = (subscriptions || []).slice().sort((a, b) =>
+        (a.nextBillingDate || '').localeCompare(b.nextBillingDate || '')
+      );
+      const nextSub = sortedSubs[0];
+      let subNextDateStr = 'No bills due';
+      if (nextSub?.nextBillingDate) {
+        try {
+          const parts = nextSub.nextBillingDate.split('-');
+          if (parts.length === 3) {
+            const dateObj = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            subNextDateStr = `Due ${monthNames[dateObj.getMonth()]} ${dateObj.getDate()}`;
+          } else {
+            subNextDateStr = `Due ${nextSub.nextBillingDate}`;
+          }
+        } catch {
+          subNextDateStr = `Due ${nextSub.nextBillingDate}`;
+        }
+      }
+
+      const totalMonthlySub = subMonthlyTotal || (subscriptions || []).reduce((sum, s) => {
+        return sum + (s.frequency === 'yearly' ? Math.round(s.amount / 12) : s.amount);
+      }, 0);
+
       const payload: WidgetSyncData = {
         currencySymbol,
         todaySpent: `${currencySymbol}${todayExpenses.toLocaleString()} Today`,
+        todaySpentVal: `${currencySymbol}${todayExpenses.toLocaleString()}`,
         netWorth: `${currencySymbol}${totalNetWorth.toLocaleString()}`,
         budgetRemaining: `${currencySymbol}${remaining.toLocaleString()}`,
         budgetTotal: `LEFT OF ${currencySymbol}${monthlyBudget.toLocaleString()}`,
         budgetProgress: progress,
         dailySafeSpend: `Safe spend: ${currencySymbol}${dailySafe.toLocaleString()} / day`,
+        dailySafeVal: `${currencySymbol}${dailySafe.toLocaleString()}`,
         monthSpent: `Spent: ${currencySymbol}${spent.toLocaleString()}`,
 
         acc1Name: acc1 ? acc1.name : 'Primary Bank',
@@ -103,11 +145,18 @@ class WidgetService {
           ? `${currencySymbol}${activeGoal.currentAmount.toLocaleString()} of ${currencySymbol}${activeGoal.targetAmount.toLocaleString()}`
           : `${currencySymbol}0 of ${currencySymbol}0`,
         goalPercent,
+        goalRemaining: `${currencySymbol}${goalRemainingVal.toLocaleString()} left to save`,
 
         tx1Name: tx1 ? (tx1.merchant || tx1.description || 'Transaction') : 'No recent transactions',
         tx1Amt: tx1 ? `${tx1.type === 'income' ? '+' : '-'}${currencySymbol}${tx1.amount.toLocaleString()}` : '',
         tx2Name: tx2 ? (tx2.merchant || tx2.description || 'Transaction') : '',
         tx2Amt: tx2 ? `${tx2.type === 'income' ? '+' : '-'}${currencySymbol}${tx2.amount.toLocaleString()}` : '',
+
+        subMonthlyTotal: `${currencySymbol}${totalMonthlySub.toLocaleString()}`,
+        subCount: `${subscriptions.length} Active`,
+        subNextName: nextSub ? nextSub.name : 'No active subscriptions',
+        subNextDate: subNextDateStr,
+        subNextAmt: nextSub ? `${currencySymbol}${nextSub.amount.toLocaleString()}` : '',
       };
 
       await WidgetModule.updateAllWidgets(payload);
@@ -128,12 +177,14 @@ class WidgetService {
       const { useBudgetStore } = require('../store/useBudgetStore');
       const { useGoalStore } = require('../store/useGoalStore');
       const { useSettingsStore } = require('../store/useSettingsStore');
+      const { useSubscriptionStore } = require('../store/useSubscriptionStore');
 
       const accounts = useAccountStore.getState().accounts || [];
       const transactions = useTransactionStore.getState().transactions || [];
       const budgetSummary = useBudgetStore.getState().summary;
       const goals = useGoalStore.getState().goals || [];
-      const currencySymbol = useSettingsStore.getState().currencySymbol || '₹';
+      const currencySymbol = useSettingsStore.getState().settings?.currencySymbol || '₹';
+      const subSummary = useSubscriptionStore.getState().summary;
 
       return await this.syncWidgets({
         currencySymbol,
@@ -141,6 +192,8 @@ class WidgetService {
         transactions,
         budgetSummary,
         goals,
+        subscriptions: subSummary?.subscriptions || [],
+        subMonthlyTotal: subSummary?.monthlyTotal || 0,
       });
     } catch (e) {
       console.warn('Error in syncCurrentState:', e);

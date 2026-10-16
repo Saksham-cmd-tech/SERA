@@ -24,7 +24,7 @@ class SeraBudgetWidgetProvider : AppWidgetProvider() {
             val remaining = data.optString("budgetRemaining", "₹0")
             val total = data.optString("budgetTotal", "LEFT OF ₹0")
             val progress = data.optInt("budgetProgress", 0)
-            val dailyPace = data.optString("dailySafeSpend", "Safe spend: ₹0 / day")
+            val dailyPace = if (data.has("dailySafeVal")) "${data.optString("dailySafeVal")} / day" else data.optString("dailySafeSpend", "₹0 / day")
             val spentTotal = data.optString("monthSpent", "Spent: ₹0")
 
             views.setTextViewText(R.id.widget_budget_remaining, remaining)

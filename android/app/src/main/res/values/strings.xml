@@ -11,4 +11,6 @@
     <string name="widget_net_worth_desc">SERA Net Worth &amp; Accounts Snapshot</string>
     <string name="widget_goal_desc">SERA Savings Goal Tracker</string>
     <string name="widget_dashboard_desc">SERA Live Financial Dashboard</string>
+    <string name="widget_subscription_desc">SERA Subscriptions &amp; Recurring Bills Radar</string>
+    <string name="widget_quick_log_desc">SERA 1-Tap Quick Log Capsule</string>
 </resources>
