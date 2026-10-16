@@ -162,7 +162,6 @@ class NotificationModule(private val reactContext: ReactApplicationContext) :
         const val CHANNEL_ALERTS = "sera_budget_alerts"
         const val CHANNEL_REMINDERS = "sera_daily_reminders"
         const val CHANNEL_GENERAL = "sera_general"
-        const val CHANNEL_SMS_ALERTS = "sera_sms_alerts"
         const val REMINDER_REQUEST_CODE = 9001
 
         fun createChannels(context: Context) {
@@ -176,16 +175,6 @@ class NotificationModule(private val reactContext: ReactApplicationContext) :
                     NotificationManager.IMPORTANCE_HIGH
                 ).apply {
                     description = "Alerts when budget thresholds are exceeded"
-                    enableVibration(true)
-                    vibrationPattern = longArrayOf(0, 250, 150, 250)
-                }
-
-                val smsChannel = NotificationChannel(
-                    CHANNEL_SMS_ALERTS,
-                    "SERA SMS Expense Detection",
-                    NotificationManager.IMPORTANCE_HIGH
-                ).apply {
-                    description = "Notifications for detected bank and UPI SMS transactions"
                     enableVibration(true)
                     vibrationPattern = longArrayOf(0, 250, 150, 250)
                 }
@@ -208,7 +197,6 @@ class NotificationModule(private val reactContext: ReactApplicationContext) :
                 }
 
                 notificationManager.createNotificationChannel(alertsChannel)
-                notificationManager.createNotificationChannel(smsChannel)
                 notificationManager.createNotificationChannel(remindersChannel)
                 notificationManager.createNotificationChannel(generalChannel)
             }

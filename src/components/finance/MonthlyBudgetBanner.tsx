@@ -2,7 +2,6 @@ import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from '../common/AppText';
-import { FinanceGrid } from '../common/FinanceGrid';
 import { CategoryIcon } from '../common/CategoryIcon';
 import { formatCurrency } from '../../utils/currency';
 
@@ -30,174 +29,166 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
   const { colors, spacing, radius, currencySymbol, isPrivacyMode } = useAppTheme();
 
   const spentRatio = totalBudget > 0 ? Math.min(1, Math.max(0, totalSpent / totalBudget)) : 0;
-  const remainingRatio = totalBudget > 0 ? Math.max(0, Math.min(1, totalRemaining / totalBudget)) : 0;
+  const spentPercent = Math.round(spentRatio * 100);
   const isBudgetExceeded = isOverrun || (totalBudget > 0 && totalSpent > totalBudget);
 
-  // When money has been spent, show at least 1 consumed bar on remaining (e.g. 17/18 active)
-  const adjustedRemainingProgress = totalSpent > 0 && remainingRatio < 1
-    ? Math.min(0.94, remainingRatio)
-    : remainingRatio;
+  // Safe daily spend estimate (days left in month)
+  const now = new Date();
+  const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const daysRemaining = Math.max(1, daysInMonth - now.getDate());
+  const dailySafePace = Math.max(0, Math.round(totalRemaining / daysRemaining));
 
   return (
-    <View style={[styles.wrapper, { marginBottom: spacing.lg }]}>
-      {/* Top Main Budget Block matching reference media_1790320460288 */}
+    <View style={[styles.wrapper, { marginBottom: spacing.md }]}>
       <TouchableOpacity
-        activeOpacity={0.9}
+        activeOpacity={0.85}
         onPress={onPressDetails}
         style={[
           styles.mainCard,
           {
             backgroundColor: colors.surface,
             borderColor: colors.border,
-            borderRadius: radius.xs,
+            borderRadius: radius.lg,
             padding: spacing.md,
           },
         ]}
       >
-        <AppText
-          variant="label"
-          style={{ color: colors.textSecondary, letterSpacing: 1.8, marginBottom: 4 }}
-        >
-          AVAILABLE {monthName.toUpperCase()} BUDGET
-        </AppText>
+        {/* Header Row: Month Budget label + Used % Chip */}
+        <View style={styles.headerRow}>
+          <View style={styles.titleRow}>
+            <View
+              style={[
+                styles.statusDot,
+                { backgroundColor: isBudgetExceeded ? colors.accentRed : colors.positive },
+              ]}
+            />
+            <AppText
+              variant="label"
+              style={{ color: colors.textPrimary, letterSpacing: 1.4, fontWeight: '700' }}
+            >
+              {monthName.toUpperCase()} BUDGET
+            </AppText>
+          </View>
 
-        <AppText
-          variant="displayMedium"
-          privacySensitive
-          style={{ color: colors.textPrimary, fontWeight: '700', marginBottom: spacing.md }}
-        >
-          {formatCurrency(totalRemaining, currencySymbol, isPrivacyMode, false)}
-        </AppText>
+          <View
+            style={[
+              styles.usedChip,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+                borderRadius: radius.sm,
+              },
+            ]}
+          >
+            <AppText
+              variant="metadata"
+              style={{
+                color: isBudgetExceeded ? colors.accentRed : colors.textPrimary,
+                fontWeight: '700',
+                fontSize: 11,
+              }}
+            >
+              {isBudgetExceeded ? 'EXCEEDED' : `${spentPercent}% Used`}
+            </AppText>
+          </View>
+        </View>
 
-        {/* Budget Row: 'BUDGET' label on left, totalBudget amount on right */}
-        <View style={styles.budgetRow}>
-          <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.2 }}>
-            BUDGET
+        {/* Large Prominent Figures: Spent / Total */}
+        <View style={styles.amountComparisonRow}>
+          <AppText
+            variant="displayMedium"
+            privacySensitive
+            style={{ color: colors.textPrimary, fontWeight: '800' }}
+          >
+            {formatCurrency(totalSpent, currencySymbol, isPrivacyMode, false)}
           </AppText>
           <AppText
-            variant="amountMedium"
+            variant="label"
             privacySensitive
-            style={{ color: colors.textPrimary, fontWeight: '700' }}
+            style={{ color: colors.textSecondary, fontWeight: '600', marginLeft: 8, marginBottom: 4 }}
           >
-            {formatCurrency(totalBudget, currencySymbol, isPrivacyMode, false)}
+            / {formatCurrency(totalBudget, currencySymbol, isPrivacyMode, false)}
           </AppText>
         </View>
 
-        {/* Full-width continuous horizontal hairline divider */}
-        <View style={[styles.fullDivider, { backgroundColor: colors.border }]} />
+        {/* Flat Progress Bar (100% solid, zero gradient) */}
+        <View
+          style={[
+            styles.progressBarTrack,
+            { backgroundColor: colors.cardDark, borderRadius: radius.full, height: 6, overflow: 'hidden' },
+          ]}
+        >
+          <View
+            style={[
+              styles.progressBarFill,
+              {
+                width: `${Math.min(100, Math.max(3, spentPercent))}%`,
+                backgroundColor: isBudgetExceeded ? colors.accentRed : colors.positive,
+                borderRadius: radius.full,
+                height: 6,
+              },
+            ]}
+          />
+        </View>
 
-        {/* Below Divider Split Section: Left info + shorter bars, Right tall vertical bars */}
-        <View style={styles.splitSection}>
-          {/* Left Column */}
-          <View style={styles.leftCol}>
-            <View style={styles.leftAmountRow}>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.2 }}>
-                LEFT
-              </AppText>
-              <AppText
-                variant="amountMedium"
-                privacySensitive
-                style={{
-                  color: isBudgetExceeded ? colors.coral : colors.textPrimary,
-                  fontWeight: '700',
-                  marginLeft: 12,
-                }}
-              >
-                {formatCurrency(totalRemaining, currencySymbol, isPrivacyMode, false)}
-              </AppText>
-            </View>
+        {/* Footer Subtext: Remaining and Safe Daily Pace */}
+        <View style={styles.footerRow}>
+          <AppText
+            variant="labelSmall"
+            privacySensitive
+            style={{
+              color: isBudgetExceeded ? colors.accentRed : colors.positive,
+              fontWeight: '700',
+            }}
+          >
+            {isBudgetExceeded
+              ? `Over by ${formatCurrency(overrunAmount || (totalSpent - totalBudget), currencySymbol, isPrivacyMode, false)}`
+              : `${formatCurrency(totalRemaining, currencySymbol, isPrivacyMode, false)} left`}
+          </AppText>
 
-            {/* Hairline sub-divider under LEFT */}
-            <View style={[styles.subDivider, { backgroundColor: colors.border }]} />
-
-            {/* Shorter Vertical Rhythm Bars (Remaining status) */}
-            <FinanceGrid
-              barsCount={18}
-              height={36}
-              pattern="uniform"
-              lineWidth={1}
-              lineSpacing={3.5}
-              activeColor={isBudgetExceeded ? colors.coral : colors.textPrimary}
-              progress={isBudgetExceeded ? 0 : adjustedRemainingProgress}
-            />
-          </View>
-
-          {/* Right Column: Tall Vertical Rhythm Bars directly hanging from the top divider */}
-          <View style={styles.rightCol}>
-            <FinanceGrid
-              barsCount={18}
-              height={72}
-              pattern="uniform"
-              lineWidth={1}
-              lineSpacing={3.5}
-              activeColor={isBudgetExceeded ? colors.coral : colors.textPrimary}
-              progress={isBudgetExceeded ? 1 : spentRatio}
-            />
-          </View>
+          {totalRemaining > 0 && !isBudgetExceeded && (
+            <AppText variant="metadata" style={{ color: colors.textMuted, fontSize: 11 }}>
+              {daysRemaining} days left • {formatCurrency(dailySafePace, currencySymbol, isPrivacyMode, false)}/day
+            </AppText>
+          )}
         </View>
       </TouchableOpacity>
 
-      {/* Coral Warning Overrun Section from reference */}
-      {isBudgetExceeded && overrunAmount > 0 && (
+      {/* Clean Budget Notice Alert (if exceeded) */}
+      {isBudgetExceeded && (
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={onPressDetails}
           style={[
-            styles.coralCard,
+            styles.noticeCard,
             {
-              backgroundColor: colors.coral,
-              borderRadius: radius.xs,
-              padding: spacing.md,
-              marginTop: spacing.sm,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.border,
+              borderLeftColor: colors.accentRed,
+              borderLeftWidth: 4,
+              borderRadius: radius.md,
+              padding: spacing.sm + 2,
+              marginTop: spacing.xs,
             },
           ]}
         >
-          {/* Top Overrun Header & Arrow Badge */}
-          <View style={styles.coralTopRow}>
-            <View style={styles.overrunBadgeRow}>
-              <CategoryIcon name="AlertTriangle" size={14} color="#FFFFFF" />
-              <AppText
-                variant="labelSmall"
-                style={{ color: '#FFFFFF', letterSpacing: 1.5, marginLeft: 6, fontWeight: '700' }}
-              >
-                BUDGET OVERRUN
-              </AppText>
-            </View>
-
-            <View style={styles.arrowCircle}>
-              <CategoryIcon name="ArrowUpRight" size={14} color="#FFFFFF" strokeWidth={2.2} />
-            </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <CategoryIcon name="AlertTriangle" size={14} color={colors.accentRed} strokeWidth={2.4} />
+            <AppText
+              variant="labelSmall"
+              style={{ color: colors.textPrimary, fontWeight: '700', marginLeft: 6 }}
+            >
+              Budget Warning
+            </AppText>
           </View>
-
-          {/* Overrun Value and Vertical Rhythm Bars */}
-          <View style={styles.coralBottomRow}>
-            <View>
-              <AppText
-                variant="amountLarge"
-                privacySensitive
-                style={{ color: '#FFFFFF', fontWeight: '700' }}
-              >
-                {formatCurrency(overrunAmount, currencySymbol, isPrivacyMode, false)}
-              </AppText>
-              <AppText
-                variant="labelSmall"
-                style={{ color: '#FFDCD1', letterSpacing: 1.4, marginTop: 2 }}
-              >
-                {overrunCategory ? overrunCategory.toUpperCase() : 'GENERAL OVERRUN'}
-              </AppText>
-            </View>
-
-            <FinanceGrid
-              barsCount={16}
-              height={28}
-              pattern="uniform"
-              lineWidth={1}
-              lineSpacing={3.5}
-              color="rgba(255, 255, 255, 0.35)"
-              activeColor="#FFFFFF"
-              progress={1}
-            />
-          </View>
+          <AppText
+            variant="metadata"
+            style={{ color: colors.textSecondary, marginTop: 4, fontSize: 11 }}
+          >
+            {overrunCategory
+              ? `${overrunCategory} exceeded budget limit by ${formatCurrency(overrunAmount, currencySymbol, isPrivacyMode, false)}.`
+              : `Overall monthly budget limit has been exceeded.`}
+          </AppText>
         </TouchableOpacity>
       )}
     </View>
@@ -211,63 +202,47 @@ const styles = StyleSheet.create({
   mainCard: {
     borderWidth: 1,
   },
-  budgetRow: {
+  headerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
-    paddingBottom: 6,
+    alignItems: 'center',
+    marginBottom: 8,
   },
-  fullDivider: {
-    height: 1,
-    width: '100%',
-  },
-  splitSection: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-  },
-  leftCol: {
-    justifyContent: 'flex-end',
-  },
-  leftAmountRow: {
+  titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingTop: 8,
-    paddingBottom: 6,
   },
-  subDivider: {
-    height: 1,
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 1,
+    marginRight: 6,
+  },
+  usedChip: {
+    paddingVertical: 3,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+  },
+  amountComparisonRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginBottom: 10,
+  },
+  progressBarTrack: {
+    height: 7,
     width: '100%',
-    marginBottom: 0,
-  },
-  rightCol: {
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-  },
-  coralCard: {
     overflow: 'hidden',
   },
-  coralTopRow: {
+  progressBarFill: {
+    height: '100%',
+  },
+  footerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginTop: 8,
   },
-  overrunBadgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  arrowCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  coralBottomRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
+  noticeCard: {
+    borderWidth: 1,
   },
 });

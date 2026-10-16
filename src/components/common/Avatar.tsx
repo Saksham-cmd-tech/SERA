@@ -12,11 +12,11 @@ interface AvatarProps {
 
 export const Avatar: React.FC<AvatarProps> = ({
   uri,
-  name = 'AW',
-  size = 38,
+  name = 'SERA',
+  size = 36,
   style,
 }) => {
-  const { colors } = useAppTheme();
+  const { colors, radius } = useAppTheme();
 
   const getInitials = (n: string) => {
     const parts = n.trim().split(' ');
@@ -49,9 +49,10 @@ export const Avatar: React.FC<AvatarProps> = ({
         <AppText
           variant="label"
           style={{
-            color: colors.textInverted,
+            color: colors.textPrimary,
             fontSize: size * 0.36,
-            fontWeight: '700',
+            fontWeight: '800',
+            letterSpacing: 1,
           }}
         >
           {getInitials(name)}

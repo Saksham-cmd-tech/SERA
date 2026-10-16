@@ -66,12 +66,12 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
             onPress={onPress}
             style={styles.tabButton}
           >
-            {/* Subtle top indicator bar from requirement 6 */}
+            {/* Precision top indicator bar */}
             <View
               style={[
                 styles.activeIndicator,
                 {
-                  backgroundColor: isFocused ? colors.textPrimary : 'transparent',
+                  backgroundColor: isFocused ? colors.accentRed : 'transparent',
                 },
               ]}
             />
@@ -81,7 +81,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
                 name={item.icon}
                 size={20}
                 color={isFocused ? colors.textPrimary : colors.textMuted}
-                strokeWidth={isFocused ? 2.2 : 1.6}
+                strokeWidth={isFocused ? 2.4 : 1.6}
               />
               <AppText
                 variant="labelSmall"
@@ -89,7 +89,7 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
                   styles.tabLabel,
                   {
                     color: isFocused ? colors.textPrimary : colors.textMuted,
-                    fontWeight: isFocused ? '700' : '500',
+                    fontWeight: isFocused ? '800' : '600',
                   },
                 ]}
               >

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
+import { View, Image, StyleSheet, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import { AppText } from './AppText';
 import { useAppTheme } from '../../hooks/useAppTheme';
 
@@ -16,7 +16,7 @@ interface SeraLogoProps {
 }
 
 export const SeraLogo: React.FC<SeraLogoProps> = ({
-  size = 40,
+  size = 28,
   showText = false,
   showTagline = false,
   tagline = 'Spending & Expense Record App',
@@ -39,31 +39,16 @@ export const SeraLogo: React.FC<SeraLogoProps> = ({
         style,
       ]}
     >
-      <View
-        style={[
-          styles.badgeCircle,
-          {
-            width: size,
-            height: size,
-            borderRadius: size / 2,
-            backgroundColor: circleBg,
-            borderColor: colors.border,
-          },
-        ]}
-      >
-        <AppText
-          style={[
-            styles.symbol,
-            {
-              color: symbolColor,
-              fontSize: size * 0.54,
-              lineHeight: size * 0.64,
-            },
-          ]}
-        >
-          $
-        </AppText>
-      </View>
+      {/* Official SERA Geometric Dual-Tone S Emblem */}
+      <Image
+        source={require('../../assets/sera_logo.png')}
+        style={{
+          width: size,
+          height: size,
+          borderRadius: Math.round(size * 0.22),
+        }}
+        resizeMode="contain"
+      />
 
       {(showText || showTagline) && (
         <View

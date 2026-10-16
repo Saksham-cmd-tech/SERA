@@ -35,7 +35,7 @@ export const CategoryBlock: React.FC<CategoryBlockProps> = ({
           styles.highlightedCard,
           {
             backgroundColor: colors.accent,
-            borderRadius: radius.xs,
+            borderRadius: radius.lg,
             padding: spacing.md,
           },
         ]}
@@ -73,7 +73,7 @@ export const CategoryBlock: React.FC<CategoryBlockProps> = ({
     );
   }
 
-  // Stacked dark olive-green horizontal rectangular block (Reference Screenshot 2)
+  // Stacked dark horizontal rectangular block (Reference Screenshot 2)
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -82,7 +82,7 @@ export const CategoryBlock: React.FC<CategoryBlockProps> = ({
         styles.darkRowCard,
         {
           backgroundColor: colors.cardDark,
-          borderRadius: radius.xs,
+          borderRadius: radius.md,
           paddingVertical: spacing.md - 2,
           paddingHorizontal: spacing.md,
           marginBottom: spacing.xs,
@@ -91,7 +91,7 @@ export const CategoryBlock: React.FC<CategoryBlockProps> = ({
     >
       <AppText
         variant="label"
-        style={{ color: colors.textInverted, letterSpacing: 1.6, fontWeight: '600' }}
+        style={{ color: colors.textPrimary, letterSpacing: 1.6, fontWeight: '600' }}
       >
         {name.toUpperCase()}
       </AppText>
@@ -99,7 +99,7 @@ export const CategoryBlock: React.FC<CategoryBlockProps> = ({
       <AppText
         variant="amountSmall"
         privacySensitive
-        style={{ color: colors.textInverted, fontWeight: '600' }}
+        style={{ color: colors.textPrimary, fontWeight: '600' }}
       >
         {isAddMode && amount === 0
           ? `${currencySymbol}00.0`

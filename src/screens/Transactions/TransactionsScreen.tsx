@@ -92,45 +92,53 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
       edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerContainer, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header
-          subtitle={formatMonthYear()}
-          title="Transactions"
-          rightAction={
-            <View style={styles.headerActions}>
-              <TouchableOpacity
-                onPress={() => setSearchVisible(!searchVisible)}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                style={[
-                  styles.actionButton,
-                  searchVisible && { backgroundColor: colors.cardDark },
-                ]}
-              >
-                <CategoryIcon
-                  name="Search"
-                  size={18}
-                  color={searchVisible ? colors.textInverted : colors.textPrimary}
-                />
-              </TouchableOpacity>
+      {/* Edge-to-edge Top Application Bar */}
+      <Header
+        subtitle={formatMonthYear()}
+        title="Transactions"
+        rightAction={
+          <View style={styles.headerActions}>
+            <TouchableOpacity
+              onPress={() => setSearchVisible(!searchVisible)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={[
+                styles.actionButton,
+                {
+                  backgroundColor: searchVisible ? colors.cardDark : colors.surfaceCard,
+                  borderColor: searchVisible ? colors.accentRed : colors.border,
+                },
+              ]}
+            >
+              <CategoryIcon
+                name="Search"
+                size={16}
+                color={searchVisible ? colors.accentRed : colors.textSecondary}
+              />
+            </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={() => setFilterModalVisible(true)}
-                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                style={[
-                  styles.actionButton,
-                  { marginLeft: 8 },
-                  activeFilterCount > 0 && { backgroundColor: colors.accent },
-                ]}
-              >
-                <CategoryIcon
-                  name="SlidersHorizontal"
-                  size={18}
-                  color={activeFilterCount > 0 ? colors.accentText : colors.textPrimary}
-                />
-              </TouchableOpacity>
-            </View>
-          }
-        />
+            <TouchableOpacity
+              onPress={() => setFilterModalVisible(true)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              style={[
+                styles.actionButton,
+                {
+                  marginLeft: 8,
+                  backgroundColor: activeFilterCount > 0 ? colors.accentRed : colors.surfaceCard,
+                  borderColor: activeFilterCount > 0 ? colors.accentRed : colors.border,
+                },
+              ]}
+            >
+              <CategoryIcon
+                name="SlidersHorizontal"
+                size={16}
+                color={activeFilterCount > 0 ? '#FFFFFF' : colors.textSecondary}
+              />
+            </TouchableOpacity>
+          </View>
+        }
+      />
+
+      <View style={[styles.headerContainer, { paddingHorizontal: spacing.screenPadding }]}>
 
         {/* Global Search Bar */}
         {searchVisible && (
@@ -140,7 +148,7 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
               {
                 backgroundColor: colors.surface,
                 borderColor: colors.border,
-                borderRadius: radius.xs,
+                borderRadius: radius.md,
                 marginTop: spacing.xs,
               },
             ]}
@@ -166,6 +174,16 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
         <View style={[styles.typePillsRow, { marginTop: spacing.sm, marginBottom: spacing.xs }]}>
           {(['all', 'expense', 'income', 'transfer'] as const).map(typeKey => {
             const isSelected = (filters.type || 'all') === typeKey;
+            let activeBg = colors.surfaceLighter;
+            let activeText = colors.textPrimary;
+            if (typeKey === 'expense') {
+              activeBg = colors.accentRed;
+              activeText = '#FFFFFF';
+            } else if (typeKey === 'income') {
+              activeBg = colors.positive;
+              activeText = '#FFFFFF';
+            }
+
             return (
               <TouchableOpacity
                 key={typeKey}
@@ -173,9 +191,9 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
                 style={[
                   styles.typePill,
                   {
-                    backgroundColor: isSelected ? colors.cardDark : colors.surface,
-                    borderColor: colors.border,
-                    borderRadius: radius.xs,
+                    backgroundColor: isSelected ? activeBg : colors.surface,
+                    borderColor: isSelected && typeKey === 'expense' ? colors.accentRedDark : colors.border,
+                    borderRadius: radius.sm,
                     marginRight: 6,
                   },
                 ]}
@@ -183,9 +201,9 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
                 <AppText
                   variant="labelSmall"
                   style={{
-                    color: isSelected ? colors.textInverted : colors.textSecondary,
-                    letterSpacing: 1.2,
-                    fontWeight: isSelected ? '700' : '500',
+                    color: isSelected ? activeText : colors.textSecondary,
+                    letterSpacing: 1.4,
+                    fontWeight: isSelected ? '800' : '600',
                   }}
                 >
                   {typeKey.toUpperCase()}
@@ -200,6 +218,8 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
       <SectionList
         sections={groupedSections}
         keyExtractor={item => item.id}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
         contentContainerStyle={[
           styles.listContent,
           { paddingHorizontal: spacing.screenPadding },
@@ -314,30 +334,32 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
               TRANSACTION TYPE
             </AppText>
             <View style={styles.typeOptionsRow}>
-              {(['all', 'expense', 'income', 'transfer'] as const).map(t => (
-                <TouchableOpacity
-                  key={t}
-                  onPress={() => setFilters({ type: t })}
-                  style={[
-                    styles.sheetPill,
-                    {
-                      backgroundColor:
-                        (filters.type || 'all') === t ? colors.cardDark : colors.background,
-                      borderColor: colors.border,
-                    },
-                  ]}
-                >
-                  <AppText
-                    variant="labelSmall"
-                    style={{
-                      color:
-                        (filters.type || 'all') === t ? colors.textInverted : colors.textPrimary,
-                    }}
+              {(['all', 'expense', 'income', 'transfer'] as const).map(t => {
+                const isSelected = (filters.type || 'all') === t;
+                return (
+                  <TouchableOpacity
+                    key={t}
+                    onPress={() => setFilters({ type: t })}
+                    style={[
+                      styles.sheetPill,
+                      {
+                        backgroundColor: isSelected ? colors.accentRed : colors.surface,
+                        borderColor: isSelected ? colors.accentRed : colors.border,
+                      },
+                    ]}
                   >
-                    {t.toUpperCase()}
-                  </AppText>
-                </TouchableOpacity>
-              ))}
+                    <AppText
+                      variant="labelSmall"
+                      style={{
+                        color: isSelected ? '#FFFFFF' : colors.textPrimary,
+                        fontWeight: isSelected ? '700' : '500',
+                      }}
+                    >
+                      {t.toUpperCase()}
+                    </AppText>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
 
             {/* Filter by Category */}
@@ -406,8 +428,8 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
                     style={[
                       styles.sheetPill,
                       {
-                        backgroundColor: isSelected ? colors.cardDark : colors.background,
-                        borderColor: colors.border,
+                        backgroundColor: isSelected ? colors.accentRed : colors.surface,
+                        borderColor: isSelected ? colors.accentRed : colors.border,
                         marginRight: 6,
                         marginBottom: 6,
                       },
@@ -416,7 +438,8 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
                     <AppText
                       variant="labelSmall"
                       style={{
-                        color: isSelected ? colors.textInverted : colors.textPrimary,
+                        color: isSelected ? '#FFFFFF' : colors.textPrimary,
+                        fontWeight: isSelected ? '700' : '500',
                       }}
                     >
                       {a.name.toUpperCase()}
@@ -452,9 +475,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   actionButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 4,
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

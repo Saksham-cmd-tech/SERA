@@ -26,15 +26,12 @@ import { useBudgetStore } from './src/store/useBudgetStore';
 import { useGoalStore } from './src/store/useGoalStore';
 import { useCategoryStore } from './src/store/useCategoryStore';
 import { useSubscriptionStore } from './src/store/useSubscriptionStore';
-import { usePendingSmsStore } from './src/store/usePendingSmsStore';
-import { PendingSmsCardStackModal } from './src/components/sms/PendingSmsCardStackModal';
 import { useAppTheme } from './src/hooks/useAppTheme';
 import { AppText } from './src/components/common/AppText';
 import { AppButton } from './src/components/common/AppButton';
-import { FinanceGrid } from './src/components/common/FinanceGrid';
+import { SeraLogo } from './src/components/common/SeraLogo';
 import { CategoryIcon } from './src/components/common/CategoryIcon';
 import { notificationService } from './src/services/notificationService';
-import { smsService, DetectedSmsTransaction } from './src/services/smsService';
 import { biometricService } from './src/services/biometricService';
 import { widgetService } from './src/services/widgetService';
 
@@ -67,7 +64,6 @@ export default function App(): React.JSX.Element {
         loadCategories(),
         loadSubscriptions(),
       ]);
-      await usePendingSmsStore.getState().loadPendingItems(true);
       console.log('--- APP SETUP: COMPLETE ---');
       setDbReady(true);
 
@@ -123,7 +119,6 @@ export default function App(): React.JSX.Element {
         if (isSecurityActive) {
           setIsLocked(true);
         }
-        usePendingSmsStore.getState().loadPendingItems(true);
       }
     });
     return () => sub.remove();
@@ -141,16 +136,9 @@ export default function App(): React.JSX.Element {
 
   if (!dbReady) {
     return (
-      <View style={[styles.loadingContainer, { backgroundColor: '#B8BBA8' }]}>
-        <StatusBar barStyle="dark-content" />
-        <FinanceGrid
-          barsCount={24}
-          height={60}
-          minHeight={15}
-          color="rgba(23, 32, 24, 0.2)"
-          activeColor="#172018"
-          progress={0.5}
-        />
+      <View style={[styles.loadingContainer, { backgroundColor: '#090E14' }]}>
+        <StatusBar barStyle="light-content" />
+        <SeraLogo size={56} />
       </View>
     );
   }
@@ -202,7 +190,6 @@ const linking: LinkingOptions<any> = {
       const initialMerchant = queryParams.merchant || undefined;
       const initialCategoryId = queryParams.category || undefined;
       const initialNote = queryParams.note || undefined;
-      const initialSmsId = queryParams.smsId || undefined;
       const autoPromptConfirm = queryParams.autoPrompt === 'true';
 
       return {
@@ -222,7 +209,6 @@ const linking: LinkingOptions<any> = {
                       {
                         name: 'AddTransaction',
                         params: {
-                          smsId: initialSmsId,
                           initialType: detectedType,
                           initialAmount,
                           initialMerchant,
@@ -391,14 +377,12 @@ function AppContent({
         const initialMerchant = queryParams.merchant || undefined;
         const initialCategoryId = queryParams.category || undefined;
         const initialNote = queryParams.note || undefined;
-        const initialSmsId = queryParams.smsId || undefined;
         const autoPromptConfirm = queryParams.autoPrompt === 'true';
 
         if (navigationRef.isReady()) {
           navigationRef.navigate('TransactionsTab', {
             screen: 'AddTransaction',
             params: {
-              smsId: initialSmsId,
               initialType: detectedType,
               initialAmount,
               initialMerchant,
@@ -435,28 +419,14 @@ function AppContent({
     return () => sub.remove();
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = smsService.subscribeToSmsEvents((data: DetectedSmsTransaction) => {
-      usePendingSmsStore.getState().addIncomingItem(data);
-    });
-    return () => {
-      unsubscribe();
-    };
-  }, []);
 
   if (isLocked) {
     return (
       <View style={[styles.lockContainer, { backgroundColor: colors.background }]}>
         <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
-        <FinanceGrid
-          barsCount={20}
-          height={40}
-          minHeight={10}
-          color={colors.gridLine}
-          activeColor={colors.textPrimary}
-          progress={0.7}
-          style={{ marginBottom: 20 }}
-        />
+        <View style={{ marginBottom: 20 }}>
+          <SeraLogo size={48} />
+        </View>
         <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 2, marginBottom: 8 }}>
           APPLICATION PROTECTED
         </AppText>
@@ -488,7 +458,7 @@ function AppContent({
             <AppButton
               title="UNLOCK WITH PIN"
               onPress={onUnlock}
-              variant="primary"
+              variant="accent"
               size="large"
               style={{ marginTop: 20, width: 220 }}
             />
@@ -508,8 +478,8 @@ function AppContent({
               },
             ]}
           >
-            <CategoryIcon name="Shield" size={20} color={colors.accent} strokeWidth={2.2} />
-            <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600', marginLeft: 10 }}>
+            <CategoryIcon name="Shield" size={20} color={colors.accentRed} strokeWidth={2.2} />
+            <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '700', marginLeft: 10 }}>
               Unlock with Biometrics
             </AppText>
           </TouchableOpacity>
@@ -524,9 +494,6 @@ function AppContent({
       <NavigationContainer ref={navigationRef} linking={linking}>
         <RootNavigator />
       </NavigationContainer>
-
-      {/* Tactile Pending SMS Card Stack Modal */}
-      <PendingSmsCardStackModal />
     </View>
   );
 }

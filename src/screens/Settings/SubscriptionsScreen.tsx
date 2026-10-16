@@ -9,6 +9,8 @@ import {
   Alert,
   Switch,
   RefreshControl,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -172,28 +174,32 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
       edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header
-          showBack
-          onPressBack={() => navigation.goBack()}
-          subtitle="RECURRING"
-          title="Subscriptions"
-          rightAction={
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={[styles.plusBtn, { backgroundColor: colors.cardDark }]}
-            >
-              <CategoryIcon name="Plus" size={16} color={colors.textInverted} strokeWidth={2.2} />
-            </TouchableOpacity>
-          }
-        />
-      </View>
+      <Header
+        showBack
+        onPressBack={() => navigation.goBack()}
+        subtitle="RECURRING"
+        title="Subscriptions"
+        rightAction={
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={[
+              styles.plusBtn,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+              },
+            ]}
+          >
+            <CategoryIcon name="Plus" size={16} color={colors.textPrimary} strokeWidth={2.2} />
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          { paddingHorizontal: spacing.screenPadding, paddingTop: spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -326,12 +332,14 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                   style={[
                     styles.markPaidBtn,
                     {
-                      backgroundColor: colors.cardDark,
+                      backgroundColor: colors.accentRedSurface,
+                      borderColor: colors.accentRed,
+                      borderWidth: 1,
                     },
                   ]}
                 >
-                  <CategoryIcon name="Zap" size={12} color={colors.accent} strokeWidth={2.4} />
-                  <AppText variant="labelSmall" style={{ color: colors.textInverted, marginLeft: 6, fontWeight: '700' }}>
+                  <CategoryIcon name="Zap" size={12} color={colors.accentRed} strokeWidth={2.4} />
+                  <AppText variant="labelSmall" style={{ color: colors.textPrimary, marginLeft: 6, fontWeight: '700' }}>
                     MARK PAID (LOG EXPENSE)
                   </AppText>
                 </TouchableOpacity>
@@ -384,115 +392,126 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setModalVisible(false)}
-          style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
         >
-          <View
-            style={[
-              styles.sheet,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                borderRadius: radius.md,
-                padding: spacing.lg,
-              },
-            ]}
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setModalVisible(false)}
+            style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
           >
-            <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
-              Add Subscription
-            </AppText>
-
-            <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                SERVICE NAME
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={e => e.stopPropagation()}
+              style={[
+                styles.sheet,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  borderRadius: radius.md,
+                  padding: spacing.lg,
+                },
+              ]}
+            >
+              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
+                Add Subscription
               </AppText>
-              <TextInput
-                value={name}
-                onChangeText={setName}
-                placeholder="e.g. Netflix, Spotify, iCloud"
-                placeholderTextColor={colors.textMuted}
-                style={[styles.input, { color: colors.textPrimary }]}
+
+              <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                  SERVICE NAME
+                </AppText>
+                <TextInput
+                  value={name}
+                  onChangeText={setName}
+                  placeholder="e.g. Netflix, Spotify, iCloud"
+                  placeholderTextColor={colors.textMuted}
+                  style={[styles.input, { color: colors.textPrimary }]}
+                />
+              </View>
+
+              <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border, marginTop: 10 }]}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                  AMOUNT
+                </AppText>
+                <TextInput
+                  value={amount}
+                  onChangeText={setAmount}
+                  placeholder="649"
+                  placeholderTextColor={colors.textMuted}
+                  keyboardType="numeric"
+                  style={[styles.input, { color: colors.textPrimary }]}
+                />
+              </View>
+
+              <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border, marginTop: 10 }]}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                  NEXT BILLING DATE
+                </AppText>
+                <TextInput
+                  value={nextBillingDate}
+                  onChangeText={setNextBillingDate}
+                  placeholder="YYYY-MM-DD"
+                  placeholderTextColor={colors.textMuted}
+                  style={[styles.input, { color: colors.textPrimary }]}
+                />
+              </View>
+
+              <View style={styles.frequencyRow}>
+                {(['monthly', 'yearly'] as const).map(f => {
+                  const isSelected = frequency === f;
+                  return (
+                    <TouchableOpacity
+                      key={f}
+                      onPress={() => setFrequency(f)}
+                      style={[
+                        styles.freqChip,
+                        {
+                          backgroundColor: isSelected ? colors.accentRed : colors.surface,
+                          borderColor: isSelected ? colors.accentRed : colors.border,
+                          flex: 1,
+                          marginHorizontal: 4,
+                        },
+                      ]}
+                    >
+                      <AppText
+                        variant="labelSmall"
+                        style={{
+                          color: isSelected ? '#FFFFFF' : colors.textPrimary,
+                          fontWeight: isSelected ? '700' : '500',
+                          textAlign: 'center',
+                        }}
+                      >
+                        {f.toUpperCase()}
+                      </AppText>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              <View style={styles.reminderRow}>
+                <AppText variant="bodyMedium" style={{ color: colors.textPrimary }}>
+                  Upcoming renewal reminder
+                </AppText>
+                <Switch
+                  value={reminder}
+                  onValueChange={setReminder}
+                  trackColor={{ false: colors.border, true: colors.accentRedSurface }}
+                  thumbColor={reminder ? colors.accent : '#F4F4F4'}
+                />
+              </View>
+
+              <AppButton
+                title="SAVE SUBSCRIPTION"
+                onPress={handleCreate}
+                variant="primary"
+                size="large"
+                style={{ marginTop: spacing.md }}
               />
-            </View>
-
-            <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border, marginTop: 10 }]}>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                AMOUNT
-              </AppText>
-              <TextInput
-                value={amount}
-                onChangeText={setAmount}
-                placeholder="649"
-                placeholderTextColor={colors.textMuted}
-                keyboardType="numeric"
-                style={[styles.input, { color: colors.textPrimary }]}
-              />
-            </View>
-
-            <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border, marginTop: 10 }]}>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                NEXT BILLING DATE
-              </AppText>
-              <TextInput
-                value={nextBillingDate}
-                onChangeText={setNextBillingDate}
-                placeholder="YYYY-MM-DD"
-                placeholderTextColor={colors.textMuted}
-                style={[styles.input, { color: colors.textPrimary }]}
-              />
-            </View>
-
-            <View style={styles.frequencyRow}>
-              {(['monthly', 'yearly'] as const).map(f => (
-                <TouchableOpacity
-                  key={f}
-                  onPress={() => setFrequency(f)}
-                  style={[
-                    styles.freqChip,
-                    {
-                      backgroundColor: frequency === f ? colors.cardDark : colors.background,
-                      borderColor: colors.border,
-                      flex: 1,
-                      marginHorizontal: 4,
-                    },
-                  ]}
-                >
-                  <AppText
-                    variant="labelSmall"
-                    style={{
-                      color: frequency === f ? colors.textInverted : colors.textPrimary,
-                      textAlign: 'center',
-                    }}
-                  >
-                    {f.toUpperCase()}
-                  </AppText>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <View style={styles.reminderRow}>
-              <AppText variant="bodyMedium" style={{ color: colors.textPrimary }}>
-                Upcoming renewal reminder
-              </AppText>
-              <Switch
-                value={reminder}
-                onValueChange={setReminder}
-                trackColor={{ false: colors.border, true: colors.cardDark }}
-                thumbColor={reminder ? colors.accent : '#F4F4F4'}
-              />
-            </View>
-
-            <AppButton
-              title="SAVE SUBSCRIPTION"
-              onPress={handleCreate}
-              variant="primary"
-              size="large"
-              style={{ marginTop: spacing.md }}
-            />
-          </View>
-        </TouchableOpacity>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -511,7 +530,8 @@ const styles = StyleSheet.create({
   plusBtn: {
     width: 32,
     height: 32,
-    borderRadius: 4,
+    borderRadius: 6,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

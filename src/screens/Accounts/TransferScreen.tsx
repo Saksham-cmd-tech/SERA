@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
+import { useKeyboardBottomInset } from '../../hooks/useKeyboardBottomInset';
 import { AppText } from '../../components/common/AppText';
 import { Header } from '../../components/navigation/Header';
 import { CategoryIcon } from '../../components/common/CategoryIcon';
@@ -40,6 +41,9 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
   const [toAccountId, setToAccountId] = useState(defaultToId);
   const [amountStr, setAmountStr] = useState('');
   const [notes, setNotes] = useState('');
+
+  const scrollRef = useRef<any>(null);
+  const keyboardPadding = useKeyboardBottomInset(30);
 
   useEffect(() => {
     if (accounts.length > 0) {
@@ -91,16 +95,20 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
       edges={['top', 'left', 'right', 'bottom']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header showBack onPressBack={() => navigation.goBack()} subtitle="ACCOUNTS" title="Transfer Funds" />
-      </View>
+      <Header showBack onPressBack={() => navigation.goBack()} subtitle="ACCOUNTS" title="Transfer Funds" />
 
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          {
+            paddingHorizontal: spacing.screenPadding,
+            paddingTop: spacing.md,
+            paddingBottom: Math.max(keyboardPadding, 40),
+          },
         ]}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {/* Large Amount Input Card */}
         <View
@@ -128,6 +136,11 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
               placeholder="0"
               placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollRef.current?.scrollTo({ y: 0, animated: true });
+                }, 150);
+              }}
               style={[styles.largeInput, { color: colors.textPrimary }]}
             />
           </View>
@@ -158,30 +171,34 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
 
           {/* Account selector chips */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
-            {accounts.map(acc => (
-              <TouchableOpacity
-                key={acc.id}
-                onPress={() => setFromAccountId(acc.id)}
-                style={[
-                  styles.accountChip,
-                  {
-                    backgroundColor: fromAccountId === acc.id ? colors.cardDark : colors.background,
-                    borderColor: colors.border,
-                    borderRadius: radius.xs,
-                    marginRight: 6,
-                  },
-                ]}
-              >
-                <AppText
-                  variant="labelSmall"
-                  style={{
-                    color: fromAccountId === acc.id ? colors.textInverted : colors.textPrimary,
-                  }}
+            {accounts.map(acc => {
+              const isSelected = fromAccountId === acc.id;
+              return (
+                <TouchableOpacity
+                  key={acc.id}
+                  onPress={() => setFromAccountId(acc.id)}
+                  style={[
+                    styles.accountChip,
+                    {
+                      backgroundColor: isSelected ? colors.accentRed : colors.surface,
+                      borderColor: isSelected ? colors.accentRed : colors.border,
+                      borderRadius: radius.xs,
+                      marginRight: 6,
+                    },
+                  ]}
                 >
-                  {acc.name.toUpperCase()}
-                </AppText>
-              </TouchableOpacity>
-            ))}
+                  <AppText
+                    variant="labelSmall"
+                    style={{
+                      color: isSelected ? '#FFFFFF' : colors.textPrimary,
+                      fontWeight: isSelected ? '700' : '500',
+                    }}
+                  >
+                    {acc.name.toUpperCase()}
+                  </AppText>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
         </View>
 
@@ -224,30 +241,34 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
 
           {/* Account selector chips */}
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
-            {accounts.map(acc => (
-              <TouchableOpacity
-                key={acc.id}
-                onPress={() => setToAccountId(acc.id)}
-                style={[
-                  styles.accountChip,
-                  {
-                    backgroundColor: toAccountId === acc.id ? colors.cardDark : colors.background,
-                    borderColor: colors.border,
-                    borderRadius: radius.xs,
-                    marginRight: 6,
-                  },
-                ]}
-              >
-                <AppText
-                  variant="labelSmall"
-                  style={{
-                    color: toAccountId === acc.id ? colors.textInverted : colors.textPrimary,
-                  }}
+            {accounts.map(acc => {
+              const isSelected = toAccountId === acc.id;
+              return (
+                <TouchableOpacity
+                  key={acc.id}
+                  onPress={() => setToAccountId(acc.id)}
+                  style={[
+                    styles.accountChip,
+                    {
+                      backgroundColor: isSelected ? colors.accentRed : colors.surface,
+                      borderColor: isSelected ? colors.accentRed : colors.border,
+                      borderRadius: radius.xs,
+                      marginRight: 6,
+                    },
+                  ]}
                 >
-                  {acc.name.toUpperCase()}
-                </AppText>
-              </TouchableOpacity>
-            ))}
+                  <AppText
+                    variant="labelSmall"
+                    style={{
+                      color: isSelected ? '#FFFFFF' : colors.textPrimary,
+                      fontWeight: isSelected ? '700' : '500',
+                    }}
+                  >
+                    {acc.name.toUpperCase()}
+                  </AppText>
+                </TouchableOpacity>
+              );
+            })}
           </ScrollView>
         </View>
 
@@ -272,6 +293,11 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
             onChangeText={setNotes}
             placeholder="e.g. ATM cash withdrawal, CC payment"
             placeholderTextColor={colors.textMuted}
+            onFocus={() => {
+              setTimeout(() => {
+                scrollRef.current?.scrollToEnd({ animated: true });
+              }, 150);
+            }}
             style={[styles.memoInput, { color: colors.textPrimary }]}
           />
         </View>

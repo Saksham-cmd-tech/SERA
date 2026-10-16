@@ -23,66 +23,112 @@ export interface ColorPalette {
   gridLineActive: string;
   overlay: string;
   transparent: string;
+  // Industrial Cyber-Technical tokens from Reference
+  panelBone: string;
+  panelBoneText: string;
+  panelBoneMuted: string;
+  panelBoneBorder: string;
+  accentRed: string;
+  accentRedDark: string;
+  accentRedSurface: string;
+  slateLight: string;
+  techBadgeBg: string;
 }
 
-export const lightPalette: ColorPalette = {
-  // Soft warm sage / gray-green from the reference images
-  background: '#B8BBA8',
-  surface: '#C5C8B5',
-  surfaceLighter: '#CFD2C2',
-  surfaceCard: '#CACDBB',
-  // Dark olive-green rectangular blocks from reference
-  cardDark: '#434E40',
-  cardDarker: '#343E32',
-  // Near-black green text
-  textPrimary: '#172018',
-  // Muted gray-green secondary text
-  textSecondary: '#5A6255',
-  textMuted: '#7D8678',
-  textInverted: '#F2F5ED',
-  // Thin low-opacity dark green borders
-  border: 'rgba(23, 32, 24, 0.18)',
-  borderLight: 'rgba(23, 32, 24, 0.08)',
-  // Muted financial green
-  positive: '#346A3E',
-  // Coral / burnt orange alert block from reference
-  negative: '#E8754F',
-  negativeSurface: '#DE6743',
-  warning: '#E8754F',
-  // Warm muted yellow category block from reference
-  accent: '#E4CF55',
-  accentText: '#172018',
-  coral: '#E8754F',
+export const darkPalette: ColorPalette = {
+  // Deep technical dark navy / midnight obsidian
+  background: '#090E14',
+  surface: '#111822',
+  surfaceLighter: '#17222F',
+  surfaceCard: '#131C27',
+  cardDark: '#1A2534',
+  cardDarker: '#0D141D',
+
+  // High-contrast technical typography
+  textPrimary: '#F2F5F8',
+  textSecondary: '#8B97A6',
+  textMuted: '#586574',
+  textInverted: '#FFFFFF',
+
+  // Hairline borders and dividers matching Stitch
+  border: '#1F2A38',
+  borderLight: '#1F2A38',
+
+  // Controlled Crimson / Vermilion Red accent from reference
+  accent: '#EB3B2E',
+  accentText: '#FFFFFF',
+  accentRed: '#EB3B2E',
+  accentRedDark: '#C92A1E',
+  accentRedSurface: 'rgba(235, 59, 46, 0.16)',
+
+  // Positive financial green & warning
+  positive: '#34D399',
+  negative: '#EB3B2E',
+  negativeSurface: 'rgba(235, 59, 46, 0.18)',
+  warning: '#F59E0B',
+
+  // Coral / Alert alias mapped to industrial crimson
+  coral: '#EB3B2E',
   coralText: '#FFFFFF',
-  gridLine: 'rgba(23, 32, 24, 0.16)',
-  gridLineActive: '#172018',
-  overlay: 'rgba(23, 32, 24, 0.5)',
+
+  // Grid lines
+  gridLine: 'rgba(255, 255, 255, 0.08)',
+  gridLineActive: '#EB3B2E',
+  overlay: 'rgba(5, 8, 12, 0.85)',
   transparent: 'transparent',
+
+  // Warm bone sand contrast panel from reference
+  panelBone: '#E4DFD7',
+  panelBoneText: '#0A0F15',
+  panelBoneMuted: '#68645C',
+  panelBoneBorder: '#C9C3BA',
+
+  // Silver / technical slate light
+  slateLight: '#B9C0C8',
+  techBadgeBg: '#0D141D',
 };
 
-export const darkPalette: ColorPalette = {
-  background: '#151C16',
-  surface: '#1E271F',
-  surfaceLighter: '#253127',
-  surfaceCard: '#242F25',
-  cardDark: '#2C3A2E',
-  cardDarker: '#1E281F',
-  textPrimary: '#EBF0E6',
-  textSecondary: '#9AA696',
-  textMuted: '#6E7A6B',
-  textInverted: '#151C16',
-  border: 'rgba(235, 240, 230, 0.16)',
-  borderLight: 'rgba(235, 240, 230, 0.08)',
-  positive: '#5EA36B',
-  negative: '#E8754F',
-  negativeSurface: '#9E3C1F',
-  warning: '#E8754F',
-  accent: '#E4CF55',
-  accentText: '#172018',
-  coral: '#E8754F',
+export const lightPalette: ColorPalette = {
+  // Light mode variant still follows the technical industrial aesthetic
+  background: '#EAEBE6',
+  surface: '#F4F5F1',
+  surfaceLighter: '#FFFFFF',
+  surfaceCard: '#F0F1ED',
+  cardDark: '#E2E8F0',
+  cardDarker: '#CBD5E1',
+
+  textPrimary: '#0C1117',
+  textSecondary: '#5C6775',
+  textMuted: '#7D8895',
+  textInverted: '#FFFFFF',
+
+  border: 'rgba(12, 17, 23, 0.14)',
+  borderLight: 'rgba(12, 17, 23, 0.07)',
+
+  accent: '#EB3B2E',
+  accentText: '#FFFFFF',
+  accentRed: '#EB3B2E',
+  accentRedDark: '#C92A1E',
+  accentRedSurface: 'rgba(235, 59, 46, 0.12)',
+
+  positive: '#10B981',
+  negative: '#EB3B2E',
+  negativeSurface: 'rgba(235, 59, 46, 0.12)',
+  warning: '#D97706',
+
+  coral: '#EB3B2E',
   coralText: '#FFFFFF',
-  gridLine: 'rgba(235, 240, 230, 0.14)',
-  gridLineActive: '#EBF0E6',
-  overlay: 'rgba(0, 0, 0, 0.75)',
+
+  gridLine: 'rgba(12, 17, 23, 0.12)',
+  gridLineActive: '#EB3B2E',
+  overlay: 'rgba(12, 17, 23, 0.6)',
   transparent: 'transparent',
+
+  panelBone: '#E4DFD7',
+  panelBoneText: '#0A0F15',
+  panelBoneMuted: '#68645C',
+  panelBoneBorder: '#C9C3BA',
+
+  slateLight: '#C3C9D0',
+  techBadgeBg: '#E2E8F0',
 };

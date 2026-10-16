@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
+import { useKeyboardBottomInset } from '../../hooks/useKeyboardBottomInset';
 import { AppText } from '../../components/common/AppText';
 import { Header } from '../../components/navigation/Header';
 import { CategoryIcon } from '../../components/common/CategoryIcon';
@@ -24,6 +25,9 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
   const { colors, spacing, radius, currencySymbol } = useAppTheme();
   const { createGoal } = useGoalStore();
   const accounts = useAccountStore(state => state.accounts);
+
+  const scrollRef = useRef<any>(null);
+  const keyboardPadding = useKeyboardBottomInset(30);
 
   const [name, setName] = useState('');
   const [targetAmountStr, setTargetAmountStr] = useState('');
@@ -85,16 +89,20 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
       edges={['top', 'left', 'right', 'bottom']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header showBack onPressBack={() => navigation.goBack()} subtitle="SAVINGS" title="Create Goal" />
-      </View>
+      <Header showBack onPressBack={() => navigation.goBack()} subtitle="SAVINGS" title="Create Goal" />
 
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          {
+            paddingHorizontal: spacing.screenPadding,
+            paddingTop: spacing.md,
+            paddingBottom: Math.max(keyboardPadding, 40),
+          },
         ]}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
       >
         {/* Editorial Question Banner from Reference */}
         <View style={{ marginBottom: spacing.md }}>
@@ -113,7 +121,7 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
             },
@@ -132,6 +140,11 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
               placeholder="0"
               placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollRef.current?.scrollTo({ y: 0, animated: true });
+                }, 150);
+              }}
               style={[styles.largeInput, { color: colors.textPrimary }]}
             />
           </View>
@@ -144,7 +157,7 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
             },
@@ -160,6 +173,11 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
               onChangeText={setName}
               placeholder="e.g. MacBook Pro, Trip"
               placeholderTextColor={colors.textMuted}
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollRef.current?.scrollTo({ y: 150, animated: true });
+                }, 150);
+              }}
               style={[styles.input, { color: colors.textPrimary }]}
             />
           </View>
@@ -175,6 +193,11 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
               placeholder="0"
               placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollRef.current?.scrollTo({ y: 220, animated: true });
+                }, 150);
+              }}
               style={[styles.input, { color: colors.textPrimary }]}
             />
           </View>
@@ -189,6 +212,11 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
               onChangeText={setTargetDate}
               placeholder="YYYY-MM-DD"
               placeholderTextColor={colors.textMuted}
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollRef.current?.scrollTo({ y: 280, animated: true });
+                }, 150);
+              }}
               style={[styles.input, { color: colors.textPrimary }]}
             />
           </View>
@@ -204,6 +232,11 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
               placeholder={targetAmountStr ? String(Math.round(parseFloat(targetAmountStr) / 12 || 0)) : 'e.g. 5000'}
               placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
+              onFocus={() => {
+                setTimeout(() => {
+                  scrollRef.current?.scrollTo({ y: 340, animated: true });
+                }, 150);
+              }}
               style={[styles.input, { color: colors.textPrimary }]}
             />
           </View>
@@ -223,16 +256,16 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
                 style={[
                   styles.iconOption,
                   {
-                    backgroundColor: isSelected ? colors.cardDark : colors.surface,
-                    borderColor: colors.border,
-                    borderRadius: radius.xs,
+                    backgroundColor: isSelected ? colors.accentRedSurface : colors.surface,
+                    borderColor: isSelected ? colors.accent : colors.border,
+                    borderRadius: radius.md,
                   },
                 ]}
               >
                 <CategoryIcon
                   name={ic}
                   size={18}
-                  color={isSelected ? colors.textInverted : colors.textPrimary}
+                  color={isSelected ? colors.accent : colors.textPrimary}
                 />
               </TouchableOpacity>
             );
@@ -253,16 +286,17 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
                 style={[
                   styles.accountSelectChip,
                   {
-                    backgroundColor: isSelected ? colors.cardDark : colors.surface,
-                    borderColor: colors.border,
-                    borderRadius: radius.xs,
+                    backgroundColor: isSelected ? colors.accentRedSurface : colors.surface,
+                    borderColor: isSelected ? colors.accent : colors.border,
+                    borderRadius: radius.md,
                   },
                 ]}
               >
                 <AppText
                   variant="labelSmall"
                   style={{
-                    color: isSelected ? colors.textInverted : colors.textPrimary,
+                    color: isSelected ? colors.accent : colors.textPrimary,
+                    fontWeight: isSelected ? '700' : '500',
                   }}
                 >
                   {acc.name.toUpperCase()}

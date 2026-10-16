@@ -33,8 +33,23 @@ local.properties
 .cxx/
 *.keystore
 !debug.keystore
+*.jks
+*.p12
+*.key
+*.pem
+*.cer
+*.der
 .kotlin/
 *.apk
+*.aab
+android/app/release/
+
+# Environment Variables & Secrets
+.env
+.env.*
+*.env
+*.local
+!**/.xcode.env
 
 # node.js
 #
@@ -58,7 +73,11 @@ yarn-error.log
 *.jsbundle
 android/app/src/main/assets/index.android.bundle*
 android/app/src/main/res/drawable-*/node_modules_*
+android/app/src/main/res/drawable-*/src_*
 android/app/src/main/res/raw/keep.xml
+
+# Local screenshot dumps
+images/
 
 # Ruby / CocoaPods
 **/Pods/

@@ -8,6 +8,9 @@ import { formatCurrency } from '../../utils/currency';
 interface BalanceCardProps {
   totalBalance: number;
   selectedAccountName: string;
+  accountCount?: number;
+  inflow?: number;
+  outflow?: number;
   onPressAccountSwitcher?: () => void;
   onTogglePrivacy?: () => void;
 }
@@ -15,94 +18,251 @@ interface BalanceCardProps {
 export const BalanceCard: React.FC<BalanceCardProps> = ({
   totalBalance,
   selectedAccountName,
+  accountCount,
+  inflow,
+  outflow,
   onPressAccountSwitcher,
   onTogglePrivacy,
 }) => {
   const { colors, spacing, radius, isPrivacyMode, currencySymbol } = useAppTheme();
 
+  const isAllAccounts = !selectedAccountName || selectedAccountName.toUpperCase() === 'ALL ACCOUNTS';
+  const subtitle = isAllAccounts
+    ? (accountCount ? `Consolidated across ${accountCount} active accounts` : 'Consolidated net balance')
+    : `${selectedAccountName} • Active`;
+
   return (
-    <View style={[styles.container, { paddingVertical: spacing.md }]}>
-      {/* Label and Privacy Toggle */}
-      <View style={styles.labelRow}>
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 2 }}>
-          AVAILABLE BALANCE
-        </AppText>
-        <TouchableOpacity
-          onPress={onTogglePrivacy}
-          hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-          style={styles.eyeButton}
-        >
-          <CategoryIcon
-            name={isPrivacyMode ? 'EyeOff' : 'Eye'}
-            size={16}
-            color={colors.textSecondary}
-          />
-        </TouchableOpacity>
+    <View
+      style={[
+        styles.panel,
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          borderRadius: radius.lg,
+          padding: spacing.md + 4,
+          marginBottom: spacing.md,
+        },
+      ]}
+    >
+      {/* Top Header Row: Label + Privacy Eye on Left, Account Pill on Right */}
+      <View style={styles.topHeaderRow}>
+        <View style={styles.labelGroup}>
+          <AppText
+            variant="label"
+            style={{
+              color: colors.textSecondary,
+              letterSpacing: 1.4,
+              fontWeight: '700',
+              fontSize: 11,
+            }}
+          >
+            AVAILABLE BALANCE
+          </AppText>
+          <TouchableOpacity
+            onPress={onTogglePrivacy}
+            hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+            style={styles.eyeButton}
+          >
+            <CategoryIcon
+              name={isPrivacyMode ? 'EyeOff' : 'Eye'}
+              size={14}
+              color={colors.textMuted}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {onPressAccountSwitcher && (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={onPressAccountSwitcher}
+            style={[
+              styles.accountPill,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+                borderRadius: radius.sm,
+              },
+            ]}
+          >
+            <View style={[styles.activeDot, { backgroundColor: colors.positive }]} />
+            <AppText
+              variant="labelSmall"
+              style={{
+                color: colors.textPrimary,
+                letterSpacing: 0.8,
+                marginRight: 4,
+                fontWeight: '700',
+                fontSize: 11,
+              }}
+            >
+              {selectedAccountName}
+            </AppText>
+            <CategoryIcon name="ChevronDown" size={12} color={colors.textSecondary} />
+          </TouchableOpacity>
+        )}
       </View>
 
-      {/* Dominant Financial Display Number */}
+      {/* Dominant Balance Display */}
       <View style={styles.numberRow}>
         <AppText
           variant="displayLarge"
           privacySensitive
-          style={[styles.dominantNumber, { color: colors.textPrimary }]}
+          style={[
+            styles.dominantNumber,
+            { color: colors.textPrimary, fontSize: 36, lineHeight: 42, letterSpacing: -1 },
+          ]}
         >
           {formatCurrency(totalBalance, currencySymbol, isPrivacyMode, false)}
         </AppText>
       </View>
 
-      {/* Account Switcher Pill */}
-      {onPressAccountSwitcher && (
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={onPressAccountSwitcher}
-          style={[
-            styles.accountPill,
-            {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
-              marginTop: spacing.sm,
-            },
-          ]}
-        >
-          <AppText
-            variant="labelSmall"
-            style={{ color: colors.textPrimary, letterSpacing: 1.4, marginRight: 6 }}
+      {/* Subtitle / Account Context */}
+      <AppText
+        variant="metadata"
+        style={{
+          color: colors.textMuted,
+          fontSize: 11,
+          letterSpacing: 0.3,
+          marginTop: 2,
+        }}
+      >
+        {subtitle}
+      </AppText>
+
+      {/* Clean Inflow & Outflow Chips (No harsh divider line) */}
+      {(inflow !== undefined || outflow !== undefined) && (
+        <View style={styles.flowRow}>
+          {/* Inflow Chip */}
+          <View
+            style={[
+              styles.flowChip,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+                borderRadius: radius.md,
+              },
+            ]}
           >
-            {selectedAccountName.toUpperCase()}
-          </AppText>
-          <CategoryIcon name="ChevronDown" size={12} color={colors.textPrimary} />
-        </TouchableOpacity>
+            <CategoryIcon name="ArrowUpRight" size={13} color={colors.positive} strokeWidth={2.4} />
+            <AppText
+              variant="labelSmall"
+              style={{
+                color: colors.textSecondary,
+                fontSize: 10,
+                letterSpacing: 0.8,
+                fontWeight: '700',
+                marginLeft: 4,
+              }}
+            >
+              INFLOW
+            </AppText>
+            <AppText
+              variant="labelSmall"
+              privacySensitive
+              style={{
+                color: colors.positive,
+                fontWeight: '800',
+                fontSize: 12,
+                marginLeft: 'auto',
+              }}
+            >
+              +{formatCurrency(inflow || 0, currencySymbol, isPrivacyMode, false)}
+            </AppText>
+          </View>
+
+          {/* Outflow Chip */}
+          <View
+            style={[
+              styles.flowChip,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+                borderRadius: radius.md,
+              },
+            ]}
+          >
+            <CategoryIcon name="ArrowDownLeft" size={13} color={colors.accentRed} strokeWidth={2.4} />
+            <AppText
+              variant="labelSmall"
+              style={{
+                color: colors.textSecondary,
+                fontSize: 10,
+                letterSpacing: 0.8,
+                fontWeight: '700',
+                marginLeft: 4,
+              }}
+            >
+              OUTFLOW
+            </AppText>
+            <AppText
+              variant="labelSmall"
+              privacySensitive
+              style={{
+                color: colors.accentRed,
+                fontWeight: '800',
+                fontSize: 12,
+                marginLeft: 'auto',
+              }}
+            >
+              -{formatCurrency(outflow || 0, currencySymbol, isPrivacyMode, false)}
+            </AppText>
+          </View>
+        </View>
       )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    alignItems: 'flex-start',
+  panel: {
+    borderWidth: 1,
+    overflow: 'hidden',
   },
-  labelRow: {
+  topHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
+    justifyContent: 'space-between',
+  },
+  labelGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
   },
   eyeButton: {
-    marginLeft: 8,
-    padding: 2,
-  },
-  numberRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  dominantNumber: {
-    fontWeight: '700',
+    padding: 4,
   },
   accountPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 5,
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderWidth: 1,
+  },
+  activeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
+  },
+  numberRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginTop: 10,
+  },
+  dominantNumber: {
+    fontWeight: '900',
+  },
+  flowRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 16,
+  },
+  flowChip: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
     paddingHorizontal: 10,
     borderWidth: 1,
   },

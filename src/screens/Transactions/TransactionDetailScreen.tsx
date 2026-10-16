@@ -117,24 +117,35 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
       edges={['top', 'left', 'right', 'bottom']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header
-          showBack
-          onPressBack={() => navigation.goBack()}
-          subtitle="DETAILS"
-          title="Transaction"
-          rightAction={
-            <TouchableOpacity onPress={handleDelete} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
-              <CategoryIcon name="Trash2" size={18} color={colors.coral} />
-            </TouchableOpacity>
-          }
-        />
-      </View>
+      <Header
+        showBack
+        onPressBack={() => navigation.goBack()}
+        subtitle="DETAILS"
+        title="Transaction"
+        rightAction={
+          <TouchableOpacity
+            onPress={handleDelete}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 6,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CategoryIcon name="Trash2" size={16} color={colors.accentRed} />
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          { paddingHorizontal: spacing.screenPadding, paddingTop: spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
       >
@@ -145,7 +156,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.lg,
               marginBottom: spacing.md,
             },
@@ -157,6 +168,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
                 styles.iconWrap,
                 {
                   backgroundColor: category?.color ? category.color + '25' : colors.cardDark,
+                  borderRadius: radius.md,
                 },
               ]}
             >
@@ -217,7 +229,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
             },
@@ -280,7 +292,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
             },
@@ -315,7 +327,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
                 onPress={() => setLightboxOpen(true)}
                 style={[
                   styles.imagePreviewWrap,
-                  { borderColor: colors.border, borderRadius: radius.xs },
+                  { borderColor: colors.border, borderRadius: radius.md },
                 ]}
               >
                 <Image

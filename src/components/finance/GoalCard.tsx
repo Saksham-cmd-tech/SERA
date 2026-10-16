@@ -24,7 +24,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onContribute 
         {
           backgroundColor: colors.surface,
           borderColor: colors.border,
-          borderRadius: radius.xs,
+          borderRadius: radius.lg,
           padding: spacing.md,
           marginBottom: spacing.sm,
         },
@@ -36,13 +36,13 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onContribute 
           <View
             style={[
               styles.iconWrapper,
-              { backgroundColor: colors.cardDark, borderRadius: radius.xs },
+              { backgroundColor: colors.cardDark, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border },
             ]}
           >
             <CategoryIcon
               name={goal.icon || 'Shield'}
               size={16}
-              color={colors.textInverted}
+              color={colors.textPrimary}
             />
           </View>
           <View style={{ marginLeft: 10 }}>
@@ -60,14 +60,22 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onContribute 
           style={[
             styles.statusBadge,
             {
-              backgroundColor: goal.isOnTrack ? colors.positive : colors.coral,
+              backgroundColor: goal.isOnTrack ? 'rgba(52, 211, 153, 0.15)' : 'rgba(235, 59, 46, 0.15)',
+              borderColor: goal.isOnTrack ? 'rgba(52, 211, 153, 0.35)' : 'rgba(235, 59, 46, 0.35)',
+              borderWidth: 1,
               borderRadius: radius.xs,
+              paddingHorizontal: 8,
+              paddingVertical: 2,
             },
           ]}
         >
           <AppText
             variant="labelSmall"
-            style={{ color: '#FFFFFF', letterSpacing: 1.2, fontWeight: '700' }}
+            style={{
+              color: goal.isOnTrack ? colors.positive : colors.accent,
+              letterSpacing: 1.2,
+              fontWeight: '700',
+            }}
           >
             {goal.isOnTrack ? 'ON TRACK' : 'BEHIND'}
           </AppText>
@@ -97,18 +105,20 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onContribute 
         </AppText>
       </View>
 
-      {/* Thin Architectural Progress Bar */}
+      {/* Solid Rounded Progress Bar */}
       <View
         style={[
           styles.progressTrack,
-          { backgroundColor: colors.borderLight, borderRadius: 1, marginTop: 8 },
+          { backgroundColor: colors.cardDark, borderRadius: radius.full, height: 6, marginTop: 8, overflow: 'hidden' },
         ]}
       >
         <View
           style={[
             styles.progressBar,
             {
-              backgroundColor: goal.isOnTrack ? colors.cardDark : colors.coral,
+              backgroundColor: goal.isOnTrack ? colors.positive : colors.accent,
+              borderRadius: radius.full,
+              height: '100%',
               width: `${Math.min(100, Math.max(2, goal.percentage))}%`,
             },
           ]}

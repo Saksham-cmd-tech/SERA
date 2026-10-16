@@ -1,134 +1,154 @@
 import { TextStyle, Platform } from 'react-native';
 
-const fontFamilyRegular = Platform.select({
-  ios: 'System',
-  android: 'sans-serif',
-  default: 'sans-serif',
-});
-
-const fontFamilyMedium = Platform.select({
-  ios: 'System',
-  android: 'sans-serif-medium',
-  default: 'sans-serif',
-});
+export const fonts = {
+  inter: {
+    regular: Platform.select({ ios: 'Inter-Regular', android: 'Inter-Regular', default: 'sans-serif' }),
+    medium: Platform.select({ ios: 'Inter-Medium', android: 'Inter-Medium', default: 'sans-serif-medium' }),
+    semiBold: Platform.select({ ios: 'Inter-SemiBold', android: 'Inter-SemiBold', default: 'sans-serif-medium' }),
+    bold: Platform.select({ ios: 'Inter-Bold', android: 'Inter-Bold', default: 'sans-serif' }),
+    extraBold: Platform.select({ ios: 'Inter-ExtraBold', android: 'Inter-ExtraBold', default: 'sans-serif' }),
+  },
+  mono: {
+    regular: Platform.select({ ios: 'JetBrainsMono-Regular', android: 'JetBrainsMono-Regular', default: 'monospace' }),
+    medium: Platform.select({ ios: 'JetBrainsMono-Medium', android: 'JetBrainsMono-Medium', default: 'monospace' }),
+    semiBold: Platform.select({ ios: 'JetBrainsMono-SemiBold', android: 'JetBrainsMono-SemiBold', default: 'monospace' }),
+    bold: Platform.select({ ios: 'JetBrainsMono-Bold', android: 'JetBrainsMono-Bold', default: 'monospace' }),
+    extraBold: Platform.select({ ios: 'JetBrainsMono-ExtraBold', android: 'JetBrainsMono-ExtraBold', default: 'monospace' }),
+  },
+};
 
 export const typography = {
-  // Large financial display number (48-64px)
+  // Dominant amount / balance figures (JetBrains Mono Bold)
   displayLarge: {
-    fontSize: 54,
-    lineHeight: 60,
+    fontSize: 48,
+    lineHeight: 54,
     fontWeight: '700',
-    letterSpacing: -1.5,
-    fontFamily: fontFamilyMedium,
+    letterSpacing: -1.2,
+    fontVariant: ['tabular-nums'],
+    fontFamily: fonts.mono.bold,
   } as TextStyle,
   
   displayMedium: {
-    fontSize: 42,
-    lineHeight: 48,
+    fontSize: 34,
+    lineHeight: 40,
     fontWeight: '700',
-    letterSpacing: -1,
-    fontFamily: fontFamilyMedium,
+    letterSpacing: -0.8,
+    fontVariant: ['tabular-nums'],
+    fontFamily: fonts.mono.bold,
   } as TextStyle,
 
-  // Page heading (32-40px)
+  // Technical Page heading (Inter Bold)
   pageHeading: {
-    fontSize: 34,
-    lineHeight: 38,
+    fontSize: 28,
+    lineHeight: 34,
     fontWeight: '700',
-    letterSpacing: -0.5,
-    fontFamily: fontFamilyMedium,
+    letterSpacing: -0.4,
+    fontFamily: fonts.inter.bold,
   } as TextStyle,
 
   pageSubheading: {
-    fontSize: 28,
-    lineHeight: 34,
-    fontWeight: '400',
-    letterSpacing: -0.3,
-    fontFamily: fontFamilyRegular,
-  } as TextStyle,
-
-  // Section heading (20-26px)
-  sectionHeading: {
-    fontSize: 22,
-    lineHeight: 28,
+    fontSize: 20,
+    lineHeight: 26,
     fontWeight: '600',
     letterSpacing: -0.2,
-    fontFamily: fontFamilyMedium,
+    fontFamily: fonts.inter.semiBold,
   } as TextStyle,
 
-  // Card title (16-20px)
-  cardTitle: {
-    fontSize: 18,
-    lineHeight: 24,
-    fontWeight: '600',
-    fontFamily: fontFamilyMedium,
-  } as TextStyle,
-
-  // Body text (14-16px)
-  bodyLarge: {
+  // Section heading (Inter Bold)
+  sectionHeading: {
     fontSize: 16,
     lineHeight: 22,
+    fontWeight: '700',
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    fontFamily: fonts.inter.bold,
+  } as TextStyle,
+
+  // Card title (Inter SemiBold)
+  cardTitle: {
+    fontSize: 15,
+    lineHeight: 20,
+    fontWeight: '600',
+    letterSpacing: -0.2,
+    fontFamily: fonts.inter.semiBold,
+  } as TextStyle,
+
+  // Body text (Inter Regular)
+  bodyLarge: {
+    fontSize: 15,
+    lineHeight: 22,
     fontWeight: '400',
-    fontFamily: fontFamilyRegular,
+    fontFamily: fonts.inter.regular,
   } as TextStyle,
 
   bodyMedium: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: 13,
+    lineHeight: 18,
     fontWeight: '400',
-    fontFamily: fontFamilyRegular,
+    fontFamily: fonts.inter.regular,
   } as TextStyle,
 
-  // Metadata / Timestamps (10-12px)
+  // Metadata / Timestamps (JetBrains Mono Medium)
   metadata: {
-    fontSize: 12,
-    lineHeight: 16,
-    fontWeight: '400',
-    fontFamily: fontFamilyRegular,
+    fontSize: 11,
+    lineHeight: 15,
+    fontWeight: '500',
+    letterSpacing: 0.4,
+    fontFamily: fonts.mono.medium,
   } as TextStyle,
 
-  // Architectural labels (9-11px, uppercase with letter-spacing)
+  // Architectural / Spec labels (JetBrains Mono Bold uppercase)
   label: {
     fontSize: 10,
     lineHeight: 14,
-    fontWeight: '600',
-    letterSpacing: 1.6,
+    fontWeight: '700',
+    letterSpacing: 1.5,
     textTransform: 'uppercase',
-    fontFamily: fontFamilyMedium,
+    fontFamily: fonts.mono.bold,
   } as TextStyle,
 
   labelSmall: {
     fontSize: 9,
     lineHeight: 12,
-    fontWeight: '600',
-    letterSpacing: 1.4,
+    fontWeight: '700',
+    letterSpacing: 1.2,
     textTransform: 'uppercase',
-    fontFamily: fontFamilyMedium,
+    fontFamily: fonts.mono.bold,
   } as TextStyle,
 
-  // Monospace / tabular numbers for amounts
+  // Technical Monospace & Spec tags
+  specCode: {
+    fontSize: 10,
+    lineHeight: 14,
+    fontWeight: '700',
+    letterSpacing: 1.4,
+    fontFamily: fonts.mono.bold,
+    textTransform: 'uppercase',
+  } as TextStyle,
+
+  // Tabular amount figures (JetBrains Mono Bold)
   amountLarge: {
-    fontSize: 36,
-    lineHeight: 42,
+    fontSize: 32,
+    lineHeight: 38,
     fontWeight: '700',
     letterSpacing: -0.5,
     fontVariant: ['tabular-nums'],
-    fontFamily: fontFamilyMedium,
+    fontFamily: fonts.mono.bold,
   } as TextStyle,
 
   amountMedium: {
-    fontSize: 22,
-    lineHeight: 28,
-    fontWeight: '600',
+    fontSize: 20,
+    lineHeight: 26,
+    fontWeight: '700',
     fontVariant: ['tabular-nums'],
-    fontFamily: fontFamilyMedium,
+    fontFamily: fonts.mono.bold,
   } as TextStyle,
 
   amountSmall: {
-    fontSize: 16,
-    lineHeight: 22,
-    fontWeight: '600',
+    fontSize: 14,
+    lineHeight: 19,
+    fontWeight: '700',
     fontVariant: ['tabular-nums'],
-    fontFamily: fontFamilyMedium,
+    fontFamily: fonts.mono.bold,
   } as TextStyle,
 };

@@ -8,6 +8,8 @@ import {
   Alert,
   Modal,
   TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,14 +25,7 @@ import { notificationService } from '../../services/notificationService';
 import { budgetRepository } from '../../database/repositories/budgetRepository';
 import { formatCurrency } from '../../utils/currency';
 import { db } from '../../database/database';
-import { smsService } from '../../services/smsService';
 import { biometricService } from '../../services/biometricService';
-import { widgetService } from '../../services/widgetService';
-import { useAccountStore } from '../../store/useAccountStore';
-import { useTransactionStore } from '../../store/useTransactionStore';
-import { useBudgetStore } from '../../store/useBudgetStore';
-import { useGoalStore } from '../../store/useGoalStore';
-import { usePendingSmsStore } from '../../store/usePendingSmsStore';
 
 interface SettingsScreenProps {
   navigation: any;
@@ -49,19 +44,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
     resetToNewUser,
   } = useSettingsStore();
 
-  const [smsDetectionEnabled, setSmsDetectionEnabled] = useState(true);
-  const [hasSmsPerm, setHasSmsPerm] = useState(false);
-
   useFocusEffect(
     useCallback(() => {
       loadSettings();
-      async function checkSms() {
-        const perm = await smsService.hasPermission();
-        const enabled = await smsService.isDetectionEnabled();
-        setHasSmsPerm(perm);
-        setSmsDetectionEnabled(enabled);
-      }
-      checkSms();
     }, [loadSettings])
   );
 
@@ -132,18 +117,16 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
       edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header
-          subtitle="SERA • PREFERENCES"
-          title="Settings"
-          rightAction={<SeraLogo size={28} />}
-        />
-      </View>
+      <Header
+        subtitle="SERA • PREFERENCES"
+        title="Settings"
+        showSeraMonogram
+      />
 
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          { paddingHorizontal: spacing.screenPadding, paddingTop: spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
       >
@@ -160,7 +143,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
             },
@@ -195,7 +178,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               marginBottom: spacing.md,
             },
           ]}
@@ -263,7 +246,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               marginBottom: spacing.md,
             },
           ]}
@@ -295,7 +278,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             <Switch
               value={isDark}
               onValueChange={toggleDarkMode}
-              trackColor={{ false: colors.border, true: colors.cardDark }}
+              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
               thumbColor={isDark ? colors.accent : '#F4F4F4'}
             />
           </View>
@@ -312,7 +295,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             <Switch
               value={isPrivacyMode}
               onValueChange={togglePrivacyMode}
-              trackColor={{ false: colors.border, true: colors.cardDark }}
+              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
               thumbColor={isPrivacyMode ? colors.accent : '#F4F4F4'}
             />
           </View>
@@ -328,7 +311,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               marginBottom: spacing.md,
             },
           ]}
@@ -355,7 +338,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   await updateSettings({ notificationsEnabled: false, dailyReminderEnabled: false });
                 }
               }}
-              trackColor={{ false: colors.border, true: colors.cardDark }}
+              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
               thumbColor={(settings.notificationsEnabled ?? true) ? colors.accent : '#F4F4F4'}
             />
           </View>
@@ -382,13 +365,13 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   await updateSettings({ dailyReminderEnabled: false });
                 }
               }}
-              trackColor={{ false: colors.border, true: colors.cardDark }}
+              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
               thumbColor={(settings.dailyReminderEnabled ?? true) ? colors.accent : '#F4F4F4'}
             />
           </View>
 
           {/* Budget Overrun Alerts */}
-          <View style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}>
+          <View style={styles.rowItem}>
             <View style={{ flex: 1, paddingRight: 10 }}>
               <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
                 Budget Overrun Warnings
@@ -403,289 +386,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
               onValueChange={async (val) => {
                 await updateSettings({ budgetAlertsEnabled: val });
               }}
-              trackColor={{ false: colors.border, true: colors.cardDark }}
+              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
               thumbColor={(settings.budgetAlertsEnabled ?? true) ? colors.accent : '#F4F4F4'}
             />
           </View>
-
-          {/* Send Test Notification Button */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={async () => {
-              const success = await notificationService.sendTestNotification();
-              if (success) {
-                Alert.alert('Notification Sent', 'Check your Android status bar for the SERA system notification!');
-              }
-            }}
-            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <CategoryIcon name="Bell" size={16} color={colors.positive} />
-              <AppText variant="bodyLarge" style={{ color: colors.positive, fontWeight: '600', marginLeft: 10 }}>
-                Send Test System Notification
-              </AppText>
-            </View>
-            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
-          </TouchableOpacity>
-
-          {/* Test All 3 Transaction Alerts */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={async () => {
-              await notificationService.sendTransactionAlert('expense', 420, 'Blue Tokai Coffee', 'Primary Bank');
-              setTimeout(() => {
-                notificationService.sendTransactionAlert('income', 4500, 'Ramesh Sharma', 'Primary Bank');
-              }, 600);
-              setTimeout(() => {
-                notificationService.sendTransactionAlert('transfer', 2000, 'Savings Account', 'Primary Bank', 'Savings Account');
-              }, 1200);
-            }}
-            style={styles.rowItem}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <CategoryIcon name="Zap" size={16} color={colors.accent} />
-              <View style={{ marginLeft: 10, flex: 1 }}>
-                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
-                  Test All 3 Transaction Notifications
-                </AppText>
-                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                  Pushes Sent (₹420), Received (₹4,500), and Transfer (₹2,000)
-                </AppText>
-              </View>
-            </View>
-            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
-          </TouchableOpacity>
-        </View>
-
-        {/* SECTION: SMS AUTO-DETECTION */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 6 }}>
-          SMS TRANSACTION AUTO-DETECTION
-        </AppText>
-        <View
-          style={[
-            styles.sectionCard,
-            {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
-              marginBottom: spacing.md,
-            },
-          ]}
-        >
-          {/* SMS Detection Toggle */}
-          <View style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}>
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
-                  Bank SMS Detection
-                </AppText>
-                <View
-                  style={{
-                    backgroundColor: hasSmsPerm ? 'rgba(52, 106, 62, 0.15)' : 'rgba(217, 83, 79, 0.15)',
-                    paddingHorizontal: 6,
-                    paddingVertical: 2,
-                    borderRadius: 2,
-                    marginLeft: 8,
-                  }}
-                >
-                  <AppText
-                    variant="labelSmall"
-                    style={{
-                      color: hasSmsPerm ? colors.accent : colors.coral,
-                      fontSize: 9,
-                      fontWeight: '700',
-                    }}
-                  >
-                    {hasSmsPerm ? 'ACTIVE' : 'PERMISSION NEEDED'}
-                  </AppText>
-                </View>
-              </View>
-              <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>
-                Auto-detect bank debit alerts & push prompt to record expense
-              </AppText>
-            </View>
-            <Switch
-              value={smsDetectionEnabled && hasSmsPerm}
-              onValueChange={async (val) => {
-                if (val) {
-                  const perm = await smsService.requestPermission();
-                  setHasSmsPerm(perm);
-                  if (perm) {
-                    await smsService.setDetectionEnabled(true);
-                    setSmsDetectionEnabled(true);
-                  } else {
-                    Alert.alert(
-                      'SMS Permission Required',
-                      'Please allow SMS permission so SERA can detect bank transactions locally.'
-                    );
-                  }
-                } else {
-                  await smsService.setDetectionEnabled(false);
-                  setSmsDetectionEnabled(false);
-                }
-              }}
-              trackColor={{ false: colors.border, true: colors.cardDark }}
-              thumbColor={smsDetectionEnabled && hasSmsPerm ? colors.accent : '#F4F4F4'}
-            />
-          </View>
-
-          {/* Test SMS Detection: Sent / Expense */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={async () => {
-              await smsService.simulateExpenseSms(420, 'Blue Tokai Coffee');
-            }}
-            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <CategoryIcon name="ArrowUpRight" size={16} color={colors.coral} strokeWidth={2.4} />
-              <View style={{ marginLeft: 10, flex: 1 }}>
-                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
-                  Test Money Sent SMS (Expense)
-                </AppText>
-                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                  Simulates debit alert: "Debited ₹420 to Blue Tokai Coffee"
-                </AppText>
-              </View>
-            </View>
-            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
-          </TouchableOpacity>
-
-          {/* Test SMS Detection: Received / Income */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={async () => {
-              await smsService.simulateIncomeSms(4500, 'Ramesh Sharma');
-            }}
-            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <CategoryIcon name="ArrowDownLeft" size={16} color={colors.positive} strokeWidth={2.4} />
-              <View style={{ marginLeft: 10, flex: 1 }}>
-                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
-                  Test Money Received SMS (Income)
-                </AppText>
-                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                  Simulates credit alert: "Credited ₹4,500 by Ramesh Sharma"
-                </AppText>
-              </View>
-            </View>
-            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
-          </TouchableOpacity>
-
-          {/* Test SMS Detection: Transferred / Transfer */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={async () => {
-              await smsService.simulateTransferSms(2000, 'Savings a/c **5678');
-            }}
-            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <CategoryIcon name="Repeat" size={16} color={colors.accent} strokeWidth={2.4} />
-              <View style={{ marginLeft: 10, flex: 1 }}>
-                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
-                  Test Transfer SMS (Transfer)
-                </AppText>
-                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                  Simulates transfer alert: "Transferred ₹2,000 to Savings via IMPS"
-                </AppText>
-              </View>
-            </View>
-            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
-          </TouchableOpacity>
-
-          {/* Test SMS Detection: Money Sent ("Sent to" - Expense) */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={async () => {
-              await smsService.simulateMoneySentSms(850, 'Rohan Verma');
-            }}
-            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <CategoryIcon name="ArrowUpRight" size={16} color={colors.coral} strokeWidth={2.4} />
-              <View style={{ marginLeft: 10, flex: 1 }}>
-                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
-                  Test "Money Sent" SMS (Expense)
-                </AppText>
-                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                  Simulates UPI alert: "₹850 sent to Rohan Verma via UPI"
-                </AppText>
-              </View>
-            </View>
-            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
-          </TouchableOpacity>
-
-          {/* Open Pending SMS Card Stack Directly */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => {
-              usePendingSmsStore.getState().openModal();
-            }}
-            style={styles.rowItem}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <CategoryIcon name="Zap" size={16} color={colors.positive} strokeWidth={2.4} />
-              <View style={{ marginLeft: 10, flex: 1 }}>
-                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
-                  Open Pending SMS Card Stack
-                </AppText>
-                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                  View, add, snooze for later, or dismiss pending SMS cards
-                </AppText>
-              </View>
-            </View>
-            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
-          </TouchableOpacity>
-        </View>
-
-        {/* SECTION: HOME SCREEN WIDGETS */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 6 }}>
-          HOME SCREEN WIDGETS
-        </AppText>
-        <View
-          style={[
-            styles.sectionCard,
-            {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
-              marginBottom: spacing.xl,
-            },
-          ]}
-        >
-          <TouchableOpacity
-            onPress={async () => {
-              const ok = await widgetService.syncWidgets({
-                currencySymbol,
-                accounts: useAccountStore.getState().accounts,
-                transactions: useTransactionStore.getState().transactions,
-                budgetSummary: useBudgetStore.getState().summary,
-                goals: useGoalStore.getState().goals,
-              });
-              if (ok) {
-                Alert.alert(
-                  'Widgets Synced',
-                  'All 5 SERA widgets have been updated with your latest balances, budgets, and transactions!\n\nTo place them on your home screen, long-press any empty space on your desktop and tap "Widgets" → "SERA".'
-                );
-              }
-            }}
-            style={styles.rowItem}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <CategoryIcon name="Zap" size={16} color={colors.accent} strokeWidth={2.4} />
-              <View style={{ marginLeft: 10, flex: 1 }}>
-                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
-                  Sync All 5 Widgets Now
-                </AppText>
-                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                  Updates Quick Actions, Budget, Net Worth, Goal &amp; Dashboard
-                </AppText>
-              </View>
-            </View>
-            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
-          </TouchableOpacity>
         </View>
 
         {/* SECTION: SECURITY */}
@@ -698,7 +402,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               marginBottom: spacing.md,
             },
           ]}
@@ -721,7 +425,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   setPinCode(undefined);
                 }
               }}
-              trackColor={{ false: colors.border, true: colors.cardDark }}
+              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
               thumbColor={settings.pinLockEnabled ? colors.accent : '#F4F4F4'}
             />
           </View>
@@ -762,37 +466,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   await updateSettings({ biometricEnabled: false });
                 }
               }}
-              trackColor={{ false: colors.border, true: colors.cardDark }}
+              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
               thumbColor={settings.biometricEnabled ? colors.accent : '#F4F4F4'}
             />
           </View>
-
-          {settings.biometricEnabled && (
-            <TouchableOpacity
-              onPress={async () => {
-                const res = await biometricService.authenticate(
-                  'SERA Biometric Test',
-                  'Verify Sensor',
-                  'Place your registered finger on the sensor to test biometric unlock',
-                  'Dismiss'
-                );
-                if (res.success) {
-                  Alert.alert('Biometric Verified', 'Biometric sensor recognized your fingerprint successfully!');
-                } else if (res.message && res.error !== 'AUTH_ERROR') {
-                  Alert.alert('Notice', res.message);
-                }
-              }}
-              style={[styles.rowItem, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}
-            >
-              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <CategoryIcon name="Shield" size={16} color={colors.accent} strokeWidth={2.4} />
-                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600', marginLeft: 10 }}>
-                  Test Biometric Sensor
-                </AppText>
-              </View>
-              <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
-            </TouchableOpacity>
-          )}
         </View>
 
         {/* SECTION: DATA MANAGEMENT */}
@@ -805,7 +482,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               marginBottom: spacing.xl,
             },
           ]}
@@ -850,7 +527,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             marginBottom: spacing.xxl,
           }}
         >
-          <SeraLogo size={52} showText showTagline direction="column" />
+          <SeraLogo size={34} showText showTagline direction="column" />
           <AppText
             variant="metadata"
             style={{
@@ -916,9 +593,10 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   style={[
                     styles.currencyOption,
                     {
-                      backgroundColor: isSelected ? colors.cardDark : colors.background,
-                      borderColor: colors.border,
-                      borderRadius: radius.xs,
+                      backgroundColor: isSelected ? colors.surfaceLighter : colors.background,
+                      borderColor: isSelected ? colors.accentRed : colors.border,
+                      borderWidth: 1,
+                      borderRadius: radius.md,
                       marginBottom: 8,
                     },
                   ]}
@@ -926,7 +604,8 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   <AppText
                     variant="cardTitle"
                     style={{
-                      color: isSelected ? colors.textInverted : colors.textPrimary,
+                      color: colors.textPrimary,
+                      fontWeight: isSelected ? '700' : '500',
                       fontSize: 16,
                     }}
                   >
@@ -935,7 +614,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   <AppText
                     variant="metadata"
                     style={{
-                      color: isSelected ? colors.textInverted : colors.textSecondary,
+                      color: colors.textSecondary,
                     }}
                   >
                     {c.name}
@@ -948,60 +627,68 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
       </Modal>
 
       {/* PIN Setup Modal */}
+      {/* PIN Setup Modal */}
       <Modal
         visible={pinModalVisible}
         transparent
         animationType="slide"
         onRequestClose={() => setPinModalVisible(false)}
       >
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setPinModalVisible(false)}
-          style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
         >
-          <View
-            style={[
-              styles.sheet,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                borderRadius: radius.md,
-                padding: spacing.lg,
-              },
-            ]}
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setPinModalVisible(false)}
+            style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
           >
-            <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
-              Set 4-Digit Security PIN
-            </AppText>
-
-            <TextInput
-              value={enteredPin}
-              onChangeText={setEnteredPin}
-              placeholder="••••"
-              placeholderTextColor={colors.textMuted}
-              keyboardType="numeric"
-              maxLength={4}
-              secureTextEntry
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={e => e.stopPropagation()}
               style={[
-                styles.pinInput,
+                styles.sheet,
                 {
-                  backgroundColor: colors.background,
+                  backgroundColor: colors.surface,
                   borderColor: colors.border,
-                  color: colors.textPrimary,
+                  borderRadius: radius.md,
+                  padding: spacing.lg,
                 },
               ]}
-              autoFocus
-            />
+            >
+              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
+                Set 4-Digit Security PIN
+              </AppText>
 
-            <AppButton
-              title="CONFIRM PIN"
-              onPress={handleSetPin}
-              variant="primary"
-              size="large"
-              style={{ marginTop: spacing.md }}
-            />
-          </View>
-        </TouchableOpacity>
+              <TextInput
+                value={enteredPin}
+                onChangeText={setEnteredPin}
+                placeholder="••••"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="numeric"
+                maxLength={4}
+                secureTextEntry
+                style={[
+                  styles.pinInput,
+                  {
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                    color: colors.textPrimary,
+                  },
+                ]}
+                autoFocus
+              />
+
+              <AppButton
+                title="CONFIRM PIN"
+                onPress={handleSetPin}
+                variant="primary"
+                size="large"
+                style={{ marginTop: spacing.md }}
+              />
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Edit Profile Modal */}
@@ -1011,73 +698,79 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
         animationType="slide"
         onRequestClose={() => setProfileModalVisible(false)}
       >
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setProfileModalVisible(false)}
-          style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
         >
           <TouchableOpacity
             activeOpacity={1}
-            style={[
-              styles.sheet,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                borderRadius: radius.md,
-                padding: spacing.lg,
-              },
-            ]}
+            onPress={() => setProfileModalVisible(false)}
+            style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
           >
-            <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
-              Edit Profile & Budget
-            </AppText>
-
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginBottom: 4 }}>
-              YOUR NAME
-            </AppText>
-            <TextInput
-              value={editName}
-              onChangeText={setEditName}
-              placeholder="Your name"
-              placeholderTextColor={colors.textMuted}
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={e => e.stopPropagation()}
               style={[
-                styles.inputField,
+                styles.sheet,
                 {
-                  backgroundColor: colors.background,
+                  backgroundColor: colors.surface,
                   borderColor: colors.border,
-                  color: colors.textPrimary,
+                  borderRadius: radius.md,
+                  padding: spacing.lg,
                 },
               ]}
-            />
+            >
+              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
+                Edit Profile & Budget
+              </AppText>
 
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginTop: 14, marginBottom: 4 }}>
-              MONTHLY BUDGET GOAL ({currencySymbol})
-            </AppText>
-            <TextInput
-              value={editBudget}
-              onChangeText={setEditBudget}
-              placeholder="e.g. 35000"
-              placeholderTextColor={colors.textMuted}
-              keyboardType="numeric"
-              style={[
-                styles.inputField,
-                {
-                  backgroundColor: colors.background,
-                  borderColor: colors.border,
-                  color: colors.textPrimary,
-                },
-              ]}
-            />
+              <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginBottom: 4 }}>
+                YOUR NAME
+              </AppText>
+              <TextInput
+                value={editName}
+                onChangeText={setEditName}
+                placeholder="Enter your name"
+                placeholderTextColor={colors.textMuted}
+                style={[
+                  styles.inputField,
+                  {
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                    color: colors.textPrimary,
+                  },
+                ]}
+              />
 
-            <AppButton
-              title="SAVE CHANGES"
-              onPress={handleSaveProfile}
-              variant="primary"
-              size="large"
-              style={{ marginTop: spacing.lg }}
-            />
+              <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginTop: 14, marginBottom: 4 }}>
+                MONTHLY BUDGET GOAL ({currencySymbol})
+              </AppText>
+              <TextInput
+                value={editBudget}
+                onChangeText={setEditBudget}
+                placeholder="e.g. 35000"
+                placeholderTextColor={colors.textMuted}
+                keyboardType="numeric"
+                style={[
+                  styles.inputField,
+                  {
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                    color: colors.textPrimary,
+                  },
+                ]}
+              />
+
+              <AppButton
+                title="SAVE CHANGES"
+                onPress={handleSaveProfile}
+                variant="primary"
+                size="large"
+                style={{ marginTop: spacing.lg }}
+              />
+            </TouchableOpacity>
           </TouchableOpacity>
-        </TouchableOpacity>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );

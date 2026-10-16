@@ -80,14 +80,12 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
       edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header showBack onPressBack={() => navigation.goBack()} subtitle="STATEMENTS" title="Monthly Report" />
-      </View>
+      <Header showBack onPressBack={() => navigation.goBack()} subtitle="STATEMENTS" title="Monthly Report" />
 
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          { paddingHorizontal: spacing.screenPadding, paddingTop: spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
       >
@@ -95,11 +93,20 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
         <View style={[styles.tabsRow, { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radius.xs, marginBottom: spacing.md }]}>
           <TouchableOpacity
             onPress={() => setSelectedMonth('current')}
-            style={[styles.tab, selectedMonth === 'current' && { backgroundColor: colors.cardDark }]}
+            style={[
+              styles.tab,
+              selectedMonth === 'current' && {
+                backgroundColor: colors.surfaceLighter,
+                borderColor: colors.border,
+              },
+            ]}
           >
             <AppText
               variant="labelSmall"
-              style={{ color: selectedMonth === 'current' ? colors.textInverted : colors.textPrimary }}
+              style={{
+                color: selectedMonth === 'current' ? colors.textPrimary : colors.textSecondary,
+                fontWeight: selectedMonth === 'current' ? '700' : '500',
+              }}
             >
               {currentMonthLabel}
             </AppText>
@@ -107,11 +114,20 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
 
           <TouchableOpacity
             onPress={() => setSelectedMonth('previous')}
-            style={[styles.tab, selectedMonth === 'previous' && { backgroundColor: colors.cardDark }]}
+            style={[
+              styles.tab,
+              selectedMonth === 'previous' && {
+                backgroundColor: colors.surfaceLighter,
+                borderColor: colors.border,
+              },
+            ]}
           >
             <AppText
               variant="labelSmall"
-              style={{ color: selectedMonth === 'previous' ? colors.textInverted : colors.textPrimary }}
+              style={{
+                color: selectedMonth === 'previous' ? colors.textPrimary : colors.textSecondary,
+                fontWeight: selectedMonth === 'previous' ? '700' : '500',
+              }}
             >
               {prevMonthLabel}
             </AppText>

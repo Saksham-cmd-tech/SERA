@@ -19,23 +19,24 @@ export const AccountCard: React.FC<AccountCardProps> = ({
 }) => {
   const { colors, spacing, radius, currencySymbol, isPrivacyMode } = useAppTheme();
 
-  const getAccountIcon = (type: string) => {
+  const getAccountVisual = (type: string) => {
     switch (type) {
       case 'bank':
       case 'savings':
-        return 'Wallet';
+        return { icon: 'Wallet', color: '#3A86FF' };
       case 'credit':
-        return 'Receipt';
+        return { icon: 'Receipt', color: colors.accentRed };
       case 'investment':
-        return 'TrendingUp';
+        return { icon: 'TrendingUp', color: colors.positive };
       case 'cash':
-        return 'DollarSign';
+        return { icon: 'DollarSign', color: '#F7B731' };
       default:
-        return 'Wallet';
+        return { icon: 'Wallet', color: colors.textPrimary };
     }
   };
 
   const isLiability = account.balance < 0;
+  const visual = getAccountVisual(account.type);
 
   return (
     <TouchableOpacity
@@ -46,7 +47,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({
         {
           backgroundColor: colors.surface,
           borderColor: colors.border,
-          borderRadius: radius.xs,
+          borderRadius: radius.lg,
           padding: spacing.md,
           marginBottom: spacing.sm,
         },
@@ -56,21 +57,26 @@ export const AccountCard: React.FC<AccountCardProps> = ({
         <View style={styles.leftInfo}>
           <View
             style={[
-              styles.iconCircle,
-              { backgroundColor: colors.cardDark, borderRadius: radius.xs },
+              styles.iconBox,
+              {
+                backgroundColor: `${visual.color}1E`,
+                borderColor: `${visual.color}44`,
+                borderRadius: radius.md,
+              },
             ]}
           >
             <CategoryIcon
-              name={getAccountIcon(account.type)}
+              name={visual.icon}
               size={16}
-              color={colors.textInverted}
+              color={visual.color}
+              strokeWidth={2.2}
             />
           </View>
           <View style={{ marginLeft: 10 }}>
-            <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 16 }}>
+            <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15, fontWeight: '700' }}>
               {account.name}
             </AppText>
-            <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+            <AppText variant="metadata" style={{ color: colors.textSecondary, fontSize: 10, letterSpacing: 0.8 }}>
               {account.type.toUpperCase()}{account.accountNumberMask ? ` • ${account.accountNumberMask}` : ''}
             </AppText>
           </View>
@@ -81,8 +87,8 @@ export const AccountCard: React.FC<AccountCardProps> = ({
             variant="amountSmall"
             privacySensitive
             style={{
-              fontWeight: '700',
-              color: isLiability ? colors.coral : colors.textPrimary,
+              fontWeight: '800',
+              color: isLiability ? colors.accentRed : colors.textPrimary,
             }}
           >
             {formatCurrency(account.balance, currencySymbol, isPrivacyMode, false)}
@@ -93,7 +99,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({
               style={{ marginTop: 4 }}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1 }}>
+              <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.2, fontWeight: '700' }}>
                 TRANSFER ↗
               </AppText>
             </TouchableOpacity>
@@ -118,9 +124,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  iconCircle: {
+  iconBox: {
     width: 34,
     height: 34,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

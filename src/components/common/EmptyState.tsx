@@ -3,7 +3,7 @@ import { View, StyleSheet, ViewStyle } from 'react-native';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from './AppText';
 import { AppButton } from './AppButton';
-import { FinanceGrid } from './FinanceGrid';
+import { CategoryIcon } from './CategoryIcon';
 
 interface EmptyStateProps {
   title: string;
@@ -34,16 +34,20 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         style,
       ]}
     >
-      <FinanceGrid
-        barsCount={16}
-        height={32}
-        minHeight={8}
-        pattern="uniform"
-        lineWidth={1}
-        lineSpacing={4}
-        color={colors.gridLine}
-        style={{ marginBottom: spacing.md, alignSelf: 'center' }}
-      />
+      <View
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: 22,
+          backgroundColor: colors.cardDark,
+          alignItems: 'center',
+          justifyContent: 'center',
+          alignSelf: 'center',
+          marginBottom: spacing.md,
+        }}
+      >
+        <CategoryIcon name="Inbox" size={22} color={colors.textSecondary} strokeWidth={2} />
+      </View>
       <AppText
         variant="label"
         style={{

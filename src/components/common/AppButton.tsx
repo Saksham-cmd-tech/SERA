@@ -9,7 +9,7 @@ import {
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from './AppText';
 
-export type ButtonVariant = 'primary' | 'accent' | 'coral' | 'outline' | 'surface' | 'ghost';
+export type ButtonVariant = 'primary' | 'accent' | 'coral' | 'bone' | 'outline' | 'surface' | 'ghost';
 export type ButtonSize = 'small' | 'medium' | 'large';
 
 interface AppButtonProps {
@@ -46,13 +46,20 @@ export const AppButton: React.FC<AppButtonProps> = ({
 
     switch (variant) {
       case 'primary':
-        bg = colors.cardDark;
+        bg = colors.surfaceLighter;
+        borderColor = colors.border;
+        borderWidth = 1;
         break;
       case 'accent':
-        bg = colors.accent;
+        bg = colors.accentRed;
         break;
       case 'coral':
         bg = colors.coral;
+        break;
+      case 'bone':
+        bg = colors.panelBone;
+        borderColor = colors.panelBoneBorder;
+        borderWidth = 1;
         break;
       case 'surface':
         bg = colors.surface;
@@ -84,7 +91,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
       backgroundColor: bg,
       borderColor,
       borderWidth,
-      borderRadius: radius.sm,
+      borderRadius: size === 'large' ? radius.lg : radius.md,
       paddingVertical,
       paddingHorizontal,
       flexDirection: 'row',
@@ -97,11 +104,13 @@ export const AppButton: React.FC<AppButtonProps> = ({
   const getTextColor = (): string => {
     switch (variant) {
       case 'primary':
-        return colors.textInverted;
+        return colors.textPrimary;
       case 'accent':
-        return colors.accentText;
+        return '#FFFFFF';
       case 'coral':
         return colors.coralText;
+      case 'bone':
+        return colors.panelBoneText;
       case 'outline':
       case 'surface':
       case 'ghost':
@@ -145,5 +154,6 @@ export const AppButton: React.FC<AppButtonProps> = ({
 const styles = StyleSheet.create({
   text: {
     letterSpacing: 1.4,
+    fontWeight: '800',
   },
 });

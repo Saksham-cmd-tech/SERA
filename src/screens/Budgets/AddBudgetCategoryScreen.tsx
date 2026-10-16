@@ -101,22 +101,36 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
 
   return (
     <SafeAreaView
-      edges={['top', 'left', 'right', 'bottom']}
+      edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header
-          showBack
-          onPressBack={() => navigation.goBack()}
-          subtitle="Add your"
-          title="Budget Category"
-        />
-      </View>
+      <Header
+        showBack
+        onPressBack={() => navigation.goBack()}
+        subtitle="BUDGETS"
+        title="Add Category"
+        rightAction={
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={handleSave}
+            style={{
+              backgroundColor: colors.accentRed,
+              paddingHorizontal: 14,
+              paddingVertical: 7,
+              borderRadius: radius.sm,
+            }}
+          >
+            <AppText variant="labelSmall" style={{ color: '#FFFFFF', fontWeight: '800' }}>
+              SAVE
+            </AppText>
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          { paddingHorizontal: spacing.screenPadding, paddingTop: spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
       >
@@ -174,7 +188,7 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginTop: spacing.md,
               marginBottom: spacing.md,
@@ -187,47 +201,51 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
               BUDGET PERIOD
             </AppText>
             <View style={styles.periodPills}>
-              {(['monthly', 'weekly'] as const).map(p => (
-                <TouchableOpacity
-                  key={p}
-                  onPress={() => setPeriod(p)}
-                  style={[
-                    styles.periodPill,
-                    {
-                      backgroundColor: period === p ? colors.cardDark : colors.background,
-                      borderColor: colors.border,
-                      borderRadius: radius.xs,
-                    },
-                  ]}
-                >
-                  <AppText
-                    variant="labelSmall"
-                    style={{
-                      color: period === p ? colors.textInverted : colors.textPrimary,
-                    }}
+              {(['monthly', 'weekly'] as const).map(p => {
+                const isSelected = period === p;
+                return (
+                  <TouchableOpacity
+                    key={p}
+                    onPress={() => setPeriod(p)}
+                    style={[
+                      styles.periodPill,
+                      {
+                        backgroundColor: isSelected ? colors.accentRed : colors.surface,
+                        borderColor: isSelected ? colors.accentRed : colors.border,
+                        borderRadius: radius.sm,
+                      },
+                    ]}
                   >
-                    {p.toUpperCase()}
-                  </AppText>
-                </TouchableOpacity>
-              ))}
+                    <AppText
+                      variant="labelSmall"
+                      style={{
+                        color: isSelected ? '#FFFFFF' : colors.textPrimary,
+                        fontWeight: isSelected ? '700' : '500',
+                      }}
+                    >
+                      {p.toUpperCase()}
+                    </AppText>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
 
           {/* Rollover Toggle */}
           <View style={[styles.switchRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <View>
+            <View style={{ flex: 1, paddingRight: spacing.md }}>
               <AppText variant="labelSmall" style={{ color: colors.textPrimary }}>
                 ROLLOVER UNUSED BUDGET
               </AppText>
-              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+              <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>
                 Carry forward remaining balance to next period
               </AppText>
             </View>
             <Switch
               value={rollover}
               onValueChange={setRollover}
-              trackColor={{ false: colors.border, true: colors.cardDark }}
-              thumbColor={rollover ? colors.accent : '#F4F4F4'}
+              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
+              thumbColor={rollover ? colors.accentRed : '#F4F4F4'}
             />
           </View>
 
@@ -246,16 +264,16 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
                     style={[
                       styles.thresholdChip,
                       {
-                        backgroundColor: isActive ? colors.accent : colors.background,
-                        borderColor: colors.border,
-                        borderRadius: radius.xs,
+                        backgroundColor: isActive ? colors.accentRed : colors.surfaceCard,
+                        borderColor: isActive ? colors.accentRed : colors.border,
+                        borderRadius: radius.sm,
                       },
                     ]}
                   >
                     <AppText
                       variant="labelSmall"
                       style={{
-                        color: isActive ? colors.accentText : colors.textPrimary,
+                        color: isActive ? '#FFFFFF' : colors.textPrimary,
                         fontWeight: '700',
                       }}
                     >
@@ -272,9 +290,9 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
         <AppButton
           title="SAVE BUDGET CATEGORY"
           onPress={handleSave}
-          variant="primary"
+          variant="accent"
           size="large"
-          style={{ marginBottom: 30 }}
+          style={{ marginTop: spacing.xs, marginBottom: spacing.xl }}
         />
       </ScrollView>
     </SafeAreaView>

@@ -8,6 +8,8 @@ import {
   TextInput,
   Alert,
   RefreshControl,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -76,26 +78,30 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
       edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header
-          subtitle="TARGETS"
-          title="Savings Goals"
-          rightAction={
-            <TouchableOpacity
-              onPress={() => navigation.navigate('CreateGoal')}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={[styles.plusIconBtn, { backgroundColor: colors.cardDark }]}
-            >
-              <CategoryIcon name="Plus" size={16} color={colors.textInverted} strokeWidth={2.2} />
-            </TouchableOpacity>
-          }
-        />
-      </View>
+      <Header
+        subtitle="TARGETS"
+        title="Savings Goals"
+        rightAction={
+          <TouchableOpacity
+            onPress={() => navigation.navigate('CreateGoal')}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={[
+              styles.plusIconBtn,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+              },
+            ]}
+          >
+            <CategoryIcon name="Plus" size={16} color={colors.textPrimary} strokeWidth={2.2} />
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          { paddingHorizontal: spacing.screenPadding, paddingTop: spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -113,7 +119,7 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
             },
@@ -169,90 +175,97 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
         animationType="slide"
         onRequestClose={() => setContributionModalVisible(false)}
       >
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setContributionModalVisible(false)}
-          style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
         >
-          <View
-            style={[
-              styles.contributeSheet,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                borderRadius: radius.md,
-                padding: spacing.lg,
-              },
-            ]}
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setContributionModalVisible(false)}
+            style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
           >
-            <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
-              ADD TO SAVINGS GOAL
-            </AppText>
-            <AppText
-              variant="cardTitle"
-              style={{ color: colors.textPrimary, fontSize: 20, marginTop: 2, marginBottom: spacing.md }}
-            >
-              {selectedGoal?.name}
-            </AppText>
-
-            <View
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={e => e.stopPropagation()}
               style={[
-                styles.inputWrapper,
+                styles.contributeSheet,
                 {
-                  backgroundColor: colors.background,
+                  backgroundColor: colors.surface,
                   borderColor: colors.border,
-                  borderRadius: radius.xs,
-                  padding: spacing.md,
-                  marginBottom: spacing.md,
+                  borderRadius: radius.xl,
+                  padding: spacing.lg,
                 },
               ]}
             >
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                AMOUNT TO DEPOSIT
+              <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
+                ADD TO SAVINGS GOAL
               </AppText>
-              <TextInput
-                value={contributionAmount}
-                onChangeText={setContributionAmount}
-                placeholder="0"
-                placeholderTextColor={colors.textMuted}
-                keyboardType="numeric"
-                style={[styles.numericInput, { color: colors.textPrimary }]}
-                autoFocus
-              />
-            </View>
-
-            <View
-              style={[
-                styles.inputWrapper,
-                {
-                  backgroundColor: colors.background,
-                  borderColor: colors.border,
-                  borderRadius: radius.xs,
-                  padding: spacing.md,
-                  marginBottom: spacing.lg,
-                },
-              ]}
-            >
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                OPTIONAL NOTE
+              <AppText
+                variant="cardTitle"
+                style={{ color: colors.textPrimary, fontSize: 20, marginTop: 2, marginBottom: spacing.md }}
+              >
+                {selectedGoal?.name}
               </AppText>
-              <TextInput
-                value={contributionNotes}
-                onChangeText={setContributionNotes}
-                placeholder="e.g. Monthly transfer, bonus payout"
-                placeholderTextColor={colors.textMuted}
-                style={[styles.textInput, { color: colors.textPrimary }]}
-              />
-            </View>
 
-            <AppButton
-              title="CONFIRM DEPOSIT"
-              onPress={handleSaveContribution}
-              variant="primary"
-              size="large"
-            />
-          </View>
-        </TouchableOpacity>
+              <View
+                style={[
+                  styles.inputWrapper,
+                  {
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                    borderRadius: radius.md,
+                    padding: spacing.md,
+                    marginBottom: spacing.md,
+                  },
+                ]}
+              >
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                  AMOUNT TO DEPOSIT
+                </AppText>
+                <TextInput
+                  value={contributionAmount}
+                  onChangeText={setContributionAmount}
+                  placeholder="0"
+                  placeholderTextColor={colors.textMuted}
+                  keyboardType="numeric"
+                  style={[styles.numericInput, { color: colors.textPrimary }]}
+                  autoFocus
+                />
+              </View>
+
+              <View
+                style={[
+                  styles.inputWrapper,
+                  {
+                    backgroundColor: colors.background,
+                    borderColor: colors.border,
+                    borderRadius: radius.md,
+                    padding: spacing.md,
+                    marginBottom: spacing.lg,
+                  },
+                ]}
+              >
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                  OPTIONAL NOTE
+                </AppText>
+                <TextInput
+                  value={contributionNotes}
+                  onChangeText={setContributionNotes}
+                  placeholder="e.g. Monthly transfer, bonus payout"
+                  placeholderTextColor={colors.textMuted}
+                  style={[styles.textInput, { color: colors.textPrimary }]}
+                />
+              </View>
+
+              <AppButton
+                title="CONFIRM DEPOSIT"
+                onPress={handleSaveContribution}
+                variant="primary"
+                size="large"
+              />
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -271,7 +284,8 @@ const styles = StyleSheet.create({
   plusIconBtn: {
     width: 32,
     height: 32,
-    borderRadius: 4,
+    borderRadius: 6,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

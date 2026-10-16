@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -8,14 +8,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
+import { useKeyboardBottomInset } from '../../hooks/useKeyboardBottomInset';
 import { AppText } from '../../components/common/AppText';
-import { FinanceGrid } from '../../components/common/FinanceGrid';
 import { AppButton } from '../../components/common/AppButton';
 import { CategoryIcon } from '../../components/common/CategoryIcon';
 import { SeraLogo } from '../../components/common/SeraLogo';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { useAccountStore } from '../../store/useAccountStore';
 import { useBudgetStore } from '../../store/useBudgetStore';
+import { fonts } from '../../theme/typography';
 
 interface OnboardingScreenProps {
   onComplete: () => void;
@@ -34,6 +35,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   const { completeOnboarding } = useSettingsStore();
   const { loadAccounts } = useAccountStore();
   const { loadBudgetSummary } = useBudgetStore();
+
+  const scrollRef = useRef<any>(null);
+  const keyboardPadding = useKeyboardBottomInset(30);
 
   const [step, setStep] = useState<number>(0);
   const [userName, setUserName] = useState<string>('');
@@ -134,7 +138,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                 {
                   backgroundColor:
                     step === idx
-                      ? colors.cardDark
+                      ? colors.accentRed
                       : step > idx
                       ? colors.textSecondary
                       : colors.border,
@@ -161,9 +165,13 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
       </View>
 
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          {
+            paddingHorizontal: spacing.screenPadding,
+            paddingBottom: Math.max(keyboardPadding, 40),
+          },
         ]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -192,7 +200,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                   <CategoryIcon
                     name={slides[step].featureIcon}
                     size={22}
-                    color={colors.textInverted}
+                    color={colors.textPrimary}
                   />
                 </View>
                 <AppText
@@ -204,21 +212,8 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               </View>
 
               {step === 0 && (
-                <View style={{ alignItems: 'center', width: '100%', paddingVertical: 4 }}>
-                  <SeraLogo size={56} showText showTagline direction="column" />
-                  <View style={[styles.gridContainer, { marginTop: 14 }]}>
-                    <FinanceGrid
-                      barsCount={28}
-                      height={44}
-                      minHeight={10}
-                      pattern="reference"
-                      lineWidth={1.5}
-                      lineSpacing={5}
-                      color={colors.gridLine}
-                      activeColor={colors.cardDark}
-                      progress={0.7}
-                    />
-                  </View>
+                <View style={{ alignItems: 'center', width: '100%', paddingVertical: 12 }}>
+                  <SeraLogo size={48} showText showTagline direction="column" />
                 </View>
               )}
 
@@ -293,7 +288,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                   letterSpacing: -0.5,
                   fontSize: 26,
                   lineHeight: 32,
-                  fontFamily: 'Courier',
+                  fontFamily: fonts.inter.bold,
                 }}
               >
                 {slides[step].titleTop}
@@ -301,12 +296,11 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               <AppText
                 variant="displayLarge"
                 style={{
-                  color: colors.cardDark,
+                  color: colors.accentRed,
                   letterSpacing: -0.5,
                   fontSize: 26,
                   lineHeight: 32,
-                  fontFamily: 'Courier',
-                  fontWeight: '700',
+                  fontFamily: fonts.inter.bold,
                 }}
               >
                 {slides[step].titleBottom}
@@ -329,14 +323,14 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               <AppButton
                 title={step === 2 ? 'PERSONALIZE YOUR SETUP' : 'CONTINUE'}
                 onPress={handleNext}
-                variant="primary"
+                variant="accent"
                 size="large"
               />
             </View>
           </View>
         ) : (
           // Step 3: Personalized Setup
-          <View style={styles.slideWrapper}>
+          <View style={styles.setupWrapper}>
             <View style={{ marginBottom: 16 }}>
               <AppText
                 variant="labelSmall"
@@ -345,7 +339,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                 STEP 4 OF 4 • PERSONAL SETUP
               </AppText>
               <View style={{ flexDirection: 'row', alignItems: 'center', marginVertical: 2 }}>
-                <SeraLogo size={32} style={{ marginRight: 10 }} />
+                <SeraLogo size={26} style={{ marginRight: 10 }} />
                 <AppText
                   variant="pageHeading"
                   style={{ color: colors.textPrimary, letterSpacing: -0.5 }}
@@ -383,8 +377,13 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
               <TextInput
                 value={userName}
                 onChangeText={setUserName}
-                placeholder="e.g. John Doe"
+                placeholder="Enter your name"
                 placeholderTextColor={colors.textMuted}
+                onFocus={() => {
+                  setTimeout(() => {
+                    scrollRef.current?.scrollTo({ y: 0, animated: true });
+                  }, 150);
+                }}
                 style={[
                   styles.input,
                   {
@@ -425,8 +424,8 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                       style={[
                         styles.currChip,
                         {
-                          backgroundColor: isSelected ? colors.cardDark : colors.background,
-                          borderColor: isSelected ? colors.cardDark : colors.border,
+                          backgroundColor: isSelected ? colors.accentRed : colors.surface,
+                          borderColor: isSelected ? colors.accentRed : colors.border,
                           borderRadius: radius.xs,
                         },
                       ]}
@@ -434,7 +433,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                       <AppText
                         variant="labelSmall"
                         style={{
-                          color: isSelected ? colors.textInverted : colors.textPrimary,
+                          color: isSelected ? '#FFFFFF' : colors.textPrimary,
                           fontWeight: isSelected ? '700' : '500',
                         }}
                       >
@@ -470,6 +469,11 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                 onChangeText={setAccountName}
                 placeholder="e.g. HDFC Bank, Checking, Cash"
                 placeholderTextColor={colors.textMuted}
+                onFocus={() => {
+                  setTimeout(() => {
+                    scrollRef.current?.scrollTo({ y: 200, animated: true });
+                  }, 150);
+                }}
                 style={[
                   styles.input,
                   {
@@ -492,6 +496,11 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                 placeholder="0"
                 placeholderTextColor={colors.textMuted}
                 keyboardType="numeric"
+                onFocus={() => {
+                  setTimeout(() => {
+                    scrollRef.current?.scrollTo({ y: 320, animated: true });
+                  }, 150);
+                }}
                 style={[
                   styles.input,
                   {
@@ -527,6 +536,11 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
                 placeholder="Optional (e.g. 40,000)"
                 placeholderTextColor={colors.textMuted}
                 keyboardType="numeric"
+                onFocus={() => {
+                  setTimeout(() => {
+                    scrollRef.current?.scrollToEnd({ animated: true });
+                  }, 150);
+                }}
                 style={[
                   styles.input,
                   {
@@ -588,6 +602,10 @@ const styles = StyleSheet.create({
   slideWrapper: {
     flex: 1,
     justifyContent: 'center',
+  },
+  setupWrapper: {
+    width: '100%',
+    paddingBottom: 20,
   },
   illustrationBox: {
     borderWidth: 1,

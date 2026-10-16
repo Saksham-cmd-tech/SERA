@@ -87,48 +87,134 @@ export function parseExpenseText(
     lower.includes('self transfer') ||
     lower.includes('own account') ||
     lower.includes('transfer to self') ||
+    lower.includes('round ups to') ||
+    lower.includes('transferred from round ups') ||
     lower.includes('between your accounts') ||
     (lower.includes('transferred from a/c') && lower.includes('to a/c'));
 
+  // Sanitize phrases containing 'credit' that are NOT credit transactions
+  const sanitizedForCredit = lower
+    .replace(/credit\s+card/g, 'cc_card')
+    .replace(/credit\s+limit/g, 'limit_val')
+    .replace(/credit\s+score/g, 'score_val')
+    .replace(/line\s+of\s+credit/g, 'loc_val')
+    .replace(/available\s+credit/g, 'avail_cr')
+    .replace(/credit\s+balance/g, 'cr_bal');
+
   const hasExplicitCredit =
-    lower.includes('credited') ||
-    lower.includes('credit to') ||
-    lower.includes('credit of') ||
-    lower.includes('deposited') ||
-    lower.includes('received from') ||
-    lower.includes('received inr') ||
-    lower.includes('received rs') ||
-    lower.includes('received ₹') ||
-    lower.includes('sent you') ||
-    lower.includes('transfer from') ||
-    lower.includes('trf from') ||
-    lower.includes('salary') ||
-    lower.includes('refund') ||
-    lower.includes('cashback') ||
-    lower.includes('inward');
+    sanitizedForCredit.includes('credited') ||
+    sanitizedForCredit.includes('credit of') ||
+    sanitizedForCredit.includes('credit to') ||
+    sanitizedForCredit.includes('credited to') ||
+    sanitizedForCredit.includes('credited with') ||
+    sanitizedForCredit.includes('credited by') ||
+    sanitizedForCredit.includes('is credited') ||
+    sanitizedForCredit.includes('has been credited') ||
+    sanitizedForCredit.includes('cr to a/c') ||
+    sanitizedForCredit.includes('cr to account') ||
+    sanitizedForCredit.includes('received') ||
+    sanitizedForCredit.includes('receive of') ||
+    sanitizedForCredit.includes('deposited') ||
+    sanitizedForCredit.includes('deposit of') ||
+    sanitizedForCredit.includes('deposit in') ||
+    sanitizedForCredit.includes('deposited to') ||
+    sanitizedForCredit.includes('refund') ||
+    sanitizedForCredit.includes('cashback') ||
+    sanitizedForCredit.includes('cash back') ||
+    sanitizedForCredit.includes('reversal') ||
+    sanitizedForCredit.includes('reversed') ||
+    sanitizedForCredit.includes('sent you') ||
+    sanitizedForCredit.includes('sent to you') ||
+    sanitizedForCredit.includes('sent to your') ||
+    sanitizedForCredit.includes('paid you') ||
+    sanitizedForCredit.includes('paid to you') ||
+    sanitizedForCredit.includes('paid to your') ||
+    sanitizedForCredit.includes('added to your') ||
+    sanitizedForCredit.includes('added to account') ||
+    sanitizedForCredit.includes('added to wallet') ||
+    sanitizedForCredit.includes('money added') ||
+    sanitizedForCredit.includes('transfer from') ||
+    sanitizedForCredit.includes('trf from') ||
+    sanitizedForCredit.includes('transferred from') ||
+    sanitizedForCredit.includes('salary') ||
+    sanitizedForCredit.includes('inward');
 
   const hasExplicitDebit =
     lower.includes('debited') ||
     lower.includes('debit of') ||
+    lower.includes('debited from') ||
+    lower.includes('debited by') ||
+    lower.includes('is debited') ||
+    lower.includes('has been debited') ||
+    lower.includes('dr from a/c') ||
+    lower.includes('spent on') ||
+    lower.includes('spent at') ||
+    lower.includes('spent from') ||
     lower.includes('spent') ||
-    lower.includes('paid') ||
-    lower.includes('sent to') ||
-    lower.includes('transferred to') ||
-    lower.includes('transfer to') ||
-    lower.includes('purchase') ||
-    lower.includes('charge') ||
-    lower.includes('deducted') ||
-    lower.includes('withdrawn');
+    lower.includes('withdrawn') ||
+    lower.includes('withdrawal') ||
+    lower.includes('sent from a/c') ||
+    lower.includes('sent from your') ||
+    lower.includes('sent from account') ||
+    (lower.includes('sent to') && !lower.includes('sent to you') && !lower.includes('sent to your')) ||
+    (lower.includes('paid to') && !lower.includes('paid to you') && !lower.includes('paid to your')) ||
+    lower.includes('paid at') ||
+    lower.includes('paid for') ||
+    (lower.includes('paid') && !sanitizedForCredit.includes('paid you') && !sanitizedForCredit.includes('paid to you') && !sanitizedForCredit.includes('paid to your') && !sanitizedForCredit.includes('received') && !sanitizedForCredit.includes('refund') && !sanitizedForCredit.includes('cashback')) ||
+    (lower.includes('transferred to') && !lower.includes('transferred to your') && !lower.includes('transferred to you')) ||
+    (lower.includes('transfer to') && !lower.includes('transfer to your') && !lower.includes('transfer to you')) ||
+    (lower.includes('trf to') && !lower.includes('trf to your') && !lower.includes('trf to you')) ||
+    lower.includes('deducted from') ||
+    lower.includes('deducted for') ||
+    lower.includes('charged to') ||
+    lower.includes('charged') ||
+    lower.includes('purchase of') ||
+    lower.includes('purchased at');
 
   let detectedType: TransactionType = 'expense';
   if (isSelfTransfer) {
     detectedType = 'transfer';
   } else if (hasExplicitCredit && !hasExplicitDebit) {
     detectedType = 'income';
-  } else if (hasExplicitDebit) {
-    // In Indian & global banking, debited / spent / sent to / paid is an Expense
+  } else if (hasExplicitDebit && !hasExplicitCredit) {
     detectedType = 'expense';
-  } else if (hasExplicitCredit) {
+  } else if (hasExplicitCredit && hasExplicitDebit) {
+    if (
+      lower.includes('refund') ||
+      lower.includes('cashback') ||
+      lower.includes('reversal') ||
+      lower.includes('reversed') ||
+      lower.includes('sent you') ||
+      lower.includes('sent to you') ||
+      lower.includes('sent to your') ||
+      lower.includes('paid you') ||
+      lower.includes('paid to you') ||
+      lower.includes('paid to your') ||
+      lower.includes('added to your') ||
+      lower.includes('credited to') ||
+      lower.includes('credited by') ||
+      lower.includes('credited with') ||
+      lower.includes('transfer from') ||
+      lower.includes('trf from') ||
+      lower.includes('received from')
+    ) {
+      detectedType = 'income';
+    } else if (
+      lower.includes('debited from') ||
+      lower.includes('sent from a/c') ||
+      lower.includes('sent from your') ||
+      lower.includes('spent on your') ||
+      lower.includes('withdrawn from')
+    ) {
+      detectedType = 'expense';
+    } else if (lower.includes('debited')) {
+      detectedType = 'expense';
+    } else if (sanitizedForCredit.includes('credited') || sanitizedForCredit.includes('received')) {
+      detectedType = 'income';
+    } else {
+      detectedType = 'expense';
+    }
+  } else if (sanitizedForCredit.includes('received') || sanitizedForCredit.includes('credited')) {
     detectedType = 'income';
   } else {
     detectedType = 'expense';

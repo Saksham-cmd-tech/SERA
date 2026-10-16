@@ -44,14 +44,14 @@ export const NumericKeypad: React.FC<NumericKeypadProps> = ({
                 style={[
                   styles.key,
                   {
-                    backgroundColor: colors.surface,
-                    borderColor: colors.borderLight,
-                    borderRadius: radius.xs,
+                    backgroundColor: colors.surfaceCard,
+                    borderColor: colors.border,
+                    borderRadius: radius.md,
                   },
                 ]}
               >
                 {isBackspace ? (
-                  <CategoryIcon name="Trash2" size={20} color={colors.textPrimary} />
+                  <CategoryIcon name="Delete" size={20} color={colors.textSecondary} strokeWidth={2} />
                 ) : (
                   <AppText
                     variant="displayMedium"
@@ -77,19 +77,19 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   key: {
     flex: 1,
-    height: 56,
-    marginHorizontal: 4,
+    height: 52,
+    marginHorizontal: 3,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
   keyText: {
-    fontSize: 24,
-    lineHeight: 28,
-    fontWeight: '600',
+    fontSize: 22,
+    lineHeight: 26,
+    fontWeight: '800',
   },
 });

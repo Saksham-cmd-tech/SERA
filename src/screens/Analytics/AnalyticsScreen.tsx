@@ -10,7 +10,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { AppText } from '../../components/common/AppText';
 import { Header } from '../../components/navigation/Header';
-import { FinanceGrid } from '../../components/common/FinanceGrid';
 import { useTransactionStore } from '../../store/useTransactionStore';
 import { useCategoryStore } from '../../store/useCategoryStore';
 import { useAccountStore } from '../../store/useAccountStore';
@@ -55,7 +54,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
           name: cat ? cat.name : 'Other',
           amount,
           percentage,
-          color: cat ? cat.color : colors.cardDark,
+          color: cat ? cat.color : colors.textSecondary,
         };
       })
       .sort((a, b) => b.amount - a.amount);
@@ -104,14 +103,12 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
       edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header showBack onPressBack={() => navigation.goBack()} subtitle={formatMonthYear()} title="Financial Analytics" />
-      </View>
+      <Header showBack onPressBack={() => navigation.goBack()} subtitle={formatMonthYear()} title="Financial Analytics" />
 
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          { paddingHorizontal: spacing.screenPadding, paddingTop: spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
       >
@@ -122,7 +119,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
             },
@@ -142,22 +139,33 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
             Savings rate: {financialSummary?.savingsRate ?? 0}% • Income: {formatCurrency(financialSummary?.totalIncome ?? 0, currencySymbol, isPrivacyMode, false)}
           </AppText>
 
-          {/* Minimalist Architectural Line Graph / Grid */}
-          <FinanceGrid
-            barsCount={32}
-            height={50}
-            minHeight={16}
-            pattern="uniform"
-            lineWidth={1.5}
-            lineSpacing={4}
-            activeColor={colors.textPrimary}
-            progress={
-              (financialSummary?.totalIncome ?? 0) > 0
-                ? Math.min(1, (financialSummary?.totalExpense ?? 0) / (financialSummary?.totalIncome ?? 1))
-                : (financialSummary?.totalExpense ?? 0) > 0 ? 1 : 0
-            }
-            style={{ marginTop: spacing.md }}
-          />
+          {/* Flat Horizontal Spending Progress Bar */}
+          <View
+            style={{
+              height: 6,
+              backgroundColor: colors.cardDark,
+              borderRadius: radius.full,
+              overflow: 'hidden',
+              marginTop: spacing.md,
+            }}
+          >
+            <View
+              style={{
+                height: '100%',
+                borderRadius: radius.full,
+                backgroundColor:
+                  (financialSummary?.totalExpense ?? 0) > (financialSummary?.totalIncome ?? 0)
+                    ? colors.accentRed
+                    : colors.positive,
+                width: `${Math.min(
+                  100,
+                  (financialSummary?.totalIncome ?? 0) > 0
+                    ? Math.round(((financialSummary?.totalExpense ?? 0) / (financialSummary?.totalIncome ?? 1)) * 100)
+                    : (financialSummary?.totalExpense ?? 0) > 0 ? 100 : 0
+                )}%`,
+              }}
+            />
+          </View>
         </View>
 
         {/* Calculated Insights Section (Requirement 24) */}
@@ -174,7 +182,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
                 {
                   backgroundColor: colors.surface,
                   borderColor: item.type === 'warning' ? colors.coral : colors.border,
-                  borderRadius: radius.xs,
+                  borderRadius: radius.md,
                   padding: spacing.md,
                   marginBottom: 8,
                 },
@@ -218,7 +226,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
             },
@@ -237,13 +245,13 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
                     <View
                       style={[
                         styles.barItem,
-                        { height: incomeHeight, backgroundColor: colors.positive, width: 7 },
+                        { height: incomeHeight, backgroundColor: colors.positive, width: 7, borderRadius: 2 },
                       ]}
                     />
                     <View
                       style={[
                         styles.barItem,
-                        { height: expenseHeight, backgroundColor: colors.coral, width: 7, marginLeft: 2 },
+                        { height: expenseHeight, backgroundColor: colors.coral, width: 7, marginLeft: 2, borderRadius: 2 },
                       ]}
                     />
                   </View>
@@ -277,7 +285,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.xl,
             },
@@ -308,14 +316,16 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
               <View
                 style={[
                   styles.categoryBarTrack,
-                  { backgroundColor: colors.borderLight, marginTop: 4 },
+                  { backgroundColor: colors.cardDark, borderRadius: radius.full, height: 6, overflow: 'hidden', marginTop: 4 },
                 ]}
               >
                 <View
                   style={[
                     styles.categoryBarFill,
                     {
-                      backgroundColor: colors.cardDark,
+                      backgroundColor: item.color || colors.positive,
+                      borderRadius: radius.full,
+                      height: '100%',
                       width: `${Math.min(100, Math.max(2, item.percentage))}%`,
                     },
                   ]}
@@ -332,27 +342,29 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
           style={[
             styles.netWorthBanner,
             {
-              backgroundColor: colors.cardDark,
+              backgroundColor: colors.surfaceLighter,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderLeftColor: colors.accentRed,
+              borderLeftWidth: 3,
+              borderRadius: radius.lg,
               padding: spacing.md,
-              marginBottom: 40,
+              marginBottom: spacing.xl,
             },
           ]}
         >
           <View>
-            <AppText variant="labelSmall" style={{ color: colors.textMuted }}>
+            <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.4, fontWeight: '800' }}>
               NET FINANCIAL POSITION
             </AppText>
             <AppText
               variant="amountMedium"
               privacySensitive
-              style={{ color: colors.textInverted, fontWeight: '700', marginTop: 2 }}
+              style={{ color: colors.textPrimary, fontWeight: '800', marginTop: 2 }}
             >
               {formatCurrency(netWorth.netWorth, currencySymbol, isPrivacyMode, false)}
             </AppText>
           </View>
-          <AppText variant="labelSmall" style={{ color: colors.accent, fontWeight: '700' }}>
+          <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '800', letterSpacing: 1.2 }}>
             VIEW ACCOUNTS ↗
           </AppText>
         </TouchableOpacity>

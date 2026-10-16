@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   ScrollView,
@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '../../hooks/useAppTheme';
+import { useKeyboardBottomInset } from '../../hooks/useKeyboardBottomInset';
 import { AppText } from '../../components/common/AppText';
 import { Header } from '../../components/navigation/Header';
 import { SegmentedControl } from '../../components/forms/SegmentedControl';
@@ -25,7 +26,6 @@ import { useAccountStore } from '../../store/useAccountStore';
 import { useBudgetStore } from '../../store/useBudgetStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { useGoalStore } from '../../store/useGoalStore';
-import { usePendingSmsStore } from '../../store/usePendingSmsStore';
 import { notificationService } from '../../services/notificationService';
 import { widgetService } from '../../services/widgetService';
 import { TransactionType } from '../../types';
@@ -38,7 +38,6 @@ interface AddTransactionScreenProps {
   navigation: any;
   route?: {
     params?: {
-      smsId?: string;
       initialType?: TransactionType;
       initialCategoryId?: string;
       initialAmount?: number;
@@ -89,9 +88,9 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
   const [targetAccountField, setTargetAccountField] = useState<'from' | 'to'>('from');
   const [smartFillVisible, setSmartFillVisible] = useState<boolean>(false);
   const [smartInput, setSmartInput] = useState<string>('');
-  const [showSmsBanner, setShowSmsBanner] = useState<boolean>(
-    !!(route?.params?.autoPromptConfirm && route?.params?.initialAmount)
-  );
+
+  const scrollRef = useRef<any>(null);
+  const keyboardPadding = useKeyboardBottomInset(30);
 
   useEffect(() => {
     if (route?.params?.initialAmount) {
@@ -109,16 +108,12 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
     if (route?.params?.initialType) {
       setType(route.params.initialType);
     }
-    if (route?.params?.autoPromptConfirm && route?.params?.initialAmount) {
-      setShowSmsBanner(true);
-    }
   }, [
     route?.params?.initialAmount,
     route?.params?.initialMerchant,
     route?.params?.initialNote,
     route?.params?.initialCategoryId,
     route?.params?.initialType,
-    route?.params?.autoPromptConfirm,
   ]);
 
   const parsedResult: ParsedExpenseResult | null = smartInput.trim()
@@ -152,6 +147,12 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
     setSmartFillVisible(false);
     setSmartInput('');
     setKeypadVisible(false);
+  };
+
+  const handleAddIncrement = (increment: number) => {
+    const current = parseFloat(amountStr) || 0;
+    const next = current + increment;
+    setAmountStr(next.toString());
   };
 
   useEffect(() => {
@@ -248,11 +249,6 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
         receiptUri: receiptUri || undefined,
       });
 
-      const routeSmsId = route?.params?.smsId;
-      if (routeSmsId) {
-        usePendingSmsStore.getState().dismissItem(routeSmsId);
-      }
-
       if (settings.notificationsEnabled ?? true) {
         notificationService.sendTransactionAlert(
           type,
@@ -298,74 +294,42 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
       edges={['top', 'left', 'right', 'bottom']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header
-          showBack
-          onPressBack={() => navigation.goBack()}
-          subtitle="QUICK ENTRY"
-          title="Add Transaction"
-        />
-      </View>
+      <Header
+        cancelText="Cancel"
+        onPressCancel={() => navigation.goBack()}
+        title="Add Transaction"
+        centerTitle
+        rightAction={
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => setSmartFillVisible(true)}
+            style={[
+              styles.receiptScanBtn,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+                borderRadius: radius.md,
+              },
+            ]}
+          >
+            <CategoryIcon name="Receipt" size={17} color={colors.textSecondary} />
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          {
+            paddingHorizontal: spacing.screenPadding,
+            paddingTop: spacing.md,
+            paddingBottom: Math.max(keyboardPadding, 40),
+          },
         ]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* SMS Auto-Detection Confirmation Banner */}
-        {showSmsBanner && (
-          <View
-            style={[
-              styles.smsDetectedBanner,
-              {
-                backgroundColor: 'rgba(52, 106, 62, 0.12)',
-                borderColor: colors.accent,
-                borderRadius: radius.xs,
-                padding: spacing.md,
-                marginBottom: spacing.md,
-              },
-            ]}
-          >
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <CategoryIcon name="Zap" size={16} color={colors.positive} strokeWidth={2.4} />
-              <AppText variant="label" style={{ color: colors.positive, marginLeft: 8, letterSpacing: 1.2, fontWeight: '700' }}>
-                SMS {type === 'transfer' ? 'TRANSFER' : type === 'income' ? 'INCOME' : 'EXPENSE'} DETECTED
-              </AppText>
-            </View>
-            <AppText variant="bodyMedium" style={{ color: colors.textPrimary, marginTop: 4 }}>
-              {type === 'transfer'
-                ? `Pre-filled ${currencySymbol}${amountStr} transferred to ${merchant || 'Account'}.`
-                : type === 'income'
-                ? `Pre-filled ${currencySymbol}${amountStr} received from ${merchant || 'Source'}.`
-                : `Pre-filled ${currencySymbol}${amountStr} sent to ${merchant || 'Merchant'}.`}
-            </AppText>
-            <View style={{ flexDirection: 'row', gap: 10, marginTop: 10 }}>
-              <TouchableOpacity
-                onPress={() => {
-                  handleSave();
-                  setShowSmsBanner(false);
-                }}
-                style={[styles.bannerConfirmBtn, { backgroundColor: colors.cardDark }]}
-              >
-                <AppText variant="labelSmall" style={{ color: colors.textInverted, fontWeight: '700' }}>
-                  CONFIRM & SAVE NOW
-                </AppText>
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => setShowSmsBanner(false)}
-                style={[styles.bannerDismissBtn, { borderColor: colors.border }]}
-              >
-                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                  EDIT DETAILS
-                </AppText>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-
         {/* Type Segmented Selector */}
         <View style={{ marginBottom: spacing.md }}>
           <SegmentedControl
@@ -379,7 +343,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           />
         </View>
 
-        {/* Smart Fill / Paste SMS Action Bar */}
+        {/* Smart Text Parser Action Bar */}
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => setSmartFillVisible(true)}
@@ -388,7 +352,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.md,
               paddingVertical: 10,
               paddingHorizontal: spacing.md,
               marginBottom: spacing.md,
@@ -408,11 +372,11 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                 letterSpacing: 1.2,
               }}
             >
-              SMART FILL / PASTE SMS
+              SMART TEXT PARSER
             </AppText>
           </View>
           <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-            Auto-Detect →
+            Auto-Parse →
           </AppText>
         </TouchableOpacity>
 
@@ -425,18 +389,25 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
             {
               backgroundColor: colors.surface,
               borderColor: keypadVisible ? colors.textPrimary : colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
             },
           ]}
         >
-          <AppText
-            variant="labelSmall"
-            style={{ color: colors.textSecondary, letterSpacing: 1.6 }}
-          >
-            AMOUNT
-          </AppText>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, width: '100%' }}>
+            <AppText
+              variant="labelSmall"
+              style={{ color: colors.textSecondary, letterSpacing: 1.6 }}
+            >
+              AMOUNT
+            </AppText>
+            <TouchableOpacity onPress={() => setKeypadVisible(!keypadVisible)}>
+              <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '700' }}>
+                {keypadVisible ? 'HIDE KEYPAD' : 'SHOW KEYPAD'}
+              </AppText>
+            </TouchableOpacity>
+          </View>
           <View style={styles.amountDisplayRow}>
             <AppText
               variant="displayLarge"
@@ -455,17 +426,33 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
               {currencySymbol}{amountStr}
             </AppText>
           </View>
-        </TouchableOpacity>
 
-        {/* Custom Large Fast Keypad */}
-        {keypadVisible && (
-          <View style={{ marginBottom: spacing.md }}>
-            <NumericKeypad
-              onKeyPress={handleKeyPress}
-              onDelete={handleDelete}
-            />
+          {/* Quick Increment Chips */}
+          <View style={styles.incrementRow}>
+            {[100, 500, 1000, 5000].map(val => (
+              <TouchableOpacity
+                key={val}
+                activeOpacity={0.7}
+                onPress={() => handleAddIncrement(val)}
+                style={[
+                  styles.incrementChip,
+                  {
+                    backgroundColor: colors.surfaceCard,
+                    borderColor: colors.border,
+                    borderRadius: radius.sm,
+                  },
+                ]}
+              >
+                <AppText
+                  variant="labelSmall"
+                  style={{ color: colors.textPrimary, fontWeight: '700' }}
+                >
+                  +{val >= 1000 ? `${val.toLocaleString()}` : val}
+                </AppText>
+              </TouchableOpacity>
+            ))}
           </View>
-        )}
+        </TouchableOpacity>
 
         {/* Form Fields Section */}
         <View
@@ -474,26 +461,34 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
             },
           ]}
         >
-          {/* Merchant / Description Input */}
-          <View style={styles.fieldRow}>
+          {/* Account Selector */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={() => {
+              setTargetAccountField('from');
+              setAccountModalVisible(true);
+            }}
+            style={styles.fieldRow}
+          >
             <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 80 }}>
-              MERCHANT
+              {type === 'transfer' ? 'FROM' : 'ACCOUNT'}
             </AppText>
-            <TextInput
-              value={merchant}
-              onChangeText={setMerchant}
-              placeholder={type === 'transfer' ? 'Internal Transfer' : 'Store or Payee Name'}
-              placeholderTextColor={colors.textMuted}
-              style={[styles.fieldInput, { color: colors.textPrimary }]}
-              onFocus={() => setKeypadVisible(false)}
-            />
-          </View>
+            <View style={styles.pickerSelector}>
+              <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15 }}>
+                {selectedAccount?.name || 'Select Account'}
+              </AppText>
+              <AppText variant="metadata" style={{ color: colors.textSecondary, marginLeft: 6 }}>
+                ({formatCurrency(selectedAccount?.balance || 0, currencySymbol, false, false)})
+              </AppText>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
+          </TouchableOpacity>
 
           {/* Category Selector (hidden for transfer) */}
           {type !== 'transfer' && (
@@ -515,7 +510,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                   <CategoryIcon
                     name={selectedCategory?.icon || 'Tag'}
                     size={14}
-                    color={colors.textInverted}
+                    color={colors.textPrimary}
                   />
                 </View>
                 <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15 }}>
@@ -526,28 +521,25 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
             </TouchableOpacity>
           )}
 
-          {/* Account Selector */}
-          <TouchableOpacity
-            activeOpacity={0.7}
-            onPress={() => {
-              setTargetAccountField('from');
-              setAccountModalVisible(true);
-            }}
-            style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}
-          >
+          {/* Merchant / Description Input */}
+          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
             <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 80 }}>
-              {type === 'transfer' ? 'FROM' : 'ACCOUNT'}
+              MERCHANT
             </AppText>
-            <View style={styles.pickerSelector}>
-              <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15 }}>
-                {selectedAccount?.name || 'Select Account'}
-              </AppText>
-              <AppText variant="metadata" style={{ color: colors.textSecondary, marginLeft: 6 }}>
-                ({formatCurrency(selectedAccount?.balance || 0, currencySymbol, false, false)})
-              </AppText>
-            </View>
-            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
-          </TouchableOpacity>
+            <TextInput
+              value={merchant}
+              onChangeText={setMerchant}
+              placeholder={type === 'transfer' ? 'Internal Transfer' : 'Store or Payee Name'}
+              placeholderTextColor={colors.textMuted}
+              style={[styles.fieldInput, { color: colors.textPrimary }]}
+              onFocus={() => {
+                setKeypadVisible(false);
+                setTimeout(() => {
+                  scrollRef.current?.scrollTo({ y: 320, animated: true });
+                }, 150);
+              }}
+            />
+          </View>
 
           {/* Destination Account for Transfer */}
           {type === 'transfer' && (
@@ -595,7 +587,12 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
               placeholder="Optional transaction memo"
               placeholderTextColor={colors.textMuted}
               style={[styles.fieldInput, { color: colors.textPrimary }]}
-              onFocus={() => setKeypadVisible(false)}
+              onFocus={() => {
+                setKeypadVisible(false);
+                setTimeout(() => {
+                  scrollRef.current?.scrollTo({ y: 440, animated: true });
+                }, 150);
+              }}
             />
           </View>
 
@@ -629,7 +626,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
             </View>
 
             {receiptUri ? (
-              <View style={[styles.receiptPreviewBox, { borderColor: colors.border, backgroundColor: colors.background, borderRadius: radius.xs }]}>
+              <View style={[styles.receiptPreviewBox, { borderColor: colors.border, backgroundColor: colors.background, borderRadius: radius.md }]}>
                 <Image source={{ uri: receiptUri }} style={styles.receiptThumb} resizeMode="cover" />
                 <View style={styles.receiptInfo}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -656,11 +653,80 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           </View>
         </View>
 
+        {/* Quick Categories Bar from Stitch Screen 1 */}
+        {type !== 'transfer' && (
+          <View style={{ marginBottom: spacing.md }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.4 }}>
+                QUICK CATEGORIES
+              </AppText>
+              <AppText variant="metadata" style={{ color: colors.textMuted, fontSize: 11 }}>
+                RECENT
+              </AppText>
+            </View>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingBottom: 2 }}>
+              {categories.slice(0, 7).map(c => {
+                const isSelected = categoryId === c.id;
+                return (
+                  <TouchableOpacity
+                    key={c.id}
+                    activeOpacity={0.8}
+                    onPress={() => setCategoryId(c.id)}
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      backgroundColor: colors.surfaceCard,
+                      borderColor: isSelected ? colors.accentRed : colors.border,
+                      borderWidth: 1,
+                      borderRadius: radius.md,
+                      paddingHorizontal: 12,
+                      paddingVertical: 8,
+                    }}
+                  >
+                    <CategoryIcon
+                      name={c.icon}
+                      size={14}
+                      color={isSelected ? colors.accentRed : colors.textSecondary}
+                    />
+                    <AppText
+                      variant="labelSmall"
+                      style={{
+                        color: isSelected ? colors.textPrimary : colors.textSecondary,
+                        fontWeight: isSelected ? '700' : '500',
+                        marginLeft: 6,
+                        fontSize: 12,
+                      }}
+                    >
+                      {c.name}
+                    </AppText>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* Custom Large Fast Keypad */}
+        {keypadVisible && (
+          <View style={{ marginBottom: spacing.md }}>
+            <NumericKeypad
+              onKeyPress={handleKeyPress}
+              onDelete={handleDelete}
+            />
+          </View>
+        )}
+
         {/* Save Button */}
         <AppButton
-          title="SAVE TRANSACTION"
+          title={
+            type === 'expense'
+              ? `SAVE EXPENSE • ${currencySymbol}${amountStr}`
+              : type === 'income'
+              ? `SAVE INCOME • ${currencySymbol}${amountStr}`
+              : `EXECUTE TRANSFER • ${currencySymbol}${amountStr}`
+          }
           onPress={handleSave}
-          variant="primary"
+          variant={type === 'expense' ? 'accent' : 'primary'}
           size="large"
           style={{ marginBottom: 30 }}
         />
@@ -684,7 +750,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
               {
                 backgroundColor: colors.surface,
                 borderColor: colors.border,
-                borderRadius: radius.md,
+                borderRadius: radius.xl,
                 padding: spacing.lg,
               },
             ]}
@@ -711,16 +777,16 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                       style={[
                         styles.categoryGridItem,
                         {
-                          backgroundColor: isSelected ? colors.accent : colors.background,
+                          backgroundColor: isSelected ? colors.accentRed : colors.surfaceCard,
                           borderColor: colors.border,
-                          borderRadius: radius.xs,
+                          borderRadius: radius.md,
                         },
                       ]}
                     >
                       <CategoryIcon
                         name={c.icon}
                         size={20}
-                        color={isSelected ? colors.accentText : colors.textPrimary}
+                        color={isSelected ? '#FFFFFF' : colors.textPrimary}
                       />
                       <AppText
                         variant="labelSmall"
@@ -790,9 +856,10 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                   style={[
                     styles.accountRowOption,
                     {
-                      backgroundColor: isSelected ? colors.cardDark : colors.background,
-                      borderColor: colors.border,
-                      borderRadius: radius.xs,
+                      backgroundColor: isSelected ? colors.surfaceLighter : colors.background,
+                      borderColor: isSelected ? colors.accentRed : colors.border,
+                      borderWidth: 1,
+                      borderRadius: radius.md,
                       marginBottom: 8,
                     },
                   ]}
@@ -801,7 +868,8 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                     <AppText
                       variant="cardTitle"
                       style={{
-                        color: isSelected ? colors.textInverted : colors.textPrimary,
+                        color: colors.textPrimary,
+                        fontWeight: isSelected ? '700' : '500',
                         fontSize: 15,
                       }}
                     >
@@ -810,7 +878,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                     <AppText
                       variant="metadata"
                       style={{
-                        color: isSelected ? colors.textInverted : colors.textSecondary,
+                        color: colors.textSecondary,
                       }}
                     >
                       {acc.type.toUpperCase()}
@@ -819,7 +887,8 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                   <AppText
                     variant="amountSmall"
                     style={{
-                      color: isSelected ? colors.textInverted : colors.textPrimary,
+                      color: isSelected ? colors.accentRed : colors.textPrimary,
+                      fontWeight: '600',
                     }}
                   >
                     {formatCurrency(acc.balance, currencySymbol, false, false)}
@@ -831,7 +900,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
         </TouchableOpacity>
       </Modal>
 
-      {/* Smart Fill / SMS Paste Modal */}
+      {/* Smart Expense Parser Modal */}
       <Modal
         visible={smartFillVisible}
         transparent
@@ -839,7 +908,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
         onRequestClose={() => setSmartFillVisible(false)}
       >
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={[styles.modalBackdrop, { backgroundColor: colors.overlay }]}
         >
           <View
@@ -867,13 +936,13 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
               </View>
 
               <AppText variant="metadata" style={{ color: colors.textSecondary, marginBottom: 10 }}>
-                Paste bank SMS or type e.g. "Dinner at Subway 420":
+                Paste receipt/transaction text or type e.g. "Dinner 420":
               </AppText>
 
               <TextInput
                 value={smartInput}
                 onChangeText={setSmartInput}
-                placeholder="e.g. Paid INR 350.00 to Swiggy UPI Ref 123456..."
+                placeholder="e.g. Coffee 250, Groceries 1200..."
                 placeholderTextColor={colors.textMuted}
                 multiline
                 numberOfLines={3}
@@ -890,14 +959,14 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
               {/* Quick Sample Chips */}
               <View style={{ marginTop: 10 }}>
                 <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginBottom: 6 }}>
-                  OR TAP A TEST SAMPLE:
+                  OR TAP A SAMPLE:
                 </AppText>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ flexDirection: 'row', gap: 6 }}>
                   {[
-                    'Swiggy debited INR 350.00 via UPI',
-                    'Uber ride ₹280 paid by Card',
-                    'Amazon order Rs. 1499 debited',
-                    'Coffee at Starbucks 250',
+                    'Groceries 1250 paid by UPI',
+                    'Cab ride ₹280 paid by Card',
+                    'Online shopping Rs. 1499',
+                    'Coffee 250',
                     'Salary credited Rs 75000',
                   ].map(sample => (
                     <TouchableOpacity
@@ -929,7 +998,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                       borderColor: colors.border,
                       marginTop: 14,
                       padding: 12,
-                      borderRadius: radius.xs,
+                      borderRadius: radius.md,
                     },
                   ]}
                 >
@@ -938,7 +1007,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                       DETECTED DETAILS
                     </AppText>
                     <View style={[styles.confidenceBadge, { backgroundColor: colors.accent }]}>
-                      <AppText variant="labelSmall" style={{ color: colors.cardDark, fontWeight: '700', fontSize: 10 }}>
+                      <AppText variant="labelSmall" style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 10 }}>
                         {parsedResult.type.toUpperCase()} • {parsedResult.confidence.toUpperCase()} CONFIDENCE
                       </AppText>
                     </View>
@@ -973,7 +1042,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
               )}
 
               {!parsedResult?.success && smartInput.trim().length > 0 && (
-                <View style={{ marginTop: 12, padding: 8, backgroundColor: colors.background, borderRadius: radius.xs }}>
+                <View style={{ marginTop: 12, padding: 8, backgroundColor: colors.background, borderRadius: radius.sm }}>
                   <AppText variant="metadata" style={{ color: colors.coral, textAlign: 'center' }}>
                     Searching for amount in text... (e.g. include ₹350 or 450)
                   </AppText>
@@ -991,19 +1060,36 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  headerWrap: {
-    paddingBottom: 4,
+  receiptScanBtn: {
+    width: 32,
+    height: 32,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   scrollContent: {
     paddingBottom: 40,
   },
   amountContainer: {
     borderWidth: 1,
-    alignItems: 'center',
+    alignItems: 'stretch',
     justifyContent: 'center',
   },
   amountDisplayRow: {
+    alignItems: 'center',
     marginVertical: 8,
+  },
+  incrementRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 10,
+  },
+  incrementChip: {
+    flex: 1,
+    paddingVertical: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
   },
   amountText: {
     fontWeight: '700',
@@ -1127,19 +1213,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 6,
     paddingVertical: 2,
     borderRadius: 2,
-  },
-  smsDetectedBanner: {
-    borderWidth: 1,
-  },
-  bannerConfirmBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-  },
-  bannerDismissBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderRadius: 4,
-    borderWidth: 1,
   },
 });

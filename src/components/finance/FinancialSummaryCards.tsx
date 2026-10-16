@@ -18,27 +18,26 @@ export const FinancialSummaryCards: React.FC<FinancialSummaryCardsProps> = ({
   const { colors, spacing, radius, currencySymbol, isPrivacyMode } = useAppTheme();
 
   return (
-    <View style={[styles.container, { marginBottom: spacing.lg }]}>
-      {/* 3 Rectangular Columns with thin borders */}
+    <View style={[styles.container, { marginBottom: spacing.md }]}>
       <View
         style={[
           styles.cardRow,
           {
             backgroundColor: colors.surface,
             borderColor: colors.border,
-            borderRadius: radius.xs,
+            borderRadius: radius.lg,
           },
         ]}
       >
         {/* Income Card */}
         <View style={[styles.cardItem, { borderRightColor: colors.border, borderRightWidth: 1 }]}>
-          <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginBottom: 4 }}>
+          <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.2, fontWeight: '700' }}>
             INCOME
           </AppText>
           <AppText
             variant="amountSmall"
             privacySensitive
-            style={{ color: colors.textPrimary, fontWeight: '700' }}
+            style={{ color: colors.positive, fontWeight: '800', marginTop: 4 }}
           >
             {formatCurrency(income, currencySymbol, isPrivacyMode, false)}
           </AppText>
@@ -46,13 +45,13 @@ export const FinancialSummaryCards: React.FC<FinancialSummaryCardsProps> = ({
 
         {/* Expenses Card */}
         <View style={[styles.cardItem, { borderRightColor: colors.border, borderRightWidth: 1 }]}>
-          <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginBottom: 4 }}>
-            EXPENSES
+          <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.2, fontWeight: '700' }}>
+            OUTFLOW
           </AppText>
           <AppText
             variant="amountSmall"
             privacySensitive
-            style={{ color: colors.textPrimary, fontWeight: '700' }}
+            style={{ color: colors.textPrimary, fontWeight: '800', marginTop: 4 }}
           >
             {formatCurrency(expenses, currencySymbol, isPrivacyMode, false)}
           </AppText>
@@ -60,13 +59,13 @@ export const FinancialSummaryCards: React.FC<FinancialSummaryCardsProps> = ({
 
         {/* Savings Card */}
         <View style={styles.cardItem}>
-          <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginBottom: 4 }}>
+          <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.2, fontWeight: '700' }}>
             SAVED
           </AppText>
           <AppText
             variant="amountSmall"
             privacySensitive
-            style={{ color: colors.textPrimary, fontWeight: '700' }}
+            style={{ color: savings >= 0 ? colors.positive : colors.accentRed, fontWeight: '800', marginTop: 4 }}
           >
             {formatCurrency(savings, currencySymbol, isPrivacyMode, false)}
           </AppText>
@@ -87,8 +86,17 @@ const styles = StyleSheet.create({
   },
   cardItem: {
     flex: 1,
-    paddingVertical: 14,
-    paddingHorizontal: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 8,
     justifyContent: 'center',
+  },
+  labelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statusSquare: {
+    width: 4,
+    height: 4,
+    marginRight: 5,
   },
 });

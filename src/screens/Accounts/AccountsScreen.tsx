@@ -8,6 +8,8 @@ import {
   TextInput,
   Alert,
   RefreshControl,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -77,28 +79,32 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
       edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <View style={[styles.headerWrap, { paddingHorizontal: spacing.screenPadding }]}>
-        <Header
-          showBack
-          onPressBack={() => navigation.goBack()}
-          subtitle="FINANCIAL ACCOUNTS"
-          title="Net Worth"
-          rightAction={
-            <TouchableOpacity
-              onPress={() => setModalVisible(true)}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-              style={[styles.plusBtn, { backgroundColor: colors.cardDark }]}
-            >
-              <CategoryIcon name="Plus" size={16} color={colors.textInverted} strokeWidth={2.2} />
-            </TouchableOpacity>
-          }
-        />
-      </View>
+      <Header
+        showBack
+        onPressBack={() => navigation.goBack()}
+        subtitle="FINANCIAL ACCOUNTS"
+        title="Net Worth"
+        rightAction={
+          <TouchableOpacity
+            onPress={() => setModalVisible(true)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={[
+              styles.plusBtn,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+              },
+            ]}
+          >
+            <CategoryIcon name="Plus" size={16} color={colors.textPrimary} strokeWidth={2.2} />
+          </TouchableOpacity>
+        }
+      />
 
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          { paddingHorizontal: spacing.screenPadding, paddingTop: spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -219,89 +225,102 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
         animationType="slide"
         onRequestClose={() => setModalVisible(false)}
       >
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={() => setModalVisible(false)}
-          style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
         >
-          <View
-            style={[
-              styles.modalSheet,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                borderRadius: radius.md,
-                padding: spacing.lg,
-              },
-            ]}
+          <TouchableOpacity
+            activeOpacity={1}
+            onPress={() => setModalVisible(false)}
+            style={[styles.modalOverlay, { backgroundColor: colors.overlay }]}
           >
-            <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
-              Add New Account
-            </AppText>
-
-            <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                ACCOUNT NAME
+            <TouchableOpacity
+              activeOpacity={1}
+              onPress={e => e.stopPropagation()}
+              style={[
+                styles.modalSheet,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.border,
+                  borderRadius: radius.md,
+                  padding: spacing.lg,
+                },
+              ]}
+            >
+              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
+                Add New Account
               </AppText>
-              <TextInput
-                value={name}
-                onChangeText={setName}
-                placeholder="e.g. Axis Bank, Wallet, Gold"
-                placeholderTextColor={colors.textMuted}
-                style={[styles.inputField, { color: colors.textPrimary }]}
-              />
-            </View>
 
-            <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border, marginTop: 10 }]}>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                STARTING BALANCE
+              <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                  ACCOUNT NAME
+                </AppText>
+                <TextInput
+                  value={name}
+                  onChangeText={setName}
+                  placeholder="e.g. Axis Bank, Wallet, Gold"
+                  placeholderTextColor={colors.textMuted}
+                  style={[styles.inputField, { color: colors.textPrimary }]}
+                />
+              </View>
+
+              <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border, marginTop: 10 }]}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                  STARTING BALANCE
+                </AppText>
+                <TextInput
+                  value={balance}
+                  onChangeText={setBalance}
+                  placeholder="0"
+                  placeholderTextColor={colors.textMuted}
+                  keyboardType="numeric"
+                  style={[styles.inputField, { color: colors.textPrimary }]}
+                />
+              </View>
+
+              {/* Type selector */}
+              <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginTop: 12, marginBottom: 6 }}>
+                ACCOUNT TYPE
               </AppText>
-              <TextInput
-                value={balance}
-                onChangeText={setBalance}
-                placeholder="0"
-                placeholderTextColor={colors.textMuted}
-                keyboardType="numeric"
-                style={[styles.inputField, { color: colors.textPrimary }]}
+              <View style={styles.typesRow}>
+                {(['bank', 'cash', 'credit', 'investment', 'wallet'] as const).map(t => {
+                  const isSelected = type === t;
+                  return (
+                    <TouchableOpacity
+                      key={t}
+                      onPress={() => setType(t)}
+                      style={[
+                        styles.typeChip,
+                        {
+                          backgroundColor: isSelected ? colors.accentRed : colors.surface,
+                          borderColor: isSelected ? colors.accentRed : colors.border,
+                        },
+                      ]}
+                    >
+                      <AppText
+                        variant="labelSmall"
+                        style={{
+                          color: isSelected ? '#FFFFFF' : colors.textPrimary,
+                          fontWeight: isSelected ? '700' : '500',
+                        }}
+                      >
+                        {t.toUpperCase()}
+                      </AppText>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              <AppButton
+                title="CREATE ACCOUNT"
+                onPress={handleCreateAccount}
+                variant="primary"
+                size="large"
+                style={{ marginTop: spacing.lg }}
               />
-            </View>
-
-            {/* Type selector */}
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginTop: 12, marginBottom: 6 }}>
-              ACCOUNT TYPE
-            </AppText>
-            <View style={styles.typesRow}>
-              {(['bank', 'cash', 'credit', 'investment', 'wallet'] as const).map(t => (
-                <TouchableOpacity
-                  key={t}
-                  onPress={() => setType(t)}
-                  style={[
-                    styles.typeChip,
-                    {
-                      backgroundColor: type === t ? colors.cardDark : colors.background,
-                      borderColor: colors.border,
-                    },
-                  ]}
-                >
-                  <AppText
-                    variant="labelSmall"
-                    style={{ color: type === t ? colors.textInverted : colors.textPrimary }}
-                  >
-                    {t.toUpperCase()}
-                  </AppText>
-                </TouchableOpacity>
-              ))}
-            </View>
-
-            <AppButton
-              title="CREATE ACCOUNT"
-              onPress={handleCreateAccount}
-              variant="primary"
-              size="large"
-              style={{ marginTop: spacing.lg }}
-            />
-          </View>
-        </TouchableOpacity>
+            </TouchableOpacity>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );
@@ -320,7 +339,8 @@ const styles = StyleSheet.create({
   plusBtn: {
     width: 32,
     height: 32,
-    borderRadius: 4,
+    borderRadius: 6,
+    borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },

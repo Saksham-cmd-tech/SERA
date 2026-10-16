@@ -1,97 +1,111 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# SERA — Spending & Expense Record App
 
-# Getting Started
+<p align="center">
+  <strong>Offline-first, cyber-technical personal financial architecture built on React Native.</strong>
+</p>
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+<p align="center">
+  <img src="src/assets/sera_logo.png" alt="SERA Emblem" width="120" />
+</p>
 
-## Step 1: Start Metro
+<p align="center">
+  <a href="#core-features">Features</a> •
+  <a href="#architecture">Architecture</a> •
+  <a href="#design-system">Design System</a> •
+  <a href="#security--privacy">Security & Privacy</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#documentation">Documentation</a>
+</p>
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+---
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Overview
 
-```sh
-# Using npm
-npm start
+**SERA** (*Spending & Expense Record App*) is a precision personal finance application designed for intentional money management. Built with a high-contrast editorial and cyber-technical aesthetic, SERA operates **100% offline on-device**—eliminating external cloud databases, analytics tracking, and third-party data collection.
 
-# OR using Yarn
-yarn start
-```
+---
 
-## Step 2: Build and run your app
+## Core Features
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+- ⚡ **Zero-Latency Expense Logging**: Tactile on-screen numeric keypad with instant haptic feedback, category chips, and receipt photo attachments.
+- 🧠 **Smart Natural Language Parser**: Auto-parses pasted transaction SMS text and freeform phrases to extract amount, type (Debit/Credit/Transfer), merchant, category, and account masks.
+- 📊 **Dynamic Monthly Budget Velocity**: Real-time burn-rate calculation, daily safe discretionary spend pacing (`safePace = remaining / daysLeft`), and category overrun alerts.
+- 🎯 **Target Savings Goals**: Visual milestone tracking with completion projections and deposit logging.
+- 🔄 **Subscription Commitments**: Recurring billing tracker with monthly burn and renewal countdowns.
+- 🏦 **Multi-Account Net Worth**: Consolidated overview across banks, credit cards, savings, and cash wallets with instant inter-account transfers.
+- 📲 **5 Native Android Home Screen Widgets**:
+  1. *Quick Action Widget* (1-tap `+ Expense` and `+ Income`)
+  2. *Budget Velocity Widget* (Monthly progress & daily safe spend)
+  3. *Net Worth Widget* (Consolidated balances)
+  4. *Active Goal Widget* (Savings target progress)
+  5. *Command Dashboard Widget* (Multi-metric glance)
+- 🔔 **Native Android Notification Scheduler**: High-priority budget warnings and scheduled evening reminder alarms.
 
-### Android
+---
 
-```sh
-# Using npm
+## Security & Privacy
+
+- **100% On-Device Sovereignty**: All financial logs, categories, and account details remain on the user's device in persistent storage.
+- **Biometric Hardware Authorization**: Android `BiometricPrompt` supporting fingerprint and face unlock.
+- **4-Digit PIN Security Gate**: Full-screen gate blocking unauthorized access on cold launch or app resume.
+- **Automated Lifecycle Auto-Lock**: Enforces instant screen lock whenever the app moves to the background.
+- **Global Privacy Mode**: Masks account balances and financial figures with dots (`••••••`) across the entire user interface.
+
+---
+
+## Design System
+
+- **Chromatic Palette**:
+  - Obsidian Midnight (`#090E14`)
+  - Industrial Dark Slate (`#111822`)
+  - Titanium Bone (`#E4DFD7`)
+  - Vermilion Crimson (`#EB3B2E`)
+  - Mint Positive (`#34D399`)
+- **Typography Scale**: Dual font stacks using **Inter** for clean editorial structural headers and **JetBrains Mono** with tabular numeral alignment (`tabular-nums`) for all monetary figures and calculations.
+
+---
+
+## Tech Stack
+
+| Component | Technology |
+| :--- | :--- |
+| **Framework** | React Native `0.87.1` (Hermes Engine, New Architecture enabled) |
+| **Language** | TypeScript `6.0.3` |
+| **State Management** | Zustand `5.0.15` (7 isolated domain stores) |
+| **Persistence** | `@react-native-async-storage/async-storage` |
+| **Navigation** | React Navigation `v7` (Native Stack & Bottom Tabs) |
+| **Native Integrations** | Android Biometrics, App Widgets, AlarmManager, Exact Alarms, Deep Links (`sera://`) |
+
+---
+
+## Getting Started
+
+### Prerequisites
+- Node.js `>= 22.11.0`
+- OpenJDK 17
+- Android SDK (API 34/35)
+
+### Installation
+```bash
+# Clone the repository
+git clone https://github.com/Saksham-cmd-tech/SERA.git
+cd SERA
+
+# Install dependencies
+npm install
+
+# Run on connected Android device or emulator
 npm run android
-
-# OR using Yarn
-yarn android
 ```
 
-### iOS
+---
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+## Documentation
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+For an exhaustive, code-level technical specification detailing every database model, Zustand store, screen route, and native Kotlin module, see [`info.md`](info.md).
 
-```sh
-bundle install
-```
+---
 
-Then, and every time you update your native dependencies, run:
+## License
 
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
-
-```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
-
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+Private & Proprietary. All rights reserved.

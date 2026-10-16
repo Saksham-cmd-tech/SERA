@@ -26,8 +26,41 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
   const category = categories.find(c => c.id === transaction.categoryId);
   const categoryIconName = category ? category.icon : 'Tag';
   const categoryName = category ? category.name : 'Other';
+  const categoryColor = category?.color || colors.textSecondary;
 
   const isIncome = transaction.type === 'income';
+
+  // Intelligent merchant & brand visual recognition
+  const getMerchantVisual = () => {
+    const m = (transaction.merchant || '').toLowerCase();
+    if (m.includes('swiggy') || m.includes('zomato')) {
+      return { icon: 'Utensils', color: '#FC8019' };
+    }
+    if (m.includes('coffee') || m.includes('starbucks') || m.includes('blue tokai') || m.includes('cafe')) {
+      return { icon: 'Coffee', color: '#C88D58' };
+    }
+    if (m.includes('uber') || m.includes('ola') || m.includes('rapido')) {
+      return { icon: 'Car', color: '#F7B731' };
+    }
+    if (m.includes('amazon') || m.includes('flipkart') || m.includes('myntra')) {
+      return { icon: 'ShoppingBag', color: '#FF9900' };
+    }
+    if (m.includes('blinkit') || m.includes('zepto') || m.includes('instamart') || m.includes('grocery') || m.includes('whole foods')) {
+      return { icon: 'ShoppingCart', color: '#20BF6B' };
+    }
+    if (m.includes('netflix') || m.includes('spotify') || m.includes('prime') || m.includes('hotstar')) {
+      return { icon: 'Film', color: '#EB3B2E' };
+    }
+    if (m.includes('airtel') || m.includes('jio') || m.includes('bill') || m.includes('electric') || m.includes('utilities')) {
+      return { icon: 'Zap', color: '#3867D6' };
+    }
+    if (isIncome) {
+      return { icon: 'Wallet', color: colors.positive };
+    }
+    return { icon: categoryIconName, color: categoryColor };
+  };
+
+  const visual = getMerchantVisual();
 
   return (
     <TouchableOpacity
@@ -43,22 +76,25 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
         },
       ]}
     >
-      {/* Left Icon Pill / Rounded Box from Reference 3 */}
+      {/* Left Brand / Category Logo Box with Tinted Tone */}
       <View
         style={[
           styles.iconBox,
           {
-            backgroundColor: colors.cardDark,
-            borderRadius: radius.sm,
+            backgroundColor: visual.color ? `${visual.color}1E` : colors.surfaceLighter,
+            borderColor: visual.color ? `${visual.color}44` : colors.border,
+            borderRadius: radius.md,
+            width: 36,
+            height: 36,
             marginRight: spacing.md,
           },
         ]}
       >
         <CategoryIcon
-          name={categoryIconName}
-          size={18}
-          color={colors.textInverted}
-          strokeWidth={1.7}
+          name={visual.icon}
+          size={16}
+          color={visual.color || colors.textPrimary}
+          strokeWidth={2.2}
         />
       </View>
 
@@ -67,13 +103,13 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
         <AppText
           variant="cardTitle"
           numberOfLines={1}
-          style={{ color: colors.textPrimary, fontSize: 16, marginBottom: 2 }}
+          style={{ color: colors.textPrimary, fontSize: 15, fontWeight: '700', marginBottom: 2 }}
         >
           {transaction.merchant}
         </AppText>
         <AppText
           variant="labelSmall"
-          style={{ color: colors.textSecondary, letterSpacing: 1.2 }}
+          style={{ color: colors.textSecondary, letterSpacing: 1.4, fontSize: 8.5 }}
         >
           {categoryName.toUpperCase()}
         </AppText>
@@ -85,7 +121,7 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
           variant="amountSmall"
           privacySensitive
           style={{
-            fontWeight: '700',
+            fontWeight: '800',
             color: isIncome ? colors.positive : colors.textPrimary,
           }}
         >
@@ -98,7 +134,7 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
         </AppText>
         <AppText
           variant="metadata"
-          style={{ color: colors.textMuted, marginTop: 2, fontSize: 11 }}
+          style={{ color: colors.textMuted, marginTop: 2, fontSize: 10 }}
         >
           {transaction.time || '12:00 PM'}
         </AppText>
@@ -114,10 +150,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   iconBox: {
-    width: 42,
-    height: 42,
+    width: 38,
+    height: 38,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
   },
   centerCol: {
     flex: 1,

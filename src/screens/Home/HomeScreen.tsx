@@ -18,14 +18,11 @@ import { MonthlyBudgetBanner } from '../../components/finance/MonthlyBudgetBanne
 import { TransactionRow } from '../../components/finance/TransactionRow';
 import { CategoryIcon } from '../../components/common/CategoryIcon';
 import { AppButton } from '../../components/common/AppButton';
-import { SeraLogo } from '../../components/common/SeraLogo';
 import { useTransactionStore } from '../../store/useTransactionStore';
 import { useAccountStore } from '../../store/useAccountStore';
 import { useBudgetStore } from '../../store/useBudgetStore';
 import { useGoalStore } from '../../store/useGoalStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
-import { PendingSmsBanner } from '../../components/sms/PendingSmsBanner';
-import { usePendingSmsStore } from '../../store/usePendingSmsStore';
 import { formatCurrency } from '../../utils/currency';
 
 interface HomeScreenProps {
@@ -62,7 +59,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       loadAccounts();
       loadBudgetSummary();
       loadGoals();
-      usePendingSmsStore.getState().loadPendingItems(false);
     }, [loadTransactions, loadAccounts, loadBudgetSummary, loadGoals])
   );
 
@@ -73,7 +69,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       loadAccounts(),
       loadBudgetSummary(),
       loadGoals(),
-      usePendingSmsStore.getState().loadPendingItems(false),
     ]);
     setRefreshing(false);
   };
@@ -93,10 +88,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
+      {/* Top Application Bar */}
+      <Header
+        showAvatar
+        avatarName={settings.userName || 'User'}
+        onPressAvatar={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
+        subtitle={settings.userName ? `SERA • ${settings.userName.toUpperCase()}` : 'SERA • OVERVIEW'}
+        title="Overview"
+        showSeraMonogram
+        showNotification
+        onPressNotification={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
+      />
+
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingHorizontal: spacing.screenPadding },
+          { paddingHorizontal: spacing.screenPadding, paddingTop: spacing.md },
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -107,97 +114,92 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           />
         }
       >
-        {/* Header: Avatar, Greeting, and SERA Logo */}
-        <Header
-          showAvatar
-          avatarName={settings.userName || 'User'}
-          onPressAvatar={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
-          subtitle={settings.userName ? `SERA • ${settings.userName.toUpperCase()}` : 'SERA • OVERVIEW'}
-          title="Overview"
-          rightAction={
-            <TouchableOpacity
-              activeOpacity={0.8}
-              onPress={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
-            >
-              <SeraLogo size={32} />
-            </TouchableOpacity>
-          }
-        />
-
-        {/* Balance Card: Large Dominant Number & Account Switcher */}
+        {/* Balance Card: Large Dominant Number & Clean Integrated Flow Chips */}
         <BalanceCard
           totalBalance={displayedBalance}
           selectedAccountName={selectedAccountName}
+          accountCount={accounts.length}
+          inflow={financialSummary?.totalIncome || 0}
+          outflow={financialSummary?.totalExpense || 0}
           onPressAccountSwitcher={() => setAccountModalVisible(true)}
           onTogglePrivacy={togglePrivacyMode}
         />
 
-        {/* Pending SMS Banner (displays when transactions are pending or for later) */}
-        <PendingSmsBanner />
-
-        {/* Quick Action Floating Bar: + Expense, + Income, Transfer */}
+        {/* Quick Action Buttons */}
         <View
           style={[
             styles.quickActionBar,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
-              marginBottom: spacing.lg,
+              marginBottom: spacing.md,
+              gap: 8,
             },
           ]}
         >
           <TouchableOpacity
-            activeOpacity={0.7}
+            activeOpacity={0.8}
             onPress={() => navigation.navigate('AddTransaction', { initialType: 'expense' })}
-            style={[styles.quickActionBtn, { borderRightColor: colors.border, borderRightWidth: 1 }]}
+            style={[
+              styles.quickActionBtn,
+              {
+                backgroundColor: colors.accentRed,
+                borderColor: colors.accentRed,
+                borderRadius: radius.md,
+              },
+            ]}
           >
-            <CategoryIcon name="Plus" size={14} color={colors.textPrimary} strokeWidth={2.2} />
+            <CategoryIcon name="Plus" size={15} color="#FFFFFF" strokeWidth={2.8} />
             <AppText
               variant="labelSmall"
-              style={{ color: colors.textPrimary, letterSpacing: 1.2, marginLeft: 4, fontWeight: '700' }}
+              style={{ color: '#FFFFFF', letterSpacing: 0.8, marginLeft: 4, fontWeight: '700' }}
             >
               EXPENSE
             </AppText>
           </TouchableOpacity>
 
           <TouchableOpacity
-            activeOpacity={0.7}
+            activeOpacity={0.8}
             onPress={() => navigation.navigate('AddTransaction', { initialType: 'income' })}
-            style={[styles.quickActionBtn, { borderRightColor: colors.border, borderRightWidth: 1 }]}
+            style={[
+              styles.quickActionBtn,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+                borderRadius: radius.md,
+              },
+            ]}
           >
-            <CategoryIcon name="ArrowDownLeft" size={14} color={colors.positive} strokeWidth={2.2} />
+            <CategoryIcon name="Plus" size={15} color={colors.positive} strokeWidth={2.8} />
             <AppText
               variant="labelSmall"
-              style={{ color: colors.textPrimary, letterSpacing: 1.2, marginLeft: 4, fontWeight: '700' }}
+              style={{ color: colors.positive, letterSpacing: 0.8, marginLeft: 4, fontWeight: '700' }}
             >
               INCOME
             </AppText>
           </TouchableOpacity>
 
           <TouchableOpacity
-            activeOpacity={0.7}
+            activeOpacity={0.8}
             onPress={() => navigation.navigate('MoreTab', { screen: 'Transfer' })}
-            style={styles.quickActionBtn}
+            style={[
+              styles.quickActionBtn,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+                borderRadius: radius.md,
+              },
+            ]}
           >
-            <CategoryIcon name="ArrowRightLeft" size={14} color={colors.textPrimary} strokeWidth={2.2} />
+            <CategoryIcon name="ArrowRightLeft" size={15} color={colors.textPrimary} strokeWidth={2.2} />
             <AppText
               variant="labelSmall"
-              style={{ color: colors.textPrimary, letterSpacing: 1.2, marginLeft: 4, fontWeight: '700' }}
+              style={{ color: colors.textPrimary, letterSpacing: 0.8, marginLeft: 4, fontWeight: '700' }}
             >
               TRANSFER
             </AppText>
           </TouchableOpacity>
         </View>
 
-        {/* Monthly Overview Section */}
-        <FinancialSummaryCards
-          income={financialSummary?.totalIncome || 0}
-          expenses={financialSummary?.totalExpense || 0}
-          savings={financialSummary?.totalSavings || 0}
-        />
-
-        {/* Monthly Budget Section with Vertical Rhythm Bars & Coral Overrun Card */}
+        {/* Monthly Budget Section (Stitch Screen 3 Layout) */}
         <MonthlyBudgetBanner
           monthName={budgetSummary?.monthName || new Date().toLocaleString('default', { month: 'long' }).toUpperCase()}
           totalBudget={budgetSummary?.totalBudget || settings.monthlyBudgetGoal || 0}
@@ -207,6 +209,136 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           overrunAmount={budgetSummary?.overrunAmount || 0}
           overrunCategory={budgetSummary?.overrunCategoryName || ''}
           onPressDetails={() => navigation.navigate('BudgetsTab')}
+        />
+
+        {/* Accounts Rail */}
+        <View style={{ marginBottom: spacing.md }}>
+          <View style={[styles.sectionHeaderRow, { marginBottom: 6 }]}>
+            <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
+              ACCOUNTS
+            </AppText>
+            <TouchableOpacity onPress={() => setAccountModalVisible(true)}>
+              <AppText variant="labelSmall" style={{ color: colors.textPrimary, fontWeight: '700' }}>
+                SWITCH ↗
+              </AppText>
+            </TouchableOpacity>
+          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: 8, paddingVertical: 2 }}
+          >
+            {/* 'ALL' Card */}
+            <TouchableOpacity
+              activeOpacity={0.8}
+              onPress={() => setSelectedAccountId('all')}
+              style={[
+                styles.accountRailCard,
+                {
+                  backgroundColor: selectedAccountId === 'all' ? colors.surfaceCard : colors.surface,
+                  borderColor: selectedAccountId === 'all' ? colors.accentRed : colors.border,
+                  borderRadius: radius.md,
+                  paddingHorizontal: 12,
+                  paddingVertical: 10,
+                  minWidth: 120,
+                },
+              ]}
+            >
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                <View
+                  style={[
+                    styles.activeDot,
+                    {
+                      backgroundColor: selectedAccountId === 'all' ? colors.positive : colors.cardDark,
+                      marginRight: 6,
+                    },
+                  ]}
+                />
+                <AppText
+                  variant="labelSmall"
+                  style={{
+                    color: selectedAccountId === 'all' ? colors.textPrimary : colors.textSecondary,
+                    fontWeight: '700',
+                    letterSpacing: 0.8,
+                  }}
+                  numberOfLines={1}
+                >
+                  ALL ACCOUNTS
+                </AppText>
+              </View>
+              <AppText
+                variant="bodyLarge"
+                style={{
+                  color: colors.textPrimary,
+                  fontWeight: '700',
+                }}
+              >
+                {isPrivacyMode ? '••••••' : formatCurrency(financialSummary?.availableBalance || 0, currencySymbol)}
+              </AppText>
+            </TouchableOpacity>
+
+            {/* Individual Accounts */}
+            {accounts.map(acc => {
+              const isSelected = selectedAccountId === acc.id;
+              return (
+                <TouchableOpacity
+                  key={acc.id}
+                  activeOpacity={0.8}
+                  onPress={() => setSelectedAccountId(isSelected ? 'all' : acc.id)}
+                  style={[
+                    styles.accountRailCard,
+                    {
+                      backgroundColor: isSelected ? colors.surfaceCard : colors.surface,
+                      borderColor: isSelected ? colors.accentRed : colors.border,
+                      borderRadius: radius.md,
+                      paddingHorizontal: 12,
+                      paddingVertical: 10,
+                      minWidth: 130,
+                    },
+                  ]}
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                    <View
+                      style={[
+                        styles.activeDot,
+                        {
+                          backgroundColor: isSelected ? colors.positive : colors.cardDark,
+                          marginRight: 6,
+                        },
+                      ]}
+                    />
+                    <AppText
+                      variant="labelSmall"
+                      style={{
+                        color: isSelected ? colors.textPrimary : colors.textSecondary,
+                        fontWeight: '700',
+                        letterSpacing: 0.8,
+                      }}
+                      numberOfLines={1}
+                    >
+                      {acc.name.toUpperCase()}
+                    </AppText>
+                  </View>
+                  <AppText
+                    variant="bodyLarge"
+                    style={{
+                      color: colors.textPrimary,
+                      fontWeight: '700',
+                    }}
+                  >
+                    {isPrivacyMode ? '••••••' : formatCurrency(acc.balance, currencySymbol)}
+                  </AppText>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </View>
+
+        {/* Monthly Overview Section */}
+        <FinancialSummaryCards
+          income={financialSummary?.totalIncome || 0}
+          expenses={financialSummary?.totalExpense || 0}
+          savings={financialSummary?.totalSavings || 0}
         />
 
         {/* Spending Category Breakdown Preview */}
@@ -227,7 +359,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             {
               backgroundColor: colors.surface,
               borderColor: colors.border,
-              borderRadius: radius.xs,
+              borderRadius: radius.lg,
               marginBottom: spacing.lg,
             },
           ]}
@@ -248,7 +380,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     <View
                       style={[
                         styles.spendingDot,
-                        { backgroundColor: cat.isOverrun ? colors.coral : colors.cardDark },
+                        { backgroundColor: cat.isOverrun ? colors.coral : colors.positive },
                       ]}
                     />
                     <AppText
@@ -301,7 +433,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 {
                   backgroundColor: colors.surface,
                   borderColor: colors.border,
-                  borderRadius: radius.xs,
+                  borderRadius: radius.lg,
                   padding: spacing.md,
                 },
               ]}
@@ -329,7 +461,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   style={[
                     styles.goalBarFill,
                     {
-                      backgroundColor: colors.cardDark,
+                      backgroundColor: colors.accentRed,
                       width: `${Math.min(100, Math.max(3, goals[0].percentage))}%`,
                     },
                   ]}
@@ -358,7 +490,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               {
                 backgroundColor: colors.surface,
                 borderColor: colors.border,
-                borderRadius: radius.xs,
+                borderRadius: radius.lg,
                 paddingHorizontal: spacing.md,
               },
             ]}
@@ -457,17 +589,17 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               style={[
                 styles.accountOption,
                 selectedAccountId === 'all' && {
-                  backgroundColor: colors.cardDark,
+                  backgroundColor: colors.surfaceLighter,
+                  borderColor: colors.accentRed,
+                  borderWidth: 1,
                 },
               ]}
             >
               <AppText
                 variant="cardTitle"
                 style={{
-                  color:
-                    selectedAccountId === 'all'
-                      ? colors.textInverted
-                      : colors.textPrimary,
+                  color: colors.textPrimary,
+                  fontWeight: selectedAccountId === 'all' ? '700' : '500',
                   fontSize: 15,
                 }}
               >
@@ -477,10 +609,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 variant="amountSmall"
                 privacySensitive
                 style={{
-                  color:
-                    selectedAccountId === 'all'
-                      ? colors.textInverted
-                      : colors.textPrimary,
+                  color: selectedAccountId === 'all' ? colors.accentRed : colors.textPrimary,
+                  fontWeight: '600',
                 }}
               >
                 {formatCurrency(financialSummary?.availableBalance || 0, currencySymbol, isPrivacyMode, false)}
@@ -499,14 +629,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   }}
                   style={[
                     styles.accountOption,
-                    isSelected && { backgroundColor: colors.cardDark },
+                    isSelected && {
+                      backgroundColor: colors.surfaceLighter,
+                      borderColor: colors.accentRed,
+                      borderWidth: 1,
+                    },
                   ]}
                 >
                   <View>
                     <AppText
                       variant="cardTitle"
                       style={{
-                        color: isSelected ? colors.textInverted : colors.textPrimary,
+                        color: colors.textPrimary,
+                        fontWeight: isSelected ? '700' : '500',
                         fontSize: 15,
                       }}
                     >
@@ -515,7 +650,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     <AppText
                       variant="metadata"
                       style={{
-                        color: isSelected ? colors.textInverted : colors.textSecondary,
+                        color: colors.textSecondary,
                         fontSize: 11,
                       }}
                     >
@@ -526,7 +661,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     variant="amountSmall"
                     privacySensitive
                     style={{
-                      color: isSelected ? colors.textInverted : colors.textPrimary,
+                      color: isSelected ? colors.accentRed : colors.textPrimary,
+                      fontWeight: '600',
                     }}
                   >
                     {formatCurrency(acc.balance, currencySymbol, isPrivacyMode, false)}
@@ -561,8 +697,6 @@ const styles = StyleSheet.create({
   },
   quickActionBar: {
     flexDirection: 'row',
-    borderWidth: 1,
-    overflow: 'hidden',
   },
   quickActionBtn: {
     flex: 1,
@@ -570,6 +704,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
+    borderWidth: 1,
+  },
+  accountRailCard: {
+    borderWidth: 1,
+  },
+  activeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
   },
   sectionHeaderRow: {
     flexDirection: 'row',
