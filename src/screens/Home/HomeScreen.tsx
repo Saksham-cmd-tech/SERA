@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   ScrollView,
@@ -24,6 +24,7 @@ import { useBudgetStore } from '../../store/useBudgetStore';
 import { useGoalStore } from '../../store/useGoalStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
 import { formatCurrency } from '../../utils/currency';
+import { widgetService } from '../../services/widgetService';
 
 interface HomeScreenProps {
   navigation: any;
@@ -72,6 +73,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     ]);
     setRefreshing(false);
   };
+
+  useEffect(() => {
+    if (!isTxLoading && accounts.length > 0) {
+      widgetService.syncWidgets({
+        currencySymbol,
+        accounts,
+        transactions: recentTransactions,
+        budgetSummary,
+        goals,
+      });
+    }
+  }, [accounts, recentTransactions, budgetSummary, goals, currencySymbol, isTxLoading]);
 
   const selectedAccount =
     selectedAccountId === 'all'

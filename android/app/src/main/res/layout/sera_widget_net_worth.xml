@@ -22,7 +22,7 @@
             android:letterSpacing="0.1"
             android:maxLines="1"
             android:text="SERA • TOTAL NET WORTH"
-            android:textColor="#88A08B"
+            android:textColor="#8B97A6"
             android:textSize="11sp"
             android:textStyle="bold" />
 
@@ -37,7 +37,7 @@
             android:paddingEnd="10dp"
             android:paddingBottom="5dp"
             android:text="Accounts ›"
-            android:textColor="#C5C8B5"
+            android:textColor="#E4DFD7"
             android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -48,8 +48,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:text="₹48,600"
-        android:textColor="#FFFFFF"
+        android:text="₹0"
+        android:textColor="#F2F5F8"
         android:textSize="26sp"
         android:textStyle="bold" />
 
@@ -78,8 +78,8 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="Primary Bank"
-                android:textColor="#C5C8B5"
+                android:text="Primary Account"
+                android:textColor="#8B97A6"
                 android:textSize="12sp" />
 
             <TextView
@@ -87,8 +87,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="₹38,600"
-                android:textColor="#FFFFFF"
+                android:text="₹0"
+                android:textColor="#F2F5F8"
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -106,8 +106,8 @@
                 android:layout_weight="1"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="Savings Account"
-                android:textColor="#C5C8B5"
+                android:text=""
+                android:textColor="#8B97A6"
                 android:textSize="12sp" />
 
             <TextView
@@ -115,8 +115,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="₹10,000"
-                android:textColor="#FFFFFF"
+                android:text=""
+                android:textColor="#F2F5F8"
                 android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>

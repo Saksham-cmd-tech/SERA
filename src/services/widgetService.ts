@@ -58,7 +58,7 @@ class WidgetService {
         .reduce((sum, t) => sum + t.amount, 0);
 
       // 3. Budget & Burn Rate
-      const monthlyBudget = budgetSummary?.totalBudget || 35000;
+      const monthlyBudget = budgetSummary?.totalBudget || 50000;
       const spent = budgetSummary?.totalSpent || 0;
       const remaining = Math.max(0, monthlyBudget - spent);
       const progress = monthlyBudget > 0 ? Math.min(100, Math.round((spent / monthlyBudget) * 100)) : 0;
@@ -114,6 +114,36 @@ class WidgetService {
       return true;
     } catch (e) {
       console.warn('Failed to sync Android widgets:', e);
+      return false;
+    }
+  }
+
+  /**
+   * Automatically pulls the latest state from stores and pushes to widgets
+   */
+  async syncCurrentState(): Promise<boolean> {
+    try {
+      const { useAccountStore } = require('../store/useAccountStore');
+      const { useTransactionStore } = require('../store/useTransactionStore');
+      const { useBudgetStore } = require('../store/useBudgetStore');
+      const { useGoalStore } = require('../store/useGoalStore');
+      const { useSettingsStore } = require('../store/useSettingsStore');
+
+      const accounts = useAccountStore.getState().accounts || [];
+      const transactions = useTransactionStore.getState().transactions || [];
+      const budgetSummary = useBudgetStore.getState().summary;
+      const goals = useGoalStore.getState().goals || [];
+      const currencySymbol = useSettingsStore.getState().currencySymbol || '₹';
+
+      return await this.syncWidgets({
+        currencySymbol,
+        accounts,
+        transactions,
+        budgetSummary,
+        goals,
+      });
+    } catch (e) {
+      console.warn('Error in syncCurrentState:', e);
       return false;
     }
   }

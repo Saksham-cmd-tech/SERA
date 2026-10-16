@@ -119,6 +119,7 @@ export default function App(): React.JSX.Element {
         if (isSecurityActive) {
           setIsLocked(true);
         }
+        widgetService.syncCurrentState();
       }
     });
     return () => sub.remove();

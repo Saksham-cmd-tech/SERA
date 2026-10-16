@@ -26,7 +26,7 @@
                 android:letterSpacing="0.1"
                 android:maxLines="1"
                 android:text="SERA • NET WORTH"
-                android:textColor="#88A08B"
+                android:textColor="#8B97A6"
                 android:textSize="10sp"
                 android:textStyle="bold" />
 
@@ -35,8 +35,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="₹48,600"
-                android:textColor="#FFFFFF"
+                android:text="₹0"
+                android:textColor="#F2F5F8"
                 android:textSize="20sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -54,7 +54,7 @@
                 android:letterSpacing="0.1"
                 android:maxLines="1"
                 android:text="THIS MONTH"
-                android:textColor="#88A08B"
+                android:textColor="#8B97A6"
                 android:textSize="10sp"
                 android:textStyle="bold" />
 
@@ -63,8 +63,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="₹1,400"
-                android:textColor="#E8988C"
+                android:text="₹0"
+                android:textColor="#EB3B2E"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -75,7 +75,7 @@
         android:layout_height="1dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="8dp"
-        android:background="#2C3B2E" />
+        android:background="#1F2A38" />
 
     <!-- Recent Transactions List -->
     <TextView
@@ -85,7 +85,7 @@
         android:letterSpacing="0.1"
         android:maxLines="1"
         android:text="RECENT ACTIVITY"
-        android:textColor="#7A8F7D"
+        android:textColor="#8B97A6"
         android:textSize="10sp"
         android:textStyle="bold" />
 
@@ -102,8 +102,8 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Blue Tokai Coffee"
-            android:textColor="#FFFFFF"
+            android:text="No recent transactions"
+            android:textColor="#F2F5F8"
             android:textSize="12sp" />
 
         <TextView
@@ -111,8 +111,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
-            android:text="-₹250"
-            android:textColor="#E8988C"
+            android:text=""
+            android:textColor="#EB3B2E"
             android:textSize="12sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -130,8 +130,8 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Swiggy Delivery"
-            android:textColor="#FFFFFF"
+            android:text=""
+            android:textColor="#F2F5F8"
             android:textSize="12sp" />
 
         <TextView
@@ -139,8 +139,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="1"
-            android:text="-₹350"
-            android:textColor="#E8988C"
+            android:text=""
+            android:textColor="#EB3B2E"
             android:textSize="12sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -169,7 +169,7 @@
             android:paddingTop="7dp"
             android:paddingBottom="7dp"
             android:text="+ Expense"
-            android:textColor="#E8988C"
+            android:textColor="#EB3B2E"
             android:textSize="11sp"
             android:textStyle="bold" />
 
@@ -185,7 +185,7 @@
             android:paddingTop="7dp"
             android:paddingBottom="7dp"
             android:text="+ Income"
-            android:textColor="#7CA982"
+            android:textColor="#34D399"
             android:textSize="11sp"
             android:textStyle="bold" />
 
@@ -201,7 +201,7 @@
             android:paddingTop="7dp"
             android:paddingBottom="7dp"
             android:text="⇄ Transfer"
-            android:textColor="#C5C8B5"
+            android:textColor="#E4DFD7"
             android:textSize="11sp"
             android:textStyle="bold" />
     </LinearLayout>

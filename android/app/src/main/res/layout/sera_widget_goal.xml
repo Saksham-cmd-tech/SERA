@@ -14,7 +14,7 @@
         android:letterSpacing="0.1"
         android:maxLines="1"
         android:text="SERA • SAVINGS GOAL"
-        android:textColor="#88A08B"
+        android:textColor="#8B97A6"
         android:textSize="10sp"
         android:textStyle="bold" />
 
@@ -31,7 +31,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Emergency Fund"
-        android:textColor="#FFFFFF"
+        android:textColor="#F2F5F8"
         android:textSize="16sp"
         android:textStyle="bold" />
 
@@ -42,8 +42,8 @@
         android:layout_marginTop="4dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:text="₹25,000 of ₹50,000"
-        android:textColor="#C5C8B5"
+        android:text="₹0 of ₹0"
+        android:textColor="#E4DFD7"
         android:textSize="12sp" />
 
     <ProgressBar
@@ -53,7 +53,7 @@
         android:layout_height="6dp"
         android:layout_marginTop="8dp"
         android:max="100"
-        android:progress="50"
+        android:progress="0"
         android:progressDrawable="@drawable/widget_progress_bar" />
 
     <TextView
@@ -62,8 +62,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
         android:maxLines="1"
-        android:text="50% completed"
-        android:textColor="#7CA982"
+        android:text="0% completed"
+        android:textColor="#34D399"
         android:textSize="11sp"
         android:textStyle="bold" />
 
