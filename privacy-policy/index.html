@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Official Privacy Policy for SERA — Expense Tracker (Spending & Expense Record App). Offline-first personal finance application for Android.">
+  <meta name="theme-color" content="#090E14">
+  <meta name="robots" content="index, follow">
+  <title>Privacy Policy — SERA — Expense Tracker</title>
+  
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  
+  <style>
+    :root {
+      /* Tier 1: Core Color Tokens */
+      --color-void: #090E14;
+      --color-surface: #101720;
+      --color-surface-hover: #16202C;
+      --color-border: #1E293B;
+      --color-border-subtle: #151F2E;
+      --color-accent: #FF5C00;
+      --color-accent-dim: rgba(255, 92, 0, 0.12);
+      --color-accent-border: rgba(255, 92, 0, 0.35);
+      --color-green: #10B981;
+      --color-green-dim: rgba(16, 185, 129, 0.12);
+      --color-blue: #38BDF8;
+      --color-blue-dim: rgba(56, 189, 248, 0.12);
+      
+      /* Typography Tokens */
+      --color-text-primary: #F8FAFC;
+      --color-text-secondary: #94A3B8;
+      --color-text-muted: #64748B;
+      
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      
+      /* Layout & Spacing */
+      --max-width: 860px;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+    }
+
+    /* Universal Box-Sizing & Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      color-scheme: dark;
+      scroll-behavior: smooth;
+      background-color: var(--color-void);
+    }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.75;
+      color: var(--color-text-secondary);
+      background-color: var(--color-void);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Top Technical Header Banner */
+    .top-bar {
+      border-bottom: 1px solid var(--color-border);
+      background-color: rgba(9, 14, 20, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .top-bar-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-border);
+      display: block;
+    }
+
+    .brand-title {
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--color-text-primary);
+      text-transform: uppercase;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      background: var(--color-green-dim);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-green);
+      letter-spacing: 0.04em;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--color-green);
+      box-shadow: 0 0 6px var(--color-green);
+    }
+
+    /* Main Container */
+    .container {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 6rem;
+    }
+
+    /* Hero Header */
+    .hero {
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .hero-badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .tech-pill {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      padding: 0.2rem 0.6rem;
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .tech-pill.accent {
+      background: var(--color-accent-dim);
+      border-color: var(--color-accent-border);
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--color-text-primary);
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-subtitle {
+      font-size: 1.1rem;
+      color: var(--color-text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Metadata Grid */
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .meta-label {
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--color-text-muted);
+    }
+
+    .meta-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-text-primary);
+      word-break: break-word;
+    }
+
+    .meta-value a {
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .meta-value a:hover {
+      text-decoration: underline;
+    }
+
+    /* Quick Table of Contents */
+    .toc-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .toc-title {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--color-text-primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 0.5rem 1.5rem;
+      list-style: none;
+    }
+
+    .toc-grid a {
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      padding: 0.2rem 0;
+      transition: color 0.15s ease;
+    }
+
+    .toc-grid a:hover {
+      color: var(--color-accent);
+    }
+
+    .toc-num {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--color-text-muted);
+      font-weight: 600;
+      min-width: 1.4rem;
+    }
+
+    /* Policy Content Sections */
+    article section {
+      scroll-margin-top: 5rem;
+      padding-top: 1.75rem;
+      margin-bottom: 2.5rem;
+      border-top: 1px solid var(--color-border-subtle);
+    }
+
+    article section:first-of-type {
+      border-top: none;
+      padding-top: 0;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .section-num {
+      font-family: var(--font-mono);
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--color-accent);
+      background: var(--color-accent-dim);
+      padding: 0.15rem 0.45rem;
+      border-radius: var(--radius-sm);
+    }
+
+    h2 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--color-text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    p {
+      margin-bottom: 1.15rem;
+    }
+
+    strong {
+      color: var(--color-text-primary);
+      font-weight: 600;
+    }
+
+    ul {
+      list-style: none;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    ul li {
+      position: relative;
+      padding-left: 1.35rem;
+    }
+
+    ul li::before {
+      content: "";
+      position: absolute;
+      left: 0.25rem;
+      top: 0.7em;
+      width: 5px;
+      height: 5px;
+      border-radius: 1px;
+      background-color: var(--color-accent);
+    }
+
+    /* Highlight Callout Box */
+    .callout {
+      background: var(--color-surface);
+      border-left: 3px solid var(--color-accent);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      padding: 1.1rem 1.25rem;
+      margin: 1.35rem 0;
+      font-size: 0.95rem;
+    }
+
+    .callout strong {
+      color: var(--color-accent);
+      display: block;
+      margin-bottom: 0.35rem;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .callout-blue {
+      border-left-color: var(--color-blue);
+      background: var(--color-blue-dim);
+    }
+
+    .callout-blue strong {
+      color: var(--color-blue);
+    }
+
+    /* Contact Box */
+    .contact-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .contact-card p {
+      margin-bottom: 0.5rem;
+    }
+
+    .contact-card p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--color-border);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      background: var(--color-surface);
+    }
+
+    .footer-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+    }
+
+    .footer-links a {
+      color: var(--color-text-secondary);
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--color-accent);
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background: #fff;
+        color: #111;
+        font-size: 11pt;
+      }
+      .top-bar, .toc-card, footer {
+        display: none;
+      }
+      .container {
+        max-width: 100%;
+        padding: 0;
+      }
+      h1, h2, strong {
+        color: #000;
+      }
+      .meta-grid, .callout, .contact-card {
+        background: #f8f8f8;
+        border: 1px solid #ddd;
+        color: #222;
+      }
+      .section-num {
+        background: #eee;
+        color: #000;
+      }
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 1.75rem;
+      }
+      .meta-grid {
+        grid-template-columns: 1fr;
+      }
+      .toc-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sticky Top Technical Navigation -->
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <a href="#" class="brand-group">
+        <img src="logo.png" alt="SERA Emblem" class="brand-logo" width="34" height="34">
+        <span class="brand-title">SERA</span>
+      </a>
+      <span class="status-badge">
+        <span class="status-dot"></span>
+        OFFLINE PRIVACY GUARANTEED
+      </span>
+    </div>
+  </header>
+
+  <!-- Main Content Container -->
+  <div class="container">
+    <main>
+      
+      <!-- Hero Header -->
+      <header class="hero">
+        <div class="hero-badge-row">
+          <span class="tech-pill accent">Official Legal Notice</span>
+          <span class="tech-pill">Google Play Compliant</span>
+          <span class="tech-pill">Local Storage Only</span>
+          <span class="tech-pill">v1.0.0</span>
+        </div>
+        <h1>Privacy Policy — SERA</h1>
+        <p class="hero-subtitle">SERA — Expense Tracker (Spending & Expense Record App)</p>
+
+        <!-- Technical Metadata Grid -->
+        <div class="meta-grid">
+          <div class="meta-item">
+            <span class="meta-label">Effective Date</span>
+            <span class="meta-value">October 16, 2026</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Application ID</span>
+            <span class="meta-value"><code>dev.sakshamtale.sera</code></span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Developer</span>
+            <span class="meta-value">Saksham Tale</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Direct Contact</span>
+            <span class="meta-value"><a href="mailto:Saksham.tale02dev@gmail.com">Saksham.tale02dev@gmail.com</a></span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Table of Contents -->
+      <nav class="toc-card" aria-label="Table of Contents">
+        <div class="toc-title">Table of Contents</div>
+        <ol class="toc-grid">
+          <li><a href="#section-1"><span class="toc-num">01</span> Introduction</a></li>
+          <li><a href="#section-2"><span class="toc-num">02</span> Information We Handle</a></li>
+          <li><a href="#section-3"><span class="toc-num">03</span> Local Storage & Data Collection</a></li>
+          <li><a href="#section-4"><span class="toc-num">04</span> SMS & Transaction Detection</a></li>
+          <li><a href="#section-5"><span class="toc-num">05</span> Device Permissions</a></li>
+          <li><a href="#section-6"><span class="toc-num">06</span> Widgets & Notifications</a></li>
+          <li><a href="#section-7"><span class="toc-num">07</span> Data Sharing & Third Parties</a></li>
+          <li><a href="#section-8"><span class="toc-num">08</span> Exporting & Backing Up Data</a></li>
+          <li><a href="#section-9"><span class="toc-num">09</span> Security Architecture</a></li>
+          <li><a href="#section-10"><span class="toc-num">10</span> Data Retention & Deletion</a></li>
+          <li><a href="#section-11"><span class="toc-num">11</span> Children's Privacy</a></li>
+          <li><a href="#section-12"><span class="toc-num">12</span> Open-Source Software</a></li>
+          <li><a href="#section-13"><span class="toc-num">13</span> Policy Changes</a></li>
+          <li><a href="#section-14"><span class="toc-num">14</span> Contact Information</a></li>
+        </ol>
+      </nav>
+
+      <!-- Policy Content -->
+      <article>
+        
+        <!-- Section 1 -->
+        <section id="section-1">
+          <div class="section-header">
+            <span class="section-num">01</span>
+            <h2>Introduction</h2>
+          </div>
+          <p>SERA (“the App”) is a personal finance application designed to help users manage expenses, income, accounts, budgets, savings goals, subscriptions, and financial records.</p>
+          <p>SERA is designed with privacy in mind. Its core functionality is intended to operate locally on your Android device, allowing you to manage your financial information without creating an online account.</p>
+          <p>This Privacy Policy explains what information the App handles, how it is used, how it is stored, and what choices you have.</p>
+        </section>
+
+        <!-- Section 2 -->
+        <section id="section-2">
+          <div class="section-header">
+            <span class="section-num">02</span>
+            <h2>Information We Handle</h2>
+          </div>
+          <p>Depending on the features you use, SERA may handle the following information:</p>
+          <ul>
+            <li><strong>Financial records:</strong> Transactions, amounts, categories, account balances, merchants, notes, and transaction dates.</li>
+            <li><strong>Budgets and goals:</strong> Budget limits, savings targets, progress, and target dates.</li>
+            <li><strong>Account information:</strong> Names and balances of accounts you create within the App.</li>
+            <li><strong>User preferences:</strong> App settings, display preferences, reminders, and security preferences.</li>
+            <li><strong>Information you provide:</strong> Any additional details, receipts, or records you choose to add.</li>
+          </ul>
+          <p>This information is used to provide the App's features, calculate summaries, display reports, and help you organize your finances.</p>
+        </section>
+
+        <!-- Section 3 -->
+        <section id="section-3">
+          <div class="section-header">
+            <span class="section-num">03</span>
+            <h2>Local Storage and Data Collection</h2>
+          </div>
+          <p>SERA is designed to store its core financial records locally on your device.</p>
+          <p>The developer does not intentionally receive your financial records through a SERA-operated server as part of the App's core functionality.</p>
+          <p>SERA does not require you to create an online account to use its core features.</p>
+          <div class="callout">
+            <strong>Important Regulatory Note</strong>
+            This statement applies to the current implementation only if no analytics, advertising, crash-reporting, synchronization, or other third-party SDKs transmit user or device information. Any such functionality must be disclosed accurately.
+          </div>
+        </section>
+
+        <!-- Section 4 -->
+        <section id="section-4">
+          <div class="section-header">
+            <span class="section-num">04</span>
+            <h2>SMS and Automatic Transaction Detection</h2>
+          </div>
+          <p>If SMS-based transaction detection is enabled in your version of SERA, the App may access relevant SMS messages after obtaining the required permission.</p>
+          <p>This access is intended to help identify transaction details and reduce manual entry.</p>
+          <p>SMS messages may contain sensitive information. SERA should process them locally and should not transmit their contents to the developer or third parties unless a feature explicitly explains the transfer and obtains any required consent.</p>
+          <p>You can manage the relevant Android permissions through your device settings. Disabling a permission may limit the associated feature.</p>
+        </section>
+
+        <!-- Section 5 -->
+        <section id="section-5">
+          <div class="section-header">
+            <span class="section-num">05</span>
+            <h2>Device Permissions</h2>
+          </div>
+          <p>Depending on the features enabled, SERA may request access to certain Android system capabilities, such as:</p>
+          <ul>
+            <li><strong>Notifications:</strong> To display reminders or scheduled alerts.</li>
+            <li><strong>Biometric authentication:</strong> To allow supported devices to authenticate access to the App.</li>
+            <li><strong>SMS access:</strong> If required for transaction detection.</li>
+            <li><strong>File access or system file selection:</strong> To import or export financial records.</li>
+            <li><strong>Other permissions:</strong> Only where required by a feature available in your installed version.</li>
+          </ul>
+          <p>Permissions are used to support the associated functionality. You can review and manage permissions in Android settings.</p>
+        </section>
+
+        <!-- Section 6 -->
+        <section id="section-6">
+          <div class="section-header">
+            <span class="section-num">06</span>
+            <h2>Widgets and Notifications</h2>
+          </div>
+          <p>SERA may provide Android home-screen widgets, shortcuts, and local notifications.</p>
+          <p>Widgets may display financial information, such as balances, budgets, or transaction summaries, depending on your configuration. This information may be visible to anyone who can view your device's screen.</p>
+          <p>Notifications may display reminder information on your lock screen, depending on your Android notification settings.</p>
+          <p>You are responsible for configuring widget visibility and lock-screen notification privacy on your device.</p>
+        </section>
+
+        <!-- Section 7 -->
+        <section id="section-7">
+          <div class="section-header">
+            <span class="section-num">07</span>
+            <h2>Data Sharing and Third Parties</h2>
+          </div>
+          <p>SERA's core functionality is designed to operate without sending your financial records to the developer.</p>
+          <p>The developer does not sell your personal or financial information.</p>
+          <p>When you explicitly export or share information using Android's system sharing or file-selection features, the information you choose to share may be transferred to the destination you select. That destination's privacy practices will apply.</p>
+          <p>If future versions introduce cloud synchronization, analytics, advertising, or other third-party services, this policy will be updated to describe the information involved and how it is handled.</p>
+        </section>
+
+        <!-- Section 8 -->
+        <section id="section-8">
+          <div class="section-header">
+            <span class="section-num">08</span>
+            <h2>Exporting and Backing Up Data</h2>
+          </div>
+          <p>SERA may allow you to export financial records in supported formats, including CSV or JSON.</p>
+          <p>Exports are initiated by you. Once a file is saved, copied, backed up, or shared, it may be accessible outside the App and may not receive the same protections as data stored inside it.</p>
+          <p>You should keep exported files in a secure location and avoid sharing them with untrusted parties.</p>
+        </section>
+
+        <!-- Section 9 -->
+        <section id="section-9">
+          <div class="section-header">
+            <span class="section-num">09</span>
+            <h2>Security</h2>
+          </div>
+          <p>SERA may provide app-lock, PIN, and biometric authentication features, depending on the installed version and device support.</p>
+          <p>These features are intended to help restrict access to the App. However, no software or storage method can guarantee absolute security.</p>
+          <p>Your device's operating-system security, screen lock, backups, and the way you handle exported files may also affect the security of your information.</p>
+          <p>Do not assume that financial records, PINs, or exported files are encrypted unless the relevant implementation explicitly provides that protection.</p>
+        </section>
+
+        <!-- Section 10 -->
+        <section id="section-10">
+          <div class="section-header">
+            <span class="section-num">10</span>
+            <h2>Data Retention and Deletion</h2>
+          </div>
+          <p>Financial records and preferences stored locally remain on your device until you delete them, reset the App, or remove its local data.</p>
+          <p>You can use the App's available deletion or reset options to remove supported records. Uninstalling the App or clearing its data may remove locally stored information, but you should not rely on this as the only way to preserve or remove information from external exports or device backups.</p>
+          <p>The developer does not have access to locally stored financial records to delete them remotely.</p>
+        </section>
+
+        <!-- Section 11 -->
+        <section id="section-11">
+          <div class="section-header">
+            <span class="section-num">11</span>
+            <h2>Children's Privacy</h2>
+          </div>
+          <p>SERA is a general personal finance tool and is not specifically designed to collect personal information from children.</p>
+          <p>Because the App is intended to help users manage potentially sensitive financial information, users should use it responsibly and in accordance with applicable laws and Google Play requirements.</p>
+        </section>
+
+        <!-- Section 12 -->
+        <section id="section-12">
+          <div class="section-header">
+            <span class="section-num">12</span>
+            <h2>Open-Source Software</h2>
+          </div>
+          <p>SERA may be distributed as open-source software. Public access to its source code does not give the developer access to financial records stored on users' devices.</p>
+          <p>Third-party libraries and dependencies included in the App may be subject to their own licenses and privacy practices. Any third-party component that collects or transmits information must be reflected accurately in the App's disclosures.</p>
+        </section>
+
+        <!-- Section 13 -->
+        <section id="section-13">
+          <div class="section-header">
+            <span class="section-num">13</span>
+            <h2>Changes to This Privacy Policy</h2>
+          </div>
+          <p>This Privacy Policy may be updated when the App's functionality, data practices, or legal requirements change.</p>
+          <p>Updated versions will be published at the designated privacy-policy URL, along with a revised effective date where appropriate.</p>
+          <p>You should review this page periodically to stay informed about how SERA handles information.</p>
+        </section>
+
+        <!-- Section 14 -->
+        <section id="section-14">
+          <div class="section-header">
+            <span class="section-num">14</span>
+            <h2>Contact</h2>
+          </div>
+          <p>If you have questions or concerns about this Privacy Policy or SERA's data practices, contact:</p>
+          <div class="contact-card">
+            <p><strong>Developer:</strong> Saksham Tale</p>
+            <p><strong>App:</strong> SERA — Spending & Expense Record App (SERA — Expense Tracker)</p>
+            <p><strong>Package Name:</strong> <code>dev.sakshamtale.sera</code></p>
+            <p><strong>Email:</strong> <a href="mailto:Saksham.tale02dev@gmail.com" style="color: var(--color-accent); font-weight: 600;">Saksham.tale02dev@gmail.com</a></p>
+          </div>
+        </section>
+
+      </article>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-links">
+        <a href="#section-1">Top of Page</a>
+        <a href="javascript:window.print()">Print / Save PDF</a>
+        <a href="PRIVACY_POLICY.md" target="_blank">Raw Markdown</a>
+        <a href="mailto:Saksham.tale02dev@gmail.com">Contact Developer</a>
+      </div>
+      <p>&copy; 2026 SERA — Spending & Expense Record App. Developed by Saksham Tale. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>
