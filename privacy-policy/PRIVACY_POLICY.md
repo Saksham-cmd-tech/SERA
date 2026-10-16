@@ -1,8 +1,8 @@
 # Privacy Policy — SERA
 
-**Effective date:** October 16, 2026  
-**Application:** SERA — Spending & Expense Record App (SERA — Expense Tracker)  
-**Package Name:** dev.sakshamtale.sera  
+**Effective Date:** October 16, 2026  
+**Application:** SERA — Expense Tracker (*Spending & Expense Record App*)  
+**Package Name:** `dev.sakshamtale.sera`  
 **Developer:** Saksham Tale  
 **Contact:** Saksham.tale02dev@gmail.com  
 
@@ -10,153 +10,149 @@
 
 ## 1. Introduction
 
-SERA (“the App”) is a personal finance application designed to help users manage expenses, income, accounts, budgets, savings goals, subscriptions, and financial records.
+**SERA** (“the App”, “we”, “our”) is a personal finance management application developed by Saksham Tale for Android devices. SERA is designed to help individuals record daily expenses, track income, balance accounts, calculate net worth, establish budgets, monitor savings goals, manage recurring subscriptions, and analyze monthly cash flows.
 
-SERA is designed with privacy in mind. Its core functionality is intended to operate locally on your Android device, allowing you to manage your financial information without creating an online account.
+SERA is engineered from the ground up as an **offline-first, privacy-respecting tool**. We believe your financial data belongs exclusively to you. All core functionality operates locally on your physical device. The App does not require user account registration, cloud sign-in, or internet connectivity to manage your financial ledger.
 
-This Privacy Policy explains what information the App handles, how it is used, how it is stored, and what choices you have.
-
----
-
-## 2. Information We Handle
-
-Depending on the features you use, SERA may handle the following information:
-
-- **Financial records:** Transactions, amounts, categories, account balances, merchants, notes, and transaction dates.
-- **Budgets and goals:** Budget limits, savings targets, progress, and target dates.
-- **Account information:** Names and balances of accounts you create within the App.
-- **User preferences:** App settings, display preferences, reminders, and security preferences.
-- **Information you provide:** Any additional details, receipts, or records you choose to add.
-
-This information is used to provide the App's features, calculate summaries, display reports, and help you organize your finances.
+This Privacy Policy explains what data SERA handles, how that data is stored and processed on your device, what permissions the App requests, and how you retain total control over your records.
 
 ---
 
-## 3. Local Storage and Data Collection
+## 2. Information Handled by the App
 
-SERA is designed to store its core financial records locally on your device.
+Depending on which features you use, SERA stores and organizes the following user-entered data locally on your device:
 
-The developer does not intentionally receive your financial records through a SERA-operated server as part of the App's core functionality.
-
-SERA does not require you to create an online account to use its core features.
-
-**Important:** This statement applies to the current implementation only if no analytics, advertising, crash-reporting, synchronization, or other third-party SDKs transmit user or device information. Any such functionality must be disclosed accurately.
-
----
-
-## 4. SMS and Automatic Transaction Detection
-
-If SMS-based transaction detection is enabled in your version of SERA, the App may access relevant SMS messages after obtaining the required permission.
-
-This access is intended to help identify transaction details and reduce manual entry.
-
-SMS messages may contain sensitive information. SERA should process them locally and should not transmit their contents to the developer or third parties unless a feature explicitly explains the transfer and obtains any required consent.
-
-You can manage the relevant Android permissions through your device settings. Disabling a permission may limit the associated feature.
+- **Financial Transactions:** Amounts, currency codes (`₹`, `$`, `€`, `£`), transaction types (expense, income, inter-account transfer), category tags, merchant or payee names, transaction dates, timestamps, and optional user notes.
+- **Financial Accounts & Net Worth:** Account labels, account types (Bank, Cash, Credit Card, Wallet, Savings, Investment), opening and current balances, financial institution names, and optional last-4-digit account masks (e.g., `••4821`).
+- **Budgets & Spending Limits:** Monthly spending targets, per-category budget limits, alert threshold indicators, and safe daily spend velocity calculations.
+- **Savings Goals:** Target savings amounts, accumulated savings balances, target achievement dates, planned monthly contributions, and deposit contribution history.
+- **Recurring Subscriptions:** Subscription names, billing amounts, recurrence frequencies (monthly or yearly), next renewal dates, and payment history.
+- **Receipt Attachments:** Physical receipt photos captured via the device camera or selected from the device photo gallery.
+- **User Preferences & Security Configurations:** Display name, profile avatar photo (stored locally), dark/light theme preference, active currency preference, 4-digit security PIN, biometric unlock preference, Privacy Mode state, and scheduled daily reminder times.
 
 ---
 
-## 5. Device Permissions
+## 3. Offline Architecture & Zero Data Collection
 
-Depending on the features enabled, SERA may request access to certain Android system capabilities, such as:
+SERA is strictly an **offline-first application**:
 
-- **Notifications:** To display reminders or scheduled alerts.
-- **Biometric authentication:** To allow supported devices to authenticate access to the App.
-- **SMS access:** If required for transaction detection.
-- **File access or system file selection:** To import or export financial records.
-- **Other permissions:** Only where required by a feature available in your installed version.
-
-Permissions are used to support the associated functionality. You can review and manage permissions in Android settings.
+- **No Remote Servers:** The developer does not operate, host, or communicate with any cloud server or database to store, transmit, or process your financial records.
+- **No Account Registration:** You do not need an email address, telephone number, password, or third-party login (e.g., Google or Facebook) to use SERA.
+- **No Third-Party Analytics:** SERA contains zero telemetry trackers, analytics SDKs (such as Firebase Analytics, Google Analytics, Mixpanel, or Adjust), and zero crash-reporting frameworks that upload device identifiers or crash logs to third parties.
+- **No Advertisements:** SERA does not include advertising SDKs, ad networks, or tracking pixels. We do not profile your financial behavior or monetize your personal data.
 
 ---
 
-## 6. Widgets and Notifications
+## 4. Smart Text Parser (No Automatic SMS Inbox Access)
 
-SERA may provide Android home-screen widgets, shortcuts, and local notifications.
+SERA features a **Smart Text Parser (Smart Expense Auto-Fill)** to streamline manual expense entry:
 
-Widgets may display financial information, such as balances, budgets, or transaction summaries, depending on your configuration. This information may be visible to anyone who can view your device's screen.
-
-Notifications may display reminder information on your lock screen, depending on your Android notification settings.
-
-You are responsible for configuring widget visibility and lock-screen notification privacy on your device.
+- **On-Demand Manual Input:** The Smart Text Parser only processes text that **you explicitly paste or type** into the input field (such as copying a bank SMS alert, an email receipt, or typing quick notes like *"Dinner 420"*).
+- **No Background SMS Access:** SERA does **not** read your SMS inbox, does **not** intercept incoming text messages, and **does not declare or request the `READ_SMS` or `RECEIVE_SMS` permissions**.
+- **100% Local Pattern Matching:** All text parsing is executed entirely on your device using deterministic, local regular expression patterns. Your pasted text is never transmitted over any network.
 
 ---
 
-## 7. Data Sharing and Third Parties
+## 5. Device Permissions & System Capabilities
 
-SERA's core functionality is designed to operate without sending your financial records to the developer.
+SERA requests only the minimum Android permissions necessary to provide its local utility features. You can review or revoke these permissions at any time via Android Settings:
 
-The developer does not sell your personal or financial information.
+| Permission | Android Identifier | Purpose in SERA |
+| :--- | :--- | :--- |
+| **Notifications** | `android.permission.POST_NOTIFICATIONS` | Used strictly to deliver local scheduled reminders (e.g., daily evening notification to log expenses) and local budget overrun warning alerts. No remote push notifications or cloud messaging services are used. |
+| **Camera** | `android.permission.CAMERA` | Used optionally when you choose to photograph a physical paper receipt within the Add Transaction screen. Captured images are stored strictly in private device storage. |
+| **Biometric Hardware** | `android.permission.USE_BIOMETRIC` | Used to trigger Android's native `BiometricPrompt` (fingerprint or face unlock). Authentication is performed entirely by your device’s secure hardware (Trusted Execution Environment / Keystore). SERA never accesses, handles, or stores your biometric templates. |
+| **Exact Alarms** | `android.permission.SCHEDULE_EXACT_ALARM` | Used by the native Android `AlarmManager` to trigger your scheduled daily expense reminder at the exact time you configured in Settings. |
+| **Boot Completed** | `android.permission.RECEIVE_BOOT_COMPLETED` | Used to automatically re-register your scheduled daily reminder alarm after your device restarts. |
+| **Vibration** | `android.permission.VIBRATE` | Used to provide subtle tactile haptic feedback when pressing numeric keypad keys. |
+| **Internet** | `android.permission.INTERNET` | Standard network permission included with the React Native framework runtime. SERA does not use internet connectivity for core financial logging, does not sync data to any cloud service, and functions completely offline. |
 
-When you explicitly export or share information using Android's system sharing or file-selection features, the information you choose to share may be transferred to the destination you select. That destination's privacy practices will apply.
-
-If future versions introduce cloud synchronization, analytics, advertising, or other third-party services, this policy will be updated to describe the information involved and how it is handled.
-
----
-
-## 8. Exporting and Backing Up Data
-
-SERA may allow you to export financial records in supported formats, including CSV or JSON.
-
-Exports are initiated by you. Once a file is saved, copied, backed up, or shared, it may be accessible outside the App and may not receive the same protections as data stored inside it.
-
-You should keep exported files in a secure location and avoid sharing them with untrusted parties.
+SERA does **not** request access to your Contacts, Device Location, Microphone, Call Logs, or SMS Inbox.
 
 ---
 
-## 9. Security
+## 6. Home Screen Widgets & OS Integrations
 
-SERA may provide app-lock, PIN, and biometric authentication features, depending on the installed version and device support.
+SERA includes 5 native Android home screen widgets:
+1. **Quick Action Widget:** Instant 1-tap shortcuts to open the expense or income logging screen.
+2. **Budget Progress Widget:** Real-time progress bar showing monthly spend and remaining budget.
+3. **Net Worth Widget:** Glanceable consolidated liquid balance across all your accounts.
+4. **Savings Goal Widget:** Target progress meter for your primary active savings goal.
+5. **Dashboard Widget:** Multi-metric overview showing net worth, daily spend, active goal, and recent transactions.
 
-These features are intended to help restrict access to the App. However, no software or storage method can guarantee absolute security.
+**How Widget Data is Handled:**  
+To render information on your home screen, the App writes minimal summary metrics to Android's local `SharedPreferences` storage on your device. This data never leaves your device. Because home screen widgets may be visible to anyone viewing an unlocked screen or lock screen (depending on your Android configuration), you are responsible for adjusting widget visibility according to your privacy comfort level.
 
-Your device's operating-system security, screen lock, backups, and the way you handle exported files may also affect the security of your information.
-
-Do not assume that financial records, PINs, or exported files are encrypted unless the relevant implementation explicitly provides that protection.
+SERA also supports Android App Launcher Shortcuts and deep links (`sera://`) for fast navigation.
 
 ---
 
-## 10. Data Retention and Deletion
+## 7. Data Sharing & Third-Party Disclosure
 
-Financial records and preferences stored locally remain on your device until you delete them, reset the App, or remove its local data.
+- **Zero Sale of Data:** The developer does not sell, rent, monetize, or trade your personal or financial information to data brokers, advertisers, or third parties under any circumstances.
+- **Zero Third-Party SDK Data Transmission:** The App does not integrate third-party SDKs that collect or broadcast device identifiers, advertising IDs, or financial metrics.
+- **User-Initiated Sharing:** When you intentionally choose to share a backup file, receipt photo, or export through Android's system share sheet (e.g., saving to Google Drive or sending via email), that data is handled directly by the destination application you selected according to their respective privacy terms.
 
-You can use the App's available deletion or reset options to remove supported records. Uninstalling the App or clearing its data may remove locally stored information, but you should not rely on this as the only way to preserve or remove information from external exports or device backups.
+---
 
-The developer does not have access to locally stored financial records to delete them remotely.
+## 8. Exporting, Backing Up, and Data Portability
+
+SERA provides full data portability through its built-in Backup & Restore tool:
+
+- **JSON Backup Export:** You can export your entire financial ledger—including all accounts, categories, transactions, budgets, goals, subscriptions, and app preferences—into a structured, human-readable JSON backup file.
+- **JSON Backup Import:** You can restore a previously exported JSON backup file on any compatible device running SERA.
+- **Storage Security:** Exported files are written to the local storage location or application you specify. Once exported, you are responsible for keeping these backup files secure.
+
+---
+
+## 9. Security & Access Protection
+
+SERA incorporates multiple layers of local security:
+
+- **Biometric Authentication:** Hardware-backed fingerprint and facial recognition via Android `BiometricPrompt`.
+- **4-Digit Numeric PIN Lock:** Built-in passcode lock screen that blocks access to all views until authenticated.
+- **Automatic Background Lock:** Enforces the lock screen immediately whenever the app transitions away from the active foreground and is reopened.
+- **Privacy Mode (Balance Masking):** A dedicated 1-tap global privacy toggle that obscures all account balances, ledger amounts, and financial metrics with `••••••` across all screens, allowing safe usage in public spaces.
+
+*Security Notice:* While SERA implements local access controls, overall security depends on your device's operating-system security, device passcode, and how you manage exported backup files.
+
+---
+
+## 10. Data Retention, Deletion, and Local Reset
+
+- **Retention Period:** All financial records, receipts, and settings remain stored on your physical device until you choose to delete them.
+- **In-App Application Reset:** SERA includes a **"Reset Application / Clear All Data"** option in Settings. Tapping this option flushes all local database tables and returns the app to its fresh initial seed state immediately.
+- **Device-Level Deletion:** You can permanently delete all records at any time by selecting "Clear Storage / Clear Data" for SERA in Android System Settings or by uninstalling the application.
+- **No Remote Copies:** Because the developer maintains no cloud servers or remote databases, we cannot access, view, or remotely restore or delete your data once cleared from your device.
 
 ---
 
 ## 11. Children's Privacy
 
-SERA is a general personal finance tool and is not specifically designed to collect personal information from children.
-
-Because the App is intended to help users manage potentially sensitive financial information, users should use it responsibly and in accordance with applicable laws and Google Play requirements.
+SERA is a general-purpose personal financial utility and is not directed at or designed for children under the age of 13 (or under the applicable legal age in your jurisdiction). SERA does not knowingly collect or solicit personal data from children.
 
 ---
 
-## 12. Open-Source Software
+## 12. Open-Source Software & Transparency
 
-SERA may be distributed as open-source software. Public access to its source code does not give the developer access to financial records stored on users' devices.
-
-Third-party libraries and dependencies included in the App may be subject to their own licenses and privacy practices. Any third-party component that collects or transmits information must be reflected accurately in the App's disclosures.
+SERA may be published as open-source software. Public availability of the source code ensures technical transparency and allows anyone to verify that the application operates strictly offline without hidden background telemetry or remote tracking.
 
 ---
 
 ## 13. Changes to This Privacy Policy
 
-This Privacy Policy may be updated when the App's functionality, data practices, or legal requirements change.
+This Privacy Policy may be updated periodically to reflect new features, improvements, or regulatory compliance requirements. Any revisions will be published with an updated **Effective Date** at:  
+[https://sera-privacy-policy.vercel.app](https://sera-privacy-policy.vercel.app) *(or the designated production privacy URL)*.
 
-Updated versions will be published at the designated privacy-policy URL, along with a revised effective date where appropriate.
-
-You should review this page periodically to stay informed about how SERA handles information.
+We encourage users to review this policy periodically.
 
 ---
 
-## 14. Contact
+## 14. Contact Information
 
-If you have questions or concerns about this Privacy Policy or SERA's data practices, contact:
+If you have any questions, concerns, or inquiries regarding this Privacy Policy or SERA's privacy practices, please contact the developer directly:
 
-**Developer:** Saksham Tale  
-**App:** SERA — Spending & Expense Record App (SERA — Expense Tracker)  
-**Package:** dev.sakshamtale.sera  
-**Email:** Saksham.tale02dev@gmail.com  
+- **Developer:** Saksham Tale
+- **Application:** SERA — Expense Tracker (*Spending & Expense Record App*)
+- **Application ID:** `dev.sakshamtale.sera`
+- **Email:** [Saksham.tale02dev@gmail.com](mailto:Saksham.tale02dev@gmail.com)
