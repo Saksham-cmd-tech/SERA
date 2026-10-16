@@ -109,8 +109,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         subtitle={settings.userName ? `SERA • ${settings.userName.toUpperCase()}` : 'SERA • OVERVIEW'}
         title="Overview"
         showSeraMonogram
-        showNotification
-        onPressNotification={() => navigation.navigate('MoreTab', { screen: 'Settings' })}
       />
 
       <ScrollView
