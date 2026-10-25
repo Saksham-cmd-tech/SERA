@@ -1,6 +1,6 @@
 {
   "name": "MoneyTracker",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "android": "JAVA_HOME=/opt/homebrew/opt/openjdk@17 ANDROID_HOME=/Users/saksham/Library/Android/sdk PATH=\"/opt/homebrew/opt/openjdk@17/bin:/Users/saksham/Library/Android/sdk/platform-tools:$PATH\" react-native run-android",

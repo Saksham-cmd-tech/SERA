@@ -72,6 +72,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
   const currentCurrencySymbol =
     CURRENCIES.find(c => c.code === selectedCurrency)?.symbol || '₹';
 
+  const isFormFilled = userName.trim().length > 0 && accountName.trim().length > 0;
+  const isButtonDisabled = step === 3 && !isFormFilled;
+
   // Animation values
   const fadeAnim = useRef(new Animated.Value(1)).current;
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -144,6 +147,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
       setDirection('forward');
       triggerTransition(step + 1, 'forward');
     } else {
+      if (isButtonDisabled) return;
       const parsedBalance = parseFloat(initialBalance.replace(/,/g, '')) || 0;
       const parsedBudget = parseFloat(monthlyBudget.replace(/,/g, '')) || 0;
 
@@ -347,13 +351,20 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
 
         {/* Primary Action Button */}
         <TouchableOpacity
-          activeOpacity={0.85}
+          activeOpacity={isButtonDisabled ? 1 : 0.85}
           onPress={handleNext}
+          disabled={isButtonDisabled}
           style={[
             styles.primaryButton,
             {
-              backgroundColor: colors.accentRed,
-              shadowColor: colors.accentRed,
+              backgroundColor: isButtonDisabled
+                ? isDark
+                  ? 'rgba(255, 255, 255, 0.12)'
+                  : 'rgba(0, 0, 0, 0.08)'
+                : colors.accentRed,
+              shadowColor: isButtonDisabled ? 'transparent' : colors.accentRed,
+              shadowOpacity: isButtonDisabled ? 0 : 0.25,
+              elevation: isButtonDisabled ? 0 : 3,
             },
           ]}
         >
@@ -361,7 +372,14 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }
             variant="bodyLarge"
             style={[
               styles.primaryButtonText,
-              { fontFamily: fonts.inter.bold },
+              {
+                fontFamily: fonts.inter.bold,
+                color: isButtonDisabled
+                  ? isDark
+                    ? 'rgba(255, 255, 255, 0.35)'
+                    : 'rgba(0, 0, 0, 0.3)'
+                  : '#FFFFFF',
+              },
             ]}
           >
             {step === 3 ? 'Get Started' : 'Continue'}
