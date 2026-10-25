@@ -118,7 +118,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
       <Header
-        subtitle="SERA • PREFERENCES"
+        subtitle="Preferences"
         title="Settings"
         showSeraMonogram
       />
@@ -130,9 +130,9 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Profile Card */}
+        {/* Apple ID Style Profile Row */}
         <TouchableOpacity
-          activeOpacity={0.8}
+          activeOpacity={0.7}
           onPress={() => {
             setEditName(settings.userName || '');
             setEditBudget(settings.monthlyBudgetGoal ? String(settings.monthlyBudgetGoal) : '');
@@ -141,95 +141,112 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
           style={[
             styles.profileCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
               padding: spacing.md,
-              marginBottom: spacing.md,
+              marginBottom: spacing.lg,
             },
           ]}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Avatar size={48} name={settings.userName || 'User'} uri={settings.userAvatarUri} />
-            <View style={{ marginLeft: 12, flex: 1 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 18 }}>
-                  {settings.userName || 'User'}
-                </AppText>
-                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                  EDIT
-                </AppText>
-              </View>
+            <Avatar size={52} name={settings.userName || 'User'} uri={settings.userAvatarUri} />
+            <View style={{ marginLeft: 14, flex: 1 }}>
+              <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 18, fontWeight: '600' }}>
+                {settings.userName || 'User'}
+              </AppText>
               <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>
-                Primary Currency: {settings.currency} ({currencySymbol})
+                Currency: {settings.currency} ({currencySymbol})
                 {settings.monthlyBudgetGoal > 0 ? ` • Budget: ${formatCurrency(settings.monthlyBudgetGoal, currencySymbol, isPrivacyMode, false)}` : ''}
               </AppText>
             </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
           </View>
         </TouchableOpacity>
 
-        {/* SECTION: FINANCE & STATEMENTS */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 6 }}>
-          FINANCE & MODULES
+        {/* SECTION: FINANCE & MODULES */}
+        <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 8 }}>
+          FINANCE MODULES
         </AppText>
         <View
           style={[
             styles.sectionCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              marginBottom: spacing.md,
+              marginBottom: spacing.lg,
+              overflow: 'hidden',
             },
           ]}
         >
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('Reports')}
-            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
+            style={styles.rowItem}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <CategoryIcon name="FileText" size={16} color={colors.textPrimary} />
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 10 }}>
-                Monthly Financial Reports
+              <View style={[styles.settingIconBadge, { backgroundColor: '#007AFF' }]}>
+                <CategoryIcon name="FileText" size={16} color="#FFFFFF" />
+              </View>
+              <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 12, fontWeight: '500' }}>
+                Financial Reports
               </AppText>
             </View>
             <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
           </TouchableOpacity>
 
+          <View style={[styles.rowDivider, { borderBottomColor: colors.borderLight }]} />
+
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('Subscriptions')}
-            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
+            style={styles.rowItem}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <CategoryIcon name="Repeat" size={16} color={colors.textPrimary} />
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 10 }}>
-                Subscription Tracker
+              <View style={[styles.settingIconBadge, { backgroundColor: '#AF52DE' }]}>
+                <CategoryIcon name="Repeat" size={16} color="#FFFFFF" />
+              </View>
+              <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 12, fontWeight: '500' }}>
+                Subscriptions & Bills
               </AppText>
             </View>
             <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
           </TouchableOpacity>
 
+          <View style={[styles.rowDivider, { borderBottomColor: colors.borderLight }]} />
+
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('Accounts')}
-            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
+            style={styles.rowItem}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <CategoryIcon name="Wallet" size={16} color={colors.textPrimary} />
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 10 }}>
-                Manage Accounts & Net Worth
+              <View style={[styles.settingIconBadge, { backgroundColor: '#34C759' }]}>
+                <CategoryIcon name="Wallet" size={16} color="#FFFFFF" />
+              </View>
+              <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 12, fontWeight: '500' }}>
+                Accounts & Net Worth
               </AppText>
             </View>
             <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
           </TouchableOpacity>
 
+          <View style={[styles.rowDivider, { borderBottomColor: colors.borderLight }]} />
+
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('Analytics')}
             style={styles.rowItem}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <CategoryIcon name="SlidersHorizontal" size={16} color={colors.textPrimary} />
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 10 }}>
-                Financial Analytics & Insights
+              <View style={[styles.settingIconBadge, { backgroundColor: '#FF9500' }]}>
+                <CategoryIcon name="SlidersHorizontal" size={16} color="#FFFFFF" />
+              </View>
+              <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 12, fontWeight: '500' }}>
+                Analytics & Insights
               </AppText>
             </View>
             <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
@@ -237,94 +254,123 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
         </View>
 
         {/* SECTION: PREFERENCES */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 6 }}>
+        <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 8 }}>
           PREFERENCES
         </AppText>
         <View
           style={[
             styles.sectionCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              marginBottom: spacing.md,
+              marginBottom: spacing.lg,
+              overflow: 'hidden',
             },
           ]}
         >
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => setCurrencyModalVisible(true)}
-            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
+            style={styles.rowItem}
           >
-            <View>
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
-                Currency
-              </AppText>
-              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                {settings.currency} ({currencySymbol})
-              </AppText>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={[styles.settingIconBadge, { backgroundColor: '#5856D6' }]}>
+                <CategoryIcon name="DollarSign" size={16} color="#FFFFFF" />
+              </View>
+              <View style={{ marginLeft: 12 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '500' }}>
+                  Currency
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  {settings.currency} ({currencySymbol})
+                </AppText>
+              </View>
             </View>
             <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
           </TouchableOpacity>
 
-          <View style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}>
-            <View>
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
-                Dark Theme
-              </AppText>
-              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                Editorial dark green mode
-              </AppText>
+          <View style={[styles.rowDivider, { borderBottomColor: colors.borderLight }]} />
+
+          <View style={styles.rowItem}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={[styles.settingIconBadge, { backgroundColor: '#1C1C1E' }]}>
+                <CategoryIcon name="Moon" size={16} color="#FFFFFF" />
+              </View>
+              <View style={{ marginLeft: 12 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '500' }}>
+                  Dark Mode
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  OLED deep black
+                </AppText>
+              </View>
             </View>
             <Switch
               value={isDark}
               onValueChange={toggleDarkMode}
-              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
-              thumbColor={isDark ? colors.accent : '#F4F4F4'}
+              trackColor={{ false: colors.surfaceLighter, true: colors.positive }}
+              thumbColor="#FFFFFF"
             />
           </View>
 
+          <View style={[styles.rowDivider, { borderBottomColor: colors.borderLight }]} />
+
           <View style={styles.rowItem}>
-            <View>
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
-                Privacy Mode
-              </AppText>
-              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                Mask balances globally ({currencySymbol}••••••)
-              </AppText>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={[styles.settingIconBadge, { backgroundColor: '#64D2FF' }]}>
+                <CategoryIcon name="EyeOff" size={16} color="#FFFFFF" />
+              </View>
+              <View style={{ marginLeft: 12 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '500' }}>
+                  Privacy Mode
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  Mask balance numbers ({currencySymbol}••••)
+                </AppText>
+              </View>
             </View>
             <Switch
               value={isPrivacyMode}
               onValueChange={togglePrivacyMode}
-              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
-              thumbColor={isPrivacyMode ? colors.accent : '#F4F4F4'}
+              trackColor={{ false: colors.surfaceLighter, true: colors.positive }}
+              thumbColor="#FFFFFF"
             />
           </View>
         </View>
 
         {/* SECTION: SYSTEM NOTIFICATIONS */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 6 }}>
-          SYSTEM NOTIFICATIONS
+        <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 8 }}>
+          NOTIFICATIONS
         </AppText>
         <View
           style={[
             styles.sectionCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              marginBottom: spacing.md,
+              marginBottom: spacing.lg,
+              overflow: 'hidden',
             },
           ]}
         >
           {/* Master Notifications Toggle */}
-          <View style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}>
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
-                Push Notifications
-              </AppText>
-              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                Native Android channels & background alerts
-              </AppText>
+          <View style={styles.rowItem}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, paddingRight: 10 }}>
+              <View style={[styles.settingIconBadge, { backgroundColor: '#FF2D55' }]}>
+                <CategoryIcon name="Bell" size={16} color="#FFFFFF" />
+              </View>
+              <View style={{ marginLeft: 12, flex: 1 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '500' }}>
+                  Notifications
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  System channels & daily alerts
+                </AppText>
+              </View>
             </View>
             <Switch
               value={settings.notificationsEnabled ?? true}
@@ -338,20 +384,27 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   await updateSettings({ notificationsEnabled: false, dailyReminderEnabled: false });
                 }
               }}
-              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
-              thumbColor={(settings.notificationsEnabled ?? true) ? colors.accent : '#F4F4F4'}
+              trackColor={{ false: colors.surfaceLighter, true: colors.positive }}
+              thumbColor="#FFFFFF"
             />
           </View>
 
+          <View style={[styles.rowDivider, { borderBottomColor: colors.borderLight }]} />
+
           {/* Daily 8:00 PM Reminder */}
-          <View style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}>
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
-                Daily Expense Reminder
-              </AppText>
-              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                Scheduled alarm at 8:00 PM every day
-              </AppText>
+          <View style={styles.rowItem}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, paddingRight: 10 }}>
+              <View style={[styles.settingIconBadge, { backgroundColor: '#FF9500' }]}>
+                <CategoryIcon name="Clock" size={16} color="#FFFFFF" />
+              </View>
+              <View style={{ marginLeft: 12, flex: 1 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '500' }}>
+                  Daily Evening Reminder
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  Scheduled at 8:00 PM
+                </AppText>
+              </View>
             </View>
             <Switch
               value={settings.dailyReminderEnabled ?? true}
@@ -365,20 +418,27 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   await updateSettings({ dailyReminderEnabled: false });
                 }
               }}
-              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
-              thumbColor={(settings.dailyReminderEnabled ?? true) ? colors.accent : '#F4F4F4'}
+              trackColor={{ false: colors.surfaceLighter, true: colors.positive }}
+              thumbColor="#FFFFFF"
             />
           </View>
 
+          <View style={[styles.rowDivider, { borderBottomColor: colors.borderLight }]} />
+
           {/* Budget Overrun Alerts */}
           <View style={styles.rowItem}>
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
-                Budget Overrun Warnings
-              </AppText>
-              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                Instant alert when category limit is exceeded
-              </AppText>
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, paddingRight: 10 }}>
+              <View style={[styles.settingIconBadge, { backgroundColor: '#FF3B30' }]}>
+                <CategoryIcon name="AlertTriangle" size={16} color="#FFFFFF" />
+              </View>
+              <View style={{ marginLeft: 12, flex: 1 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '500' }}>
+                  Overrun Alerts
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  Alert when category exceeds limit
+                </AppText>
+              </View>
             </View>
             <Switch
               value={settings.budgetAlertsEnabled ?? true}
@@ -386,35 +446,42 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
               onValueChange={async (val) => {
                 await updateSettings({ budgetAlertsEnabled: val });
               }}
-              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
-              thumbColor={(settings.budgetAlertsEnabled ?? true) ? colors.accent : '#F4F4F4'}
+              trackColor={{ false: colors.surfaceLighter, true: colors.positive }}
+              thumbColor="#FFFFFF"
             />
           </View>
         </View>
 
         {/* SECTION: SECURITY */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 6 }}>
+        <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 8 }}>
           SECURITY & PRIVACY
         </AppText>
         <View
           style={[
             styles.sectionCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              marginBottom: spacing.md,
+              marginBottom: spacing.lg,
+              overflow: 'hidden',
             },
           ]}
         >
-          <View style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}>
-            <View>
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
-                PIN Protection
-              </AppText>
-              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                {settings.pinLockEnabled ? 'Enabled' : 'Disabled'}
-              </AppText>
+          <View style={styles.rowItem}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={[styles.settingIconBadge, { backgroundColor: '#5856D6' }]}>
+                <CategoryIcon name="Lock" size={16} color="#FFFFFF" />
+              </View>
+              <View style={{ marginLeft: 12 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '500' }}>
+                  PIN Code
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  {settings.pinLockEnabled ? 'Enabled' : 'Disabled'}
+                </AppText>
+              </View>
             </View>
             <Switch
               value={settings.pinLockEnabled}
@@ -425,19 +492,26 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   setPinCode(undefined);
                 }
               }}
-              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
-              thumbColor={settings.pinLockEnabled ? colors.accent : '#F4F4F4'}
+              trackColor={{ false: colors.surfaceLighter, true: colors.positive }}
+              thumbColor="#FFFFFF"
             />
           </View>
 
+          <View style={[styles.rowDivider, { borderBottomColor: colors.borderLight }]} />
+
           <View style={styles.rowItem}>
-            <View style={{ flex: 1, paddingRight: 10 }}>
-              <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
-                Biometric Unlock
-              </AppText>
-              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                Face / Fingerprint authorization
-              </AppText>
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, paddingRight: 10 }}>
+              <View style={[styles.settingIconBadge, { backgroundColor: '#34C759' }]}>
+                <CategoryIcon name="Shield" size={16} color="#FFFFFF" />
+              </View>
+              <View style={{ marginLeft: 12, flex: 1 }}>
+                <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '500' }}>
+                  Biometrics
+                </AppText>
+                <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+                  Face / Fingerprint authorization
+                </AppText>
+              </View>
             </View>
             <Switch
               value={settings.biometricEnabled}
@@ -466,55 +540,82 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   await updateSettings({ biometricEnabled: false });
                 }
               }}
-              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
-              thumbColor={settings.biometricEnabled ? colors.accent : '#F4F4F4'}
+              trackColor={{ false: colors.surfaceLighter, true: colors.positive }}
+              thumbColor="#FFFFFF"
             />
           </View>
         </View>
 
         {/* SECTION: DATA MANAGEMENT */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 6 }}>
+        <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 8 }}>
           DATA MANAGEMENT
         </AppText>
         <View
           style={[
             styles.sectionCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
               marginBottom: spacing.xl,
+              overflow: 'hidden',
             },
           ]}
         >
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('Reports')}
-            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
+            style={styles.rowItem}
           >
-            <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
-              Export CSV Data
-            </AppText>
-            <CategoryIcon name="Download" size={16} color={colors.textSecondary} />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={[styles.settingIconBadge, { backgroundColor: '#007AFF' }]}>
+                <CategoryIcon name="Download" size={16} color="#FFFFFF" />
+              </View>
+              <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 12, fontWeight: '500' }}>
+                Export CSV Data
+              </AppText>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
           </TouchableOpacity>
 
+          <View style={[styles.rowDivider, { borderBottomColor: colors.borderLight }]} />
+
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={async () => {
               const json = await db.exportAllData();
               Alert.alert('Backup JSON Created', `Backup file created (${json.length} bytes).`);
             }}
-            style={[styles.rowItem, { borderBottomColor: colors.borderLight, borderBottomWidth: 1 }]}
+            style={styles.rowItem}
           >
-            <AppText variant="bodyLarge" style={{ color: colors.textPrimary }}>
-              Export Full JSON Backup
-            </AppText>
-            <CategoryIcon name="Download" size={16} color={colors.textSecondary} />
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={[styles.settingIconBadge, { backgroundColor: '#30B0C7' }]}>
+                <CategoryIcon name="FileText" size={16} color="#FFFFFF" />
+              </View>
+              <AppText variant="bodyLarge" style={{ color: colors.textPrimary, marginLeft: 12, fontWeight: '500' }}>
+                Export Full JSON Backup
+              </AppText>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={handleResetData} style={styles.rowItem}>
-            <AppText variant="bodyLarge" style={{ color: colors.coral, fontWeight: '600' }}>
-              Reset & Return to Onboarding
-            </AppText>
-            <CategoryIcon name="RotateCcw" size={16} color={colors.coral} />
+          <View style={[styles.rowDivider, { borderBottomColor: colors.borderLight }]} />
+
+          <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={handleResetData}
+            style={styles.rowItem}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={[styles.settingIconBadge, { backgroundColor: 'rgba(255, 59, 48, 0.15)' }]}>
+                <CategoryIcon name="RotateCcw" size={16} color={colors.accentRed} />
+              </View>
+              <AppText variant="bodyLarge" style={{ color: colors.accentRed, marginLeft: 12, fontWeight: '600' }}>
+                Reset & Return to Onboarding
+              </AppText>
+            </View>
+            <CategoryIcon name="ChevronRight" size={16} color={colors.accentRed} />
           </TouchableOpacity>
         </View>
 
@@ -570,14 +671,19 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
             style={[
               styles.sheet,
               {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                borderRadius: radius.md,
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: radius.xl,
                 padding: spacing.lg,
               },
             ]}
           >
-            <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
+            <View style={styles.sheetHandleWrap}>
+              <View style={[styles.sheetHandle, { backgroundColor: colors.borderLight }]} />
+            </View>
+
+            <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md, fontWeight: '700', fontSize: 18 }}>
               Select Currency
             </AppText>
 
@@ -586,6 +692,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
               return (
                 <TouchableOpacity
                   key={c.code}
+                  activeOpacity={0.7}
                   onPress={() => {
                     setCurrency(c.code, c.symbol);
                     setCurrencyModalVisible(false);
@@ -593,32 +700,36 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   style={[
                     styles.currencyOption,
                     {
-                      backgroundColor: isSelected ? colors.surfaceLighter : colors.background,
-                      borderColor: isSelected ? colors.accentRed : colors.border,
-                      borderWidth: 1,
+                      backgroundColor: isSelected ? colors.surfaceLighter : 'transparent',
                       borderRadius: radius.md,
-                      marginBottom: 8,
+                      marginBottom: 6,
                     },
                   ]}
                 >
-                  <AppText
-                    variant="cardTitle"
-                    style={{
-                      color: colors.textPrimary,
-                      fontWeight: isSelected ? '700' : '500',
-                      fontSize: 16,
-                    }}
-                  >
-                    {c.symbol} {c.code}
-                  </AppText>
-                  <AppText
-                    variant="metadata"
-                    style={{
-                      color: colors.textSecondary,
-                    }}
-                  >
-                    {c.name}
-                  </AppText>
+                  <View>
+                    <AppText
+                      variant="cardTitle"
+                      style={{
+                        color: colors.textPrimary,
+                        fontWeight: isSelected ? '700' : '500',
+                        fontSize: 16,
+                      }}
+                    >
+                      {c.symbol} {c.code}
+                    </AppText>
+                    <AppText
+                      variant="metadata"
+                      style={{
+                        color: colors.textSecondary,
+                        marginTop: 2,
+                      }}
+                    >
+                      {c.name}
+                    </AppText>
+                  </View>
+                  {isSelected && (
+                    <CategoryIcon name="Check" size={18} color={colors.accentRed} strokeWidth={2.5} />
+                  )}
                 </TouchableOpacity>
               );
             })}
@@ -626,7 +737,6 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
         </TouchableOpacity>
       </Modal>
 
-      {/* PIN Setup Modal */}
       {/* PIN Setup Modal */}
       <Modal
         visible={pinModalVisible}
@@ -649,14 +759,19 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
               style={[
                 styles.sheet,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                  borderRadius: radius.md,
+                  backgroundColor: colors.surfaceCard,
+                  borderColor: colors.borderLight,
+                  borderWidth: StyleSheet.hairlineWidth,
+                  borderRadius: radius.xl,
                   padding: spacing.lg,
                 },
               ]}
             >
-              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
+              <View style={styles.sheetHandleWrap}>
+                <View style={[styles.sheetHandle, { backgroundColor: colors.borderLight }]} />
+              </View>
+
+              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md, fontWeight: '700', fontSize: 18 }}>
                 Set 4-Digit Security PIN
               </AppText>
 
@@ -671,16 +786,16 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                 style={[
                   styles.pinInput,
                   {
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
+                    backgroundColor: colors.surfaceLighter,
                     color: colors.textPrimary,
+                    borderRadius: radius.md,
                   },
                 ]}
                 autoFocus
               />
 
               <AppButton
-                title="CONFIRM PIN"
+                title="Confirm PIN"
                 onPress={handleSetPin}
                 variant="primary"
                 size="large"
@@ -713,18 +828,23 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
               style={[
                 styles.sheet,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                  borderRadius: radius.md,
+                  backgroundColor: colors.surfaceCard,
+                  borderColor: colors.borderLight,
+                  borderWidth: StyleSheet.hairlineWidth,
+                  borderRadius: radius.xl,
                   padding: spacing.lg,
                 },
               ]}
             >
-              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
+              <View style={styles.sheetHandleWrap}>
+                <View style={[styles.sheetHandle, { backgroundColor: colors.borderLight }]} />
+              </View>
+
+              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md, fontWeight: '700', fontSize: 18 }}>
                 Edit Profile & Budget
               </AppText>
 
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginBottom: 4 }}>
+              <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 6 }}>
                 YOUR NAME
               </AppText>
               <TextInput
@@ -735,14 +855,14 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                 style={[
                   styles.inputField,
                   {
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
+                    backgroundColor: colors.surfaceLighter,
                     color: colors.textPrimary,
+                    borderRadius: radius.md,
                   },
                 ]}
               />
 
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginTop: 14, marginBottom: 4 }}>
+              <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginTop: 14, marginBottom: 6 }}>
                 MONTHLY BUDGET GOAL ({currencySymbol})
               </AppText>
               <TextInput
@@ -754,15 +874,15 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                 style={[
                   styles.inputField,
                   {
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
+                    backgroundColor: colors.surfaceLighter,
                     color: colors.textPrimary,
+                    borderRadius: radius.md,
                   },
                 ]}
               />
 
               <AppButton
-                title="SAVE CHANGES"
+                title="Save Changes"
                 onPress={handleSaveProfile}
                 variant="primary"
                 size="large"
@@ -786,56 +906,59 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 40,
   },
-  profileCard: {
-    borderWidth: 1,
-  },
-  avatarLarge: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1,
+  profileCard: {},
+  sectionCard: {},
+  settingIconBadge: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  sectionCard: {
-    borderWidth: 1,
   },
   rowItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 14,
+    paddingVertical: 12,
     paddingHorizontal: 16,
+    minHeight: 52,
+  },
+  rowDivider: {
+    marginLeft: 58,
   },
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   sheet: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    borderWidth: 1,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  sheetHandleWrap: {
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sheetHandle: {
+    width: 36,
+    height: 5,
+    borderRadius: 2.5,
   },
   currencyOption: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 12,
-    borderWidth: 1,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
   },
   pinInput: {
     fontSize: 32,
     textAlign: 'center',
     letterSpacing: 12,
     paddingVertical: 12,
-    borderWidth: 1,
-    borderRadius: 4,
   },
   inputField: {
-    borderWidth: 1,
-    borderRadius: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     fontSize: 16,
   },
 });

@@ -17,16 +17,17 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onContribute 
 
   return (
     <TouchableOpacity
-      activeOpacity={0.85}
+      activeOpacity={0.7}
       onPress={onPress}
       style={[
         styles.card,
         {
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
+          backgroundColor: colors.surfaceCard,
+          borderColor: colors.borderLight,
+          borderWidth: StyleSheet.hairlineWidth,
           borderRadius: radius.lg,
           padding: spacing.md,
-          marginBottom: spacing.sm,
+          marginBottom: spacing.sm + 2,
         },
       ]}
     >
@@ -36,20 +37,23 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onContribute 
           <View
             style={[
               styles.iconWrapper,
-              { backgroundColor: colors.cardDark, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border },
+              {
+                backgroundColor: colors.surfaceLighter,
+                borderRadius: radius.md,
+              },
             ]}
           >
             <CategoryIcon
               name={goal.icon || 'Shield'}
-              size={16}
+              size={18}
               color={colors.textPrimary}
             />
           </View>
-          <View style={{ marginLeft: 10 }}>
-            <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 16 }}>
+          <View style={{ marginLeft: 12 }}>
+            <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 16, fontWeight: '600' }}>
               {goal.name}
             </AppText>
-            <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+            <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>
               Target: {goal.targetDate}
             </AppText>
           </View>
@@ -60,24 +64,22 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onContribute 
           style={[
             styles.statusBadge,
             {
-              backgroundColor: goal.isOnTrack ? 'rgba(52, 211, 153, 0.15)' : 'rgba(235, 59, 46, 0.15)',
-              borderColor: goal.isOnTrack ? 'rgba(52, 211, 153, 0.35)' : 'rgba(235, 59, 46, 0.35)',
-              borderWidth: 1,
-              borderRadius: radius.xs,
-              paddingHorizontal: 8,
-              paddingVertical: 2,
+              backgroundColor: goal.isOnTrack ? 'rgba(52, 199, 89, 0.12)' : 'rgba(255, 59, 48, 0.12)',
+              borderRadius: radius.full,
+              paddingHorizontal: 10,
+              paddingVertical: 3,
             },
           ]}
         >
           <AppText
             variant="labelSmall"
             style={{
-              color: goal.isOnTrack ? colors.positive : colors.accent,
-              letterSpacing: 1.2,
-              fontWeight: '700',
+              color: goal.isOnTrack ? colors.positive : colors.accentRed,
+              fontWeight: '600',
+              fontSize: 11,
             }}
           >
-            {goal.isOnTrack ? 'ON TRACK' : 'BEHIND'}
+            {goal.isOnTrack ? 'On Track' : 'Behind'}
           </AppText>
         </View>
       </View>
@@ -100,7 +102,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onContribute 
           </AppText>
         </View>
 
-        <AppText variant="label" style={{ color: colors.textPrimary, fontWeight: '700' }}>
+        <AppText variant="labelSmall" style={{ color: colors.textPrimary, fontWeight: '700' }}>
           {goal.percentage}%
         </AppText>
       </View>
@@ -109,14 +111,20 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onContribute 
       <View
         style={[
           styles.progressTrack,
-          { backgroundColor: colors.cardDark, borderRadius: radius.full, height: 6, marginTop: 8, overflow: 'hidden' },
+          {
+            backgroundColor: colors.surfaceLighter,
+            borderRadius: radius.full,
+            height: 6,
+            marginTop: 8,
+            overflow: 'hidden',
+          },
         ]}
       >
         <View
           style={[
             styles.progressBar,
             {
-              backgroundColor: goal.isOnTrack ? colors.positive : colors.accent,
+              backgroundColor: goal.isOnTrack ? colors.positive : colors.accentRed,
               borderRadius: radius.full,
               height: '100%',
               width: `${Math.min(100, Math.max(2, goal.percentage))}%`,
@@ -127,19 +135,30 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onContribute 
 
       {/* Bottom Contribution Prompt */}
       {onContribute && (
-        <View style={[styles.bottomRow, { marginTop: spacing.sm + 2 }]}>
+        <View
+          style={[
+            styles.bottomRow,
+            {
+              marginTop: spacing.sm + 4,
+              borderTopColor: colors.borderLight,
+              borderTopWidth: StyleSheet.hairlineWidth,
+              paddingTop: 10,
+            },
+          ]}
+        >
           <AppText variant="metadata" style={{ color: colors.textSecondary }}>
             Need {formatCurrency(goal.calculatedRequiredMonthly, currencySymbol, isPrivacyMode, false)}/mo
           </AppText>
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={onContribute}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
             <AppText
               variant="labelSmall"
-              style={{ color: colors.textPrimary, fontWeight: '700', letterSpacing: 1 }}
+              style={{ color: colors.accentRed, fontWeight: '700', letterSpacing: 0.3 }}
             >
-              + ADD SAVINGS
+              + Add Savings
             </AppText>
           </TouchableOpacity>
         </View>
@@ -150,7 +169,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onPress, onContribute 
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: 1,
+    gap: 4,
   },
   topRow: {
     flexDirection: 'row',
@@ -160,17 +179,16 @@ const styles = StyleSheet.create({
   titleGroup: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
   },
   iconWrapper: {
-    width: 32,
-    height: 32,
+    width: 38,
+    height: 38,
     alignItems: 'center',
     justifyContent: 'center',
   },
   statusBadge: {
-    paddingVertical: 3,
-    paddingHorizontal: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   amountsRow: {
     flexDirection: 'row',
@@ -178,13 +196,9 @@ const styles = StyleSheet.create({
     alignItems: 'baseline',
   },
   progressTrack: {
-    height: 4,
     width: '100%',
-    overflow: 'hidden',
   },
-  progressBar: {
-    height: '100%',
-  },
+  progressBar: {},
   bottomRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -149,21 +149,26 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
       <Header
         showBack
         onPressBack={() => navigation.goBack()}
-        subtitle="RECURRING"
+        subtitle="Recurring"
         title="Subscriptions"
         rightAction={
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => setModalVisible(true)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             style={[
               styles.plusBtn,
               {
                 backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: 18,
+                width: 36,
+                height: 36,
               },
             ]}
           >
-            <CategoryIcon name="Plus" size={16} color={colors.textPrimary} strokeWidth={2.2} />
+            <CategoryIcon name="Plus" size={17} color={colors.textPrimary} strokeWidth={2.2} />
           </TouchableOpacity>
         }
       />
@@ -182,32 +187,33 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
           />
         }
       >
-        {/* Subscriptions Overview Summary (Requirement 22) */}
+        {/* Subscriptions Overview Summary */}
         <View
           style={[
             styles.summaryCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
-              padding: spacing.md,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderRadius: radius.lg,
+              padding: spacing.md + 2,
               marginBottom: spacing.md,
             },
           ]}
         >
-          <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
             MONTHLY SUBSCRIPTIONS
           </AppText>
           <AppText
             variant="displayMedium"
             privacySensitive
-            style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 2 }}
+            style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 4 }}
           >
             {formatCurrency(summary.monthlyTotal, currencySymbol, isPrivacyMode, false)}
           </AppText>
 
-          <View style={[styles.yearlyRow, { borderTopColor: colors.border, borderTopWidth: 1, marginTop: spacing.md, paddingTop: spacing.sm }]}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+          <View style={[styles.yearlyRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth, marginTop: spacing.md, paddingTop: spacing.sm + 2 }]}>
+            <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 }}>
               YEARLY COMMITMENT
             </AppText>
             <AppText
@@ -221,7 +227,7 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
         </View>
 
         {/* Subscriptions List */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 8 }}>
+        <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 10 }}>
           ACTIVE SUBSCRIPTIONS ({summary.subscriptions.length})
         </AppText>
 
@@ -233,34 +239,35 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
               style={[
                 styles.subItem,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                  borderRadius: radius.xs,
+                  backgroundColor: colors.surfaceCard,
+                  borderColor: colors.borderLight,
+                  borderWidth: StyleSheet.hairlineWidth,
+                  borderRadius: radius.lg,
                   padding: spacing.md,
-                  marginBottom: spacing.xs,
+                  marginBottom: spacing.sm,
                 },
               ]}
             >
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                 <View style={{ flex: 1, marginRight: 8 }}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 16 }}>
+                    <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 16, fontWeight: '600' }}>
                       {sub.name}
                     </AppText>
                     <View
                       style={[
                         styles.dueBadge,
                         {
-                          backgroundColor: dueStatus.isUrgent ? 'rgba(217, 83, 79, 0.15)' : 'rgba(52, 106, 62, 0.12)',
-                          borderColor: dueStatus.isUrgent ? colors.coral : colors.accent,
+                          backgroundColor: dueStatus.isUrgent ? 'rgba(255, 59, 48, 0.12)' : 'rgba(52, 199, 89, 0.12)',
+                          borderRadius: radius.full,
                         },
                       ]}
                     >
                       <AppText
                         variant="labelSmall"
                         style={{
-                          color: dueStatus.isUrgent ? colors.coral : colors.accent,
-                          fontSize: 9,
+                          color: dueStatus.isUrgent ? colors.accentRed : colors.positive,
+                          fontSize: 10,
                           fontWeight: '700',
                         }}
                       >
@@ -287,41 +294,42 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                 </View>
               </View>
 
-              {/* Action Buttons: 1-Tap Log & Delete */}
+              {/* Action Buttons */}
               <View
                 style={[
                   styles.subActionsRow,
                   {
-                    borderTopColor: colors.border,
-                    borderTopWidth: 1,
-                    marginTop: 10,
-                    paddingTop: 8,
+                    borderTopColor: colors.borderLight,
+                    borderTopWidth: StyleSheet.hairlineWidth,
+                    marginTop: 12,
+                    paddingTop: 10,
                   },
                 ]}
               >
                 <TouchableOpacity
+                  activeOpacity={0.7}
                   onPress={() => handleLogExpense(sub)}
                   style={[
                     styles.markPaidBtn,
                     {
-                      backgroundColor: colors.accentRedSurface,
-                      borderColor: colors.accentRed,
-                      borderWidth: 1,
+                      backgroundColor: colors.surfaceLighter,
+                      borderRadius: radius.full,
                     },
                   ]}
                 >
-                  <CategoryIcon name="Check" size={12} color={colors.accentRed} strokeWidth={2.4} />
-                  <AppText variant="labelSmall" style={{ color: colors.textPrimary, marginLeft: 6, fontWeight: '700' }}>
-                    MARK PAID (LOG EXPENSE)
+                  <CategoryIcon name="Check" size={13} color={colors.accentRed} strokeWidth={2.4} />
+                  <AppText variant="labelSmall" style={{ color: colors.textPrimary, marginLeft: 6, fontWeight: '600' }}>
+                    Mark Paid
                   </AppText>
                 </TouchableOpacity>
 
                 <TouchableOpacity
+                  activeOpacity={0.7}
                   onPress={() => handleDelete(sub.id, sub.name)}
                   hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                   style={{ paddingVertical: 4, paddingHorizontal: 8 }}
                 >
-                  <AppText variant="metadata" style={{ color: colors.coral }}>
+                  <AppText variant="metadata" style={{ color: colors.accentRed, fontWeight: '600' }}>
                     Remove
                   </AppText>
                 </TouchableOpacity>
@@ -334,10 +342,10 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
           <View
             style={{
               padding: spacing.lg,
-              borderWidth: 1,
-              borderColor: colors.border,
-              backgroundColor: colors.surface,
-              borderRadius: radius.xs,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderColor: colors.borderLight,
+              backgroundColor: colors.surfaceCard,
+              borderRadius: radius.lg,
               alignItems: 'center',
               marginBottom: spacing.md,
             }}
@@ -349,7 +357,7 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
         )}
 
         <AppButton
-          title="+ ADD SUBSCRIPTION"
+          title="Add Subscription"
           onPress={() => setModalVisible(true)}
           variant="primary"
           size="large"
@@ -379,14 +387,19 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
               style={[
                 styles.sheet,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                  borderRadius: radius.md,
+                  backgroundColor: colors.surfaceCard,
+                  borderColor: colors.borderLight,
+                  borderWidth: StyleSheet.hairlineWidth,
+                  borderRadius: radius.xl,
                   padding: spacing.lg,
                 },
               ]}
             >
-              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
+              <View style={styles.sheetHandleWrap}>
+                <View style={[styles.sheetHandle, { backgroundColor: colors.borderLight }]} />
+              </View>
+
+              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md, fontWeight: '700', fontSize: 18 }}>
                 Add Subscription
               </AppText>
 
@@ -400,24 +413,23 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                 ].map(preset => (
                   <TouchableOpacity
                     key={preset.label}
+                    activeOpacity={0.7}
                     onPress={() => {
                       setName(preset.label);
                       if (!amount) setAmount(preset.amt);
                     }}
                     style={{
-                      paddingVertical: 4,
-                      paddingHorizontal: 10,
-                      borderRadius: 12,
-                      backgroundColor: name === preset.label ? colors.accentRedSurface : colors.surfaceLighter,
-                      borderWidth: 1,
-                      borderColor: name === preset.label ? colors.accentRed : colors.border,
+                      paddingVertical: 5,
+                      paddingHorizontal: 12,
+                      borderRadius: radius.full,
+                      backgroundColor: name === preset.label ? colors.accentRed : colors.surfaceLighter,
                     }}
                   >
                     <AppText
                       variant="labelSmall"
                       style={{
-                        color: name === preset.label ? colors.coral : colors.textSecondary,
-                        fontSize: 11,
+                        color: name === preset.label ? '#FFFFFF' : colors.textPrimary,
+                        fontSize: 12,
                         fontWeight: '600',
                       }}
                     >
@@ -427,8 +439,8 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                 ))}
               </View>
 
-              <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+              <View style={[styles.inputBox, { backgroundColor: colors.surfaceLighter }]}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 }}>
                   SERVICE NAME
                 </AppText>
                 <TextInput
@@ -440,8 +452,8 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                 />
               </View>
 
-              <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border, marginTop: 10 }]}>
-                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+              <View style={[styles.inputBox, { backgroundColor: colors.surfaceLighter, marginTop: 10 }]}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 }}>
                   AMOUNT
                 </AppText>
                 <TextInput
@@ -454,39 +466,37 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                 />
               </View>
 
-              <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border, marginTop: 10 }]}>
+              <View style={[styles.inputBox, { backgroundColor: colors.surfaceLighter, marginTop: 10 }]}>
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                  <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                  <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 }}>
                     NEXT BILLING DATE
                   </AppText>
                   <View style={{ flexDirection: 'row', gap: 6 }}>
                     <TouchableOpacity
+                      activeOpacity={0.7}
                       onPress={() => setNextBillingDate(getTodayDateString())}
                       style={{
-                        paddingVertical: 2,
-                        paddingHorizontal: 8,
-                        borderRadius: 4,
-                        backgroundColor: nextBillingDate === getTodayDateString() ? colors.accentRedSurface : colors.surfaceLighter,
-                        borderWidth: 1,
-                        borderColor: nextBillingDate === getTodayDateString() ? colors.accentRed : colors.border,
+                        paddingVertical: 3,
+                        paddingHorizontal: 10,
+                        borderRadius: radius.full,
+                        backgroundColor: nextBillingDate === getTodayDateString() ? colors.accentRed : colors.surfaceCard,
                       }}
                     >
-                      <AppText variant="labelSmall" style={{ color: nextBillingDate === getTodayDateString() ? colors.coral : colors.textSecondary, fontSize: 10 }}>
+                      <AppText variant="labelSmall" style={{ color: nextBillingDate === getTodayDateString() ? '#FFFFFF' : colors.textSecondary, fontSize: 11, fontWeight: '600' }}>
                         Today
                       </AppText>
                     </TouchableOpacity>
                     <TouchableOpacity
+                      activeOpacity={0.7}
                       onPress={() => setNextBillingDate(getInitialNextDate())}
                       style={{
-                        paddingVertical: 2,
-                        paddingHorizontal: 8,
-                        borderRadius: 4,
-                        backgroundColor: nextBillingDate === getInitialNextDate() ? colors.accentRedSurface : colors.surfaceLighter,
-                        borderWidth: 1,
-                        borderColor: nextBillingDate === getInitialNextDate() ? colors.accentRed : colors.border,
+                        paddingVertical: 3,
+                        paddingHorizontal: 10,
+                        borderRadius: radius.full,
+                        backgroundColor: nextBillingDate === getInitialNextDate() ? colors.accentRed : colors.surfaceCard,
                       }}
                     >
-                      <AppText variant="labelSmall" style={{ color: nextBillingDate === getInitialNextDate() ? colors.coral : colors.textSecondary, fontSize: 10 }}>
+                      <AppText variant="labelSmall" style={{ color: nextBillingDate === getInitialNextDate() ? '#FFFFFF' : colors.textSecondary, fontSize: 11, fontWeight: '600' }}>
                         +1 Month
                       </AppText>
                     </TouchableOpacity>
@@ -501,32 +511,32 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                 />
               </View>
 
-              <View style={styles.frequencyRow}>
+              <View style={[styles.frequencyRow, { backgroundColor: colors.surfaceLighter, borderRadius: radius.md, padding: 3 }]}>
                 {(['monthly', 'yearly'] as const).map(f => {
                   const isSelected = frequency === f;
                   return (
                     <TouchableOpacity
                       key={f}
+                      activeOpacity={0.7}
                       onPress={() => setFrequency(f)}
                       style={[
                         styles.freqChip,
                         {
-                          backgroundColor: isSelected ? colors.accentRed : colors.surface,
-                          borderColor: isSelected ? colors.accentRed : colors.border,
+                          backgroundColor: isSelected ? colors.surfaceCard : 'transparent',
+                          borderRadius: 8,
                           flex: 1,
-                          marginHorizontal: 4,
                         },
                       ]}
                     >
                       <AppText
                         variant="labelSmall"
                         style={{
-                          color: isSelected ? '#FFFFFF' : colors.textPrimary,
+                          color: isSelected ? colors.textPrimary : colors.textSecondary,
                           fontWeight: isSelected ? '700' : '500',
                           textAlign: 'center',
                         }}
                       >
-                        {f.toUpperCase()}
+                        {f === 'monthly' ? 'Monthly' : 'Yearly'}
                       </AppText>
                     </TouchableOpacity>
                   );
@@ -534,19 +544,19 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
               </View>
 
               <View style={styles.reminderRow}>
-                <AppText variant="bodyMedium" style={{ color: colors.textPrimary }}>
+                <AppText variant="bodyMedium" style={{ color: colors.textPrimary, fontWeight: '500' }}>
                   Upcoming renewal reminder
                 </AppText>
                 <Switch
                   value={reminder}
                   onValueChange={setReminder}
-                  trackColor={{ false: colors.border, true: colors.accentRedSurface }}
-                  thumbColor={reminder ? colors.accent : '#F4F4F4'}
+                  trackColor={{ false: colors.surfaceLighter, true: colors.positive }}
+                  thumbColor="#FFFFFF"
                 />
               </View>
 
               <AppButton
-                title="SAVE SUBSCRIPTION"
+                title="Save Subscription"
                 onPress={handleCreate}
                 variant="primary"
                 size="large"
@@ -580,15 +590,14 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   plusBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 6,
-    borderWidth: 1,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
   summaryCard: {
-    borderWidth: 1,
+    gap: 4,
   },
   yearlyRow: {
     flexDirection: 'row',
@@ -596,24 +605,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   subItem: {
-    borderWidth: 1,
+    gap: 4,
   },
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   sheet: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    borderWidth: 1,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  sheetHandleWrap: {
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sheetHandle: {
+    width: 36,
+    height: 5,
+    borderRadius: 2.5,
   },
   inputBox: {
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 4,
+    padding: 12,
+    borderRadius: 12,
   },
   input: {
-    fontSize: 15,
+    fontSize: 16,
     marginTop: 4,
     paddingVertical: 0,
   },
@@ -622,9 +638,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   freqChip: {
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderRadius: 4,
+    paddingVertical: 7,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   reminderRow: {
     flexDirection: 'row',
@@ -633,10 +649,8 @@ const styles = StyleSheet.create({
     marginTop: 14,
   },
   dueBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 2,
-    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     marginLeft: 8,
   },
   subActionsRow: {
@@ -647,8 +661,7 @@ const styles = StyleSheet.create({
   markPaidBtn: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderRadius: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
   },
 });

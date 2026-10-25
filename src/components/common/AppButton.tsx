@@ -153,7 +153,8 @@ export const AppButton: React.FC<AppButtonProps> = ({
 
 const styles = StyleSheet.create({
   text: {
-    letterSpacing: 1.4,
-    fontWeight: '800',
+    letterSpacing: 0.3,
+    fontWeight: '600',
+    fontSize: 15,
   },
 });

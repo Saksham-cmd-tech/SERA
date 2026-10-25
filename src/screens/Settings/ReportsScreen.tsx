@@ -80,7 +80,7 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
       edges={['top', 'left', 'right']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <Header showBack onPressBack={() => navigation.goBack()} subtitle="STATEMENTS" title="Monthly Report" />
+      <Header showBack onPressBack={() => navigation.goBack()} subtitle="Statements" title="Monthly Report" />
 
       <ScrollView
         contentContainerStyle={[
@@ -90,14 +90,15 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         {/* Month Selector Tabs */}
-        <View style={[styles.tabsRow, { backgroundColor: colors.surface, borderColor: colors.border, borderRadius: radius.xs, marginBottom: spacing.md }]}>
+        <View style={[styles.tabsRow, { backgroundColor: colors.surfaceLighter, borderRadius: 12, marginBottom: spacing.md }]}>
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => setSelectedMonth('current')}
             style={[
               styles.tab,
               selectedMonth === 'current' && {
-                backgroundColor: colors.surfaceLighter,
-                borderColor: colors.border,
+                backgroundColor: colors.surfaceCard,
+                borderRadius: 9,
               },
             ]}
           >
@@ -113,12 +114,13 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => setSelectedMonth('previous')}
             style={[
               styles.tab,
               selectedMonth === 'previous' && {
-                backgroundColor: colors.surfaceLighter,
-                borderColor: colors.border,
+                backgroundColor: colors.surfaceCard,
+                borderRadius: 9,
               },
             ]}
           >
@@ -134,25 +136,26 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Report Card (Exact layout from Requirement 27) */}
+        {/* Report Card */}
         <View
           style={[
             styles.reportCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
-              padding: spacing.md,
-              marginBottom: spacing.md,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderRadius: radius.lg,
+              padding: spacing.md + 2,
+              marginBottom: spacing.lg,
             },
           ]}
         >
-          <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 2, marginBottom: spacing.md }}>
-            {monthLabel} STATEMENT
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: spacing.sm }}>
+            {monthLabel.toUpperCase()} SUMMARY
           </AppText>
 
           <View style={styles.metricRow}>
-            <AppText variant="cardTitle" style={{ color: colors.textSecondary, fontSize: 16 }}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, fontWeight: '500' }}>
               Income
             </AppText>
             <AppText variant="amountMedium" privacySensitive style={{ color: colors.positive, fontWeight: '700' }}>
@@ -160,8 +163,8 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
             </AppText>
           </View>
 
-          <View style={[styles.metricRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="cardTitle" style={{ color: colors.textSecondary, fontSize: 16 }}>
+          <View style={[styles.metricRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, fontWeight: '500' }}>
               Expenses
             </AppText>
             <AppText variant="amountMedium" privacySensitive style={{ color: colors.textPrimary, fontWeight: '700' }}>
@@ -169,8 +172,8 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
             </AppText>
           </View>
 
-          <View style={[styles.metricRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="cardTitle" style={{ color: colors.textSecondary, fontSize: 16 }}>
+          <View style={[styles.metricRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, fontWeight: '500' }}>
               Savings
             </AppText>
             <AppText variant="amountMedium" privacySensitive style={{ color: colors.textPrimary, fontWeight: '700' }}>
@@ -178,8 +181,8 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
             </AppText>
           </View>
 
-          <View style={[styles.metricRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="cardTitle" style={{ color: colors.textSecondary, fontSize: 16 }}>
+          <View style={[styles.metricRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, fontWeight: '500' }}>
               Savings Rate
             </AppText>
             <AppText variant="amountMedium" style={{ color: colors.positive, fontWeight: '700' }}>
@@ -187,17 +190,17 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
             </AppText>
           </View>
 
-          <View style={[styles.metricRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="cardTitle" style={{ color: colors.textSecondary, fontSize: 16 }}>
+          <View style={[styles.metricRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, fontWeight: '500' }}>
               Top Outflow Category
             </AppText>
-            <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '700' }}>
+            <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
               {topCategoryName}
             </AppText>
           </View>
 
-          <View style={[styles.metricRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="cardTitle" style={{ color: colors.textSecondary, fontSize: 15, marginRight: 12 }}>
+          <View style={[styles.metricRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, fontWeight: '500', marginRight: 12 }}>
               Largest Transaction
             </AppText>
             <AppText
@@ -205,7 +208,7 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
               privacySensitive
               numberOfLines={1}
               ellipsizeMode="tail"
-              style={{ color: colors.textPrimary, fontWeight: '700', flex: 1, textAlign: 'right' }}
+              style={{ color: colors.textPrimary, fontWeight: '600', flex: 1, textAlign: 'right' }}
             >
               {largestTx ? `${largestTx.merchant} — ${formatCurrency(largestTx.amount, currencySymbol, isPrivacyMode, false)}` : 'None'}
             </AppText>
@@ -214,7 +217,7 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
 
         {/* Export Buttons */}
         <AppButton
-          title="EXPORT CSV STATEMENT"
+          title="Export CSV Statement"
           onPress={handleExportCSV}
           variant="primary"
           size="large"
@@ -222,11 +225,11 @@ export const ReportsScreen: React.FC<ReportsScreenProps> = ({ navigation }) => {
         />
 
         <AppButton
-          title="EXPORT FULL JSON BACKUP"
+          title="Export JSON Backup"
           onPress={() => {
             Alert.alert('JSON Backup Ready', 'Application backup snapshot encrypted and generated.');
           }}
-          variant="outline"
+          variant="surface"
           size="medium"
           style={{ marginBottom: 30 }}
         />
@@ -247,7 +250,6 @@ const styles = StyleSheet.create({
   },
   tabsRow: {
     flexDirection: 'row',
-    borderWidth: 1,
     padding: 3,
   },
   tab: {
@@ -255,15 +257,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 2,
   },
-  reportCard: {
-    borderWidth: 1,
-  },
+  reportCard: {},
   metricRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 14,
   },
 });

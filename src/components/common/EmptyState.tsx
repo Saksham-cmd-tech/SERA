@@ -27,8 +27,10 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
       style={[
         styles.container,
         {
-          borderColor: colors.border,
-          borderRadius: radius.md,
+          backgroundColor: colors.surfaceCard,
+          borderColor: colors.borderLight,
+          borderWidth: StyleSheet.hairlineWidth,
+          borderRadius: radius.lg,
           padding: spacing.xl,
         },
         style,
@@ -36,25 +38,26 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     >
       <View
         style={{
-          width: 44,
-          height: 44,
-          borderRadius: 22,
-          backgroundColor: colors.cardDark,
+          width: 52,
+          height: 52,
+          borderRadius: 26,
+          backgroundColor: colors.surfaceLighter,
           alignItems: 'center',
           justifyContent: 'center',
           alignSelf: 'center',
           marginBottom: spacing.md,
         }}
       >
-        <CategoryIcon name="Inbox" size={22} color={colors.textSecondary} strokeWidth={2} />
+        <CategoryIcon name="Inbox" size={24} color={colors.textSecondary} strokeWidth={2} />
       </View>
       <AppText
-        variant="label"
+        variant="cardTitle"
         style={{
           color: colors.textPrimary,
           textAlign: 'center',
           marginBottom: spacing.xs,
-          letterSpacing: 2,
+          fontSize: 17,
+          fontWeight: '600',
         }}
       >
         {title}
@@ -65,6 +68,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           color: colors.textSecondary,
           textAlign: 'center',
           marginBottom: actionTitle ? spacing.lg : 0,
+          lineHeight: 20,
         }}
       >
         {subtitle}
@@ -75,7 +79,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
           onPress={onAction}
           variant="primary"
           size="medium"
-          style={{ alignSelf: 'center' }}
+          style={{ alignSelf: 'center', paddingHorizontal: 20 }}
         />
       )}
     </View>
@@ -84,10 +88,8 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    borderWidth: 1,
-    borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
-    marginVertical: 20,
+    marginVertical: 16,
   },
 });

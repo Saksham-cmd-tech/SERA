@@ -95,7 +95,7 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
       edges={['top', 'left', 'right', 'bottom']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <Header showBack onPressBack={() => navigation.goBack()} subtitle="ACCOUNTS" title="Transfer Funds" />
+      <Header showBack onPressBack={() => navigation.goBack()} subtitle="Accounts" title="Transfer Funds" />
 
       <ScrollView
         ref={scrollRef}
@@ -115,15 +115,16 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
           style={[
             styles.card,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
-              padding: spacing.md,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderRadius: radius.lg,
+              padding: spacing.md + 2,
               marginBottom: spacing.md,
             },
           ]}
         >
-          <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.4 }}>
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
             TRANSFER AMOUNT
           </AppText>
           <View style={styles.amountInputRow}>
@@ -151,39 +152,40 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
           style={[
             styles.card,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.xs,
             },
           ]}
         >
-          <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.4 }}>
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
             FROM (SOURCE)
           </AppText>
-          <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 18, marginTop: 4 }}>
+          <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 18, marginTop: 4, fontWeight: '600' }}>
             {fromAccount?.name}
           </AppText>
           <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>
-            Balance: {formatCurrency(fromAccount?.balance || 0, currencySymbol, false, false)}
+            Available: {formatCurrency(fromAccount?.balance || 0, currencySymbol, false, false)}
           </AppText>
 
           {/* Account selector chips */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 12 }}>
             {accounts.map(acc => {
               const isSelected = fromAccountId === acc.id;
               return (
                 <TouchableOpacity
                   key={acc.id}
+                  activeOpacity={0.7}
                   onPress={() => setFromAccountId(acc.id)}
                   style={[
                     styles.accountChip,
                     {
-                      backgroundColor: isSelected ? colors.accentRed : colors.surface,
-                      borderColor: isSelected ? colors.accentRed : colors.border,
-                      borderRadius: radius.xs,
-                      marginRight: 6,
+                      backgroundColor: isSelected ? colors.accentRed : colors.surfaceLighter,
+                      borderRadius: radius.full,
+                      marginRight: 8,
                     },
                   ]}
                 >
@@ -194,7 +196,7 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
                       fontWeight: isSelected ? '700' : '500',
                     }}
                   >
-                    {acc.name.toUpperCase()}
+                    {acc.name}
                   </AppText>
                 </TouchableOpacity>
               );
@@ -209,10 +211,15 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
             onPress={handleSwap}
             style={[
               styles.swapButton,
-              { backgroundColor: colors.accent, borderColor: colors.border, borderRadius: radius.xs },
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: 20,
+              },
             ]}
           >
-            <CategoryIcon name="ArrowRightLeft" size={16} color={colors.accentText} />
+            <CategoryIcon name="ArrowRightLeft" size={16} color={colors.textPrimary} />
           </TouchableOpacity>
         </View>
 
@@ -221,39 +228,40 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
           style={[
             styles.card,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
             },
           ]}
         >
-          <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.4 }}>
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
             TO (DESTINATION)
           </AppText>
-          <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 18, marginTop: 4 }}>
+          <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 18, marginTop: 4, fontWeight: '600' }}>
             {toAccount?.name}
           </AppText>
           <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>
-            Balance: {formatCurrency(toAccount?.balance || 0, currencySymbol, false, false)}
+            Current: {formatCurrency(toAccount?.balance || 0, currencySymbol, false, false)}
           </AppText>
 
           {/* Account selector chips */}
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 10 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginTop: 12 }}>
             {accounts.map(acc => {
               const isSelected = toAccountId === acc.id;
               return (
                 <TouchableOpacity
                   key={acc.id}
+                  activeOpacity={0.7}
                   onPress={() => setToAccountId(acc.id)}
                   style={[
                     styles.accountChip,
                     {
-                      backgroundColor: isSelected ? colors.accentRed : colors.surface,
-                      borderColor: isSelected ? colors.accentRed : colors.border,
-                      borderRadius: radius.xs,
-                      marginRight: 6,
+                      backgroundColor: isSelected ? colors.accentRed : colors.surfaceLighter,
+                      borderRadius: radius.full,
+                      marginRight: 8,
                     },
                   ]}
                 >
@@ -264,7 +272,7 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
                       fontWeight: isSelected ? '700' : '500',
                     }}
                   >
-                    {acc.name.toUpperCase()}
+                    {acc.name}
                   </AppText>
                 </TouchableOpacity>
               );
@@ -277,21 +285,22 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
           style={[
             styles.card,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.xl,
             },
           ]}
         >
-          <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.4 }}>
-            TRANSFER MEMO
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
+            TRANSFER NOTE
           </AppText>
           <TextInput
             value={notes}
             onChangeText={setNotes}
-            placeholder="e.g. ATM cash withdrawal, CC payment"
+            placeholder="e.g. ATM withdrawal, Credit card payment"
             placeholderTextColor={colors.textMuted}
             onFocus={() => {
               setTimeout(() => {
@@ -304,7 +313,7 @@ export const TransferScreen: React.FC<TransferScreenProps> = ({
 
         {/* Action Button */}
         <AppButton
-          title="EXECUTE TRANSFER"
+          title="Confirm Transfer"
           onPress={handleExecuteTransfer}
           variant="primary"
           size="large"
@@ -325,9 +334,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 40,
   },
-  card: {
-    borderWidth: 1,
-  },
+  card: {},
   amountInputRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -335,27 +342,25 @@ const styles = StyleSheet.create({
   },
   largeInput: {
     flex: 1,
-    fontSize: 48,
-    lineHeight: 52,
+    fontSize: 44,
+    lineHeight: 48,
     fontWeight: '700',
     paddingVertical: 0,
-    marginLeft: 4,
+    marginLeft: 6,
   },
   accountChip: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderWidth: 1,
+    paddingVertical: 7,
+    paddingHorizontal: 16,
   },
   swapRow: {
     alignItems: 'center',
     marginVertical: 4,
   },
   swapButton: {
-    width: 36,
-    height: 36,
+    width: 40,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
   },
   memoInput: {
     fontSize: 15,

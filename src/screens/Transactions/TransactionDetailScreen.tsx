@@ -120,24 +120,23 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
       <Header
         showBack
         onPressBack={() => navigation.goBack()}
-        subtitle="DETAILS"
+        subtitle="Details"
         title="Transaction"
         rightAction={
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={handleDelete}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             style={{
-              width: 32,
-              height: 32,
-              borderRadius: 6,
-              borderWidth: 1,
-              borderColor: colors.border,
-              backgroundColor: colors.surfaceCard,
+              width: 36,
+              height: 36,
+              borderRadius: 18,
+              backgroundColor: 'rgba(255, 59, 48, 0.12)',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <CategoryIcon name="Trash2" size={16} color={colors.accentRed} />
+            <CategoryIcon name="Trash2" size={17} color={colors.accentRed} />
           </TouchableOpacity>
         }
       />
@@ -154,8 +153,9 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
           style={[
             styles.heroCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
               padding: spacing.lg,
               marginBottom: spacing.md,
@@ -167,32 +167,45 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
               style={[
                 styles.iconWrap,
                 {
-                  backgroundColor: category?.color ? category.color + '25' : colors.cardDark,
+                  backgroundColor: category?.color ? category.color + '22' : colors.surfaceLighter,
                   borderRadius: radius.md,
                 },
               ]}
             >
               <CategoryIcon
                 name={category?.icon || 'DollarSign'}
-                size={24}
-                color={colors.textPrimary}
+                size={22}
+                color={category?.color || colors.textPrimary}
               />
             </View>
-            <View style={styles.badgeWrap}>
+            <View
+              style={[
+                styles.badgeWrap,
+                {
+                  backgroundColor:
+                    tx.type === 'expense'
+                      ? 'rgba(255, 59, 48, 0.12)'
+                      : tx.type === 'income'
+                      ? 'rgba(52, 199, 89, 0.12)'
+                      : colors.surfaceLighter,
+                  borderRadius: radius.full,
+                },
+              ]}
+            >
               <AppText
                 variant="labelSmall"
                 style={{
                   color:
                     tx.type === 'expense'
-                      ? colors.coral
+                      ? colors.accentRed
                       : tx.type === 'income'
                       ? colors.positive
                       : colors.textSecondary,
-                  letterSpacing: 1.5,
                   fontWeight: '700',
+                  fontSize: 11,
                 }}
               >
-                {tx.type.toUpperCase()}
+                {tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}
               </AppText>
             </View>
           </View>
@@ -216,7 +229,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
 
           <AppText
             variant="cardTitle"
-            style={{ color: colors.textPrimary, fontSize: 20, marginTop: 4 }}
+            style={{ color: colors.textPrimary, fontSize: 20, marginTop: 4, fontWeight: '600' }}
           >
             {tx.merchant}
           </AppText>
@@ -227,17 +240,18 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
           style={[
             styles.detailCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              padding: spacing.md,
+              paddingHorizontal: spacing.md,
               marginBottom: spacing.md,
             },
           ]}
         >
           <View style={styles.detailRow}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-              ACCOUNT
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, fontWeight: '500' }}>
+              Account
             </AppText>
             <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
               {account?.name || 'Account'}
@@ -245,9 +259,9 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
           </View>
 
           {tx.toAccountId && (
-            <View style={[styles.detailRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                TRANSFERRED TO
+            <View style={[styles.detailRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+              <AppText variant="bodyMedium" style={{ color: colors.textSecondary, fontWeight: '500' }}>
+                Transferred To
               </AppText>
               <AppText variant="bodyLarge" style={{ color: colors.textPrimary, fontWeight: '600' }}>
                 {toAccount?.name || 'Destination Account'}
@@ -255,18 +269,18 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
             </View>
           )}
 
-          <View style={[styles.detailRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-              CATEGORY
+          <View style={[styles.detailRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, fontWeight: '500' }}>
+              Category
             </AppText>
             <AppText variant="bodyMedium" style={{ color: colors.textPrimary, fontWeight: '600' }}>
               {category?.name || 'Uncategorized'}
             </AppText>
           </View>
 
-          <View style={[styles.detailRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-              DATE & TIME
+          <View style={[styles.detailRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, fontWeight: '500' }}>
+              Date & Time
             </AppText>
             <AppText variant="bodyMedium" style={{ color: colors.textPrimary }}>
               {tx.date} • {tx.time}
@@ -274,9 +288,9 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
           </View>
 
           {tx.description ? (
-            <View style={[styles.detailRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                NOTES
+            <View style={[styles.detailRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+              <AppText variant="bodyMedium" style={{ color: colors.textSecondary, fontWeight: '500' }}>
+                Note
               </AppText>
               <AppText variant="bodyMedium" style={{ color: colors.textPrimary, flex: 1, textAlign: 'right' }}>
                 {tx.description}
@@ -290,8 +304,9 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
           style={[
             styles.receiptCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
               padding: spacing.md,
               marginBottom: spacing.md,
@@ -302,19 +317,20 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               <CategoryIcon name="Camera" size={16} color={colors.textPrimary} />
               <AppText
-                variant="labelSmall"
-                style={{ color: colors.textPrimary, letterSpacing: 1.5, marginLeft: 8 }}
+                variant="bodyMedium"
+                style={{ color: colors.textPrimary, fontWeight: '600', marginLeft: 8 }}
               >
-                RECEIPT ATTACHMENT
+                Receipt Attachment
               </AppText>
             </View>
             {tx.receiptUri ? (
               <TouchableOpacity
+                activeOpacity={0.7}
                 onPress={handleAttachOrChangeReceipt}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <AppText variant="labelSmall" style={{ color: colors.textPrimary, fontWeight: '700' }}>
-                  CHANGE
+                <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '700' }}>
+                  Change
                 </AppText>
               </TouchableOpacity>
             ) : null}
@@ -327,7 +343,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
                 onPress={() => setLightboxOpen(true)}
                 style={[
                   styles.imagePreviewWrap,
-                  { borderColor: colors.border, borderRadius: radius.md },
+                  { borderColor: colors.borderLight, borderRadius: radius.md },
                 ]}
               >
                 <Image
@@ -347,7 +363,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
                 onPress={handleRemoveReceipt}
                 style={{ marginTop: 10, alignSelf: 'flex-start' }}
               >
-                <AppText variant="labelSmall" style={{ color: colors.coral, fontWeight: '600' }}>
+                <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '600' }}>
                   Remove Receipt
                 </AppText>
               </TouchableOpacity>
@@ -358,7 +374,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
                 No receipt attached to this transaction.
               </AppText>
               <AppButton
-                title="ATTACH RECEIPT"
+                title="Attach Receipt"
                 onPress={handleAttachOrChangeReceipt}
                 variant="surface"
                 size="small"
@@ -371,7 +387,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
         {/* Action Buttons: Duplicate & Delete */}
         <View style={styles.actionsRow}>
           <AppButton
-            title="DUPLICATE"
+            title="Duplicate"
             onPress={handleDuplicate}
             variant="surface"
             size="medium"
@@ -379,7 +395,7 @@ export const TransactionDetailScreen: React.FC<TransactionDetailScreenProps> = (
             style={{ flex: 1, marginRight: 8 }}
           />
           <AppButton
-            title="DELETE"
+            title="Delete"
             onPress={handleDelete}
             variant="coral"
             size="medium"
@@ -441,9 +457,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  heroCard: {
-    borderWidth: 1,
-  },
+  heroCard: {},
   heroTopRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -451,33 +465,28 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   iconWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: 8,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
   badgeWrap: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 3,
   },
   amountText: {
     fontSize: 34,
-    fontWeight: '800',
+    fontWeight: '700',
     letterSpacing: -0.5,
   },
-  detailCard: {
-    borderWidth: 1,
-  },
+  detailCard: {},
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 14,
   },
-  receiptCard: {
-    borderWidth: 1,
-  },
+  receiptCard: {},
   receiptTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -486,7 +495,6 @@ const styles = StyleSheet.create({
   imagePreviewWrap: {
     width: '100%',
     height: 160,
-    borderWidth: 1,
     overflow: 'hidden',
     position: 'relative',
   },
@@ -503,7 +511,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 4,
+    borderRadius: 6,
   },
   noReceiptBox: {
     paddingVertical: 12,

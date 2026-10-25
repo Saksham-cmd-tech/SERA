@@ -170,19 +170,16 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
           </View>
         )}
 
-        {/* Type Quick Selector Pills */}
-        <View style={[styles.typePillsRow, { marginTop: spacing.sm, marginBottom: spacing.xs }]}>
+        {/* Type Quick Selector Pills (Apple Segmented Style) */}
+        <View style={[styles.typePillsRow, { marginTop: 10, marginBottom: 6 }]}>
           {(['all', 'expense', 'income', 'transfer'] as const).map(typeKey => {
             const isSelected = (filters.type || 'all') === typeKey;
-            let activeBg = colors.surfaceLighter;
-            let activeText = colors.textPrimary;
-            if (typeKey === 'expense') {
-              activeBg = colors.accentRed;
-              activeText = '#FFFFFF';
-            } else if (typeKey === 'income') {
-              activeBg = colors.positive;
-              activeText = '#FFFFFF';
-            }
+            const labels: Record<string, string> = {
+              all: 'All',
+              expense: 'Expenses',
+              income: 'Income',
+              transfer: 'Transfers',
+            };
 
             return (
               <TouchableOpacity
@@ -191,9 +188,12 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
                 style={[
                   styles.typePill,
                   {
-                    backgroundColor: isSelected ? activeBg : colors.surface,
-                    borderColor: isSelected && typeKey === 'expense' ? colors.accentRedDark : colors.border,
-                    borderRadius: radius.sm,
+                    backgroundColor: isSelected ? colors.surfaceLighter : 'transparent',
+                    borderColor: isSelected ? colors.border : 'transparent',
+                    borderWidth: isSelected ? StyleSheet.hairlineWidth : 0,
+                    borderRadius: 16,
+                    paddingHorizontal: 14,
+                    paddingVertical: 6,
                     marginRight: 6,
                   },
                 ]}
@@ -201,12 +201,13 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
                 <AppText
                   variant="labelSmall"
                   style={{
-                    color: isSelected ? activeText : colors.textSecondary,
-                    letterSpacing: 1.4,
-                    fontWeight: isSelected ? '800' : '600',
+                    color: isSelected ? (typeKey === 'expense' ? colors.coral : typeKey === 'income' ? colors.positive : colors.textPrimary) : colors.textSecondary,
+                    letterSpacing: 0.2,
+                    fontWeight: isSelected ? '700' : '500',
+                    fontSize: 12,
                   }}
                 >
-                  {typeKey.toUpperCase()}
+                  {labels[typeKey]}
                 </AppText>
               </TouchableOpacity>
             );
@@ -214,7 +215,7 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
         </View>
       </View>
 
-      {/* Grouped Transaction List */}
+      {/* Grouped Transaction List (Apple Inset Grouped Table) */}
       <SectionList
         sections={groupedSections}
         keyExtractor={item => item.id}
@@ -222,7 +223,7 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
         keyboardDismissMode="on-drag"
         contentContainerStyle={[
           styles.listContent,
-          { paddingHorizontal: spacing.screenPadding },
+          { paddingHorizontal: spacing.screenPadding, paddingBottom: 32 },
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -235,11 +236,12 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
         renderSectionHeader={({ section: { title } }) => (
           <View style={[styles.sectionHeader, { backgroundColor: colors.background }]}>
             <AppText
-              variant="label"
+              variant="sectionHeading"
               style={{
                 color: colors.textSecondary,
-                letterSpacing: 1.8,
                 paddingVertical: 8,
+                fontSize: 13,
+                fontWeight: '600',
               }}
             >
               {title}
@@ -251,13 +253,17 @@ export const TransactionsScreen: React.FC<TransactionsScreenProps> = ({ navigati
             style={[
               styles.itemContainer,
               {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-                borderTopWidth: index === 0 ? 1 : 0,
-                borderBottomWidth: index === section.data.length - 1 ? 1 : 0,
-                borderLeftWidth: 1,
-                borderRightWidth: 1,
-                paddingHorizontal: spacing.md,
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.borderLight,
+                borderTopWidth: index === 0 ? StyleSheet.hairlineWidth : 0,
+                borderBottomWidth: index === section.data.length - 1 ? StyleSheet.hairlineWidth : 0,
+                borderLeftWidth: StyleSheet.hairlineWidth,
+                borderRightWidth: StyleSheet.hairlineWidth,
+                borderTopLeftRadius: index === 0 ? radius.lg : 0,
+                borderTopRightRadius: index === 0 ? radius.lg : 0,
+                borderBottomLeftRadius: index === section.data.length - 1 ? radius.lg : 0,
+                borderBottomRightRadius: index === section.data.length - 1 ? radius.lg : 0,
+                paddingHorizontal: 16,
               },
             ]}
           >
@@ -475,10 +481,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   actionButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 6,
-    borderWidth: 1,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    borderWidth: StyleSheet.hairlineWidth,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -487,7 +493,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 12,
     height: 42,
-    borderWidth: 1,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: 12,
   },
   searchInput: {
     flex: 1,

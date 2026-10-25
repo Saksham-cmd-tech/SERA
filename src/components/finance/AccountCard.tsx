@@ -40,13 +40,14 @@ export const AccountCard: React.FC<AccountCardProps> = ({
 
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={0.7}
       onPress={onPress}
       style={[
         styles.card,
         {
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
+          backgroundColor: colors.surfaceCard,
+          borderColor: colors.borderLight,
+          borderWidth: StyleSheet.hairlineWidth,
           borderRadius: radius.lg,
           padding: spacing.md,
           marginBottom: spacing.sm,
@@ -59,25 +60,24 @@ export const AccountCard: React.FC<AccountCardProps> = ({
             style={[
               styles.iconBox,
               {
-                backgroundColor: `${visual.color}1E`,
-                borderColor: `${visual.color}44`,
+                backgroundColor: `${visual.color}18`,
                 borderRadius: radius.md,
               },
             ]}
           >
             <CategoryIcon
               name={visual.icon}
-              size={16}
+              size={18}
               color={visual.color}
               strokeWidth={2.2}
             />
           </View>
-          <View style={{ marginLeft: 10 }}>
-            <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15, fontWeight: '700' }}>
+          <View style={{ marginLeft: 12 }}>
+            <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 16, fontWeight: '600' }}>
               {account.name}
             </AppText>
-            <AppText variant="metadata" style={{ color: colors.textSecondary, fontSize: 10, letterSpacing: 0.8 }}>
-              {account.type.toUpperCase()}{account.accountNumberMask ? ` • ${account.accountNumberMask}` : ''}
+            <AppText variant="metadata" style={{ color: colors.textSecondary, fontSize: 12, marginTop: 2 }}>
+              {account.type.charAt(0).toUpperCase() + account.type.slice(1)}{account.accountNumberMask ? ` • ${account.accountNumberMask}` : ''}
             </AppText>
           </View>
         </View>
@@ -87,20 +87,22 @@ export const AccountCard: React.FC<AccountCardProps> = ({
             variant="amountSmall"
             privacySensitive
             style={{
-              fontWeight: '800',
+              fontWeight: '700',
               color: isLiability ? colors.accentRed : colors.textPrimary,
+              textAlign: 'right',
             }}
           >
             {formatCurrency(account.balance, currencySymbol, isPrivacyMode, false)}
           </AppText>
           {onPressTransfer && (
             <TouchableOpacity
+              activeOpacity={0.7}
               onPress={onPressTransfer}
-              style={{ marginTop: 4 }}
+              style={{ marginTop: 4, alignSelf: 'flex-end' }}
               hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
             >
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.2, fontWeight: '700' }}>
-                TRANSFER ↗
+              <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '600' }}>
+                Transfer ↗
               </AppText>
             </TouchableOpacity>
           )}
@@ -112,7 +114,7 @@ export const AccountCard: React.FC<AccountCardProps> = ({
 
 const styles = StyleSheet.create({
   card: {
-    borderWidth: 1,
+    gap: 4,
   },
   topRow: {
     flexDirection: 'row',
@@ -125,9 +127,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   iconBox: {
-    width: 34,
-    height: 34,
-    borderWidth: 1,
+    width: 38,
+    height: 38,
     alignItems: 'center',
     justifyContent: 'center',
   },

@@ -36,99 +36,95 @@ export interface ColorPalette {
 }
 
 export const darkPalette: ColorPalette = {
-  // Deep technical dark navy / midnight obsidian
-  background: '#090E14',
-  surface: '#111822',
-  surfaceLighter: '#17222F',
-  surfaceCard: '#131C27',
-  cardDark: '#1A2534',
-  cardDarker: '#0D141D',
+  // Apple HIG Dark Mode Palette
+  background: '#000000',
+  surface: '#1C1C1E',
+  surfaceLighter: '#2C2C2E',
+  surfaceCard: '#1C1C1E',
+  cardDark: '#2C2C2E',
+  cardDarker: '#141416',
 
-  // High-contrast technical typography
-  textPrimary: '#F2F5F8',
-  textSecondary: '#8B97A6',
-  textMuted: '#586574',
-  textInverted: '#FFFFFF',
+  // Apple System Typography Colors
+  textPrimary: '#FFFFFF',
+  textSecondary: '#8E8E93',
+  textMuted: '#636366',
+  textInverted: '#000000',
 
-  // Hairline borders and dividers matching Stitch
-  border: '#1F2A38',
-  borderLight: '#1F2A38',
+  // Hairline borders and dividers (Apple HIG 0.5-1pt separator)
+  border: 'rgba(255, 255, 255, 0.12)',
+  borderLight: 'rgba(255, 255, 255, 0.08)',
 
-  // Controlled Crimson / Vermilion Red accent from reference
-  accent: '#EB3B2E',
+  // Apple System Red Accent
+  accent: '#FF3B30',
   accentText: '#FFFFFF',
-  accentRed: '#EB3B2E',
-  accentRedDark: '#C92A1E',
-  accentRedSurface: 'rgba(235, 59, 46, 0.16)',
+  accentRed: '#FF3B30',
+  accentRedDark: '#D70015',
+  accentRedSurface: 'rgba(255, 59, 48, 0.16)',
 
-  // Positive financial green & warning
-  positive: '#34D399',
-  negative: '#EB3B2E',
-  negativeSurface: 'rgba(235, 59, 46, 0.18)',
-  warning: '#F59E0B',
+  // Financial Semantics (Apple System Green, Red, Orange)
+  positive: '#34C759',
+  negative: '#FF3B30',
+  negativeSurface: 'rgba(255, 59, 48, 0.16)',
+  warning: '#FF9500',
 
-  // Coral / Alert alias mapped to industrial crimson
-  coral: '#EB3B2E',
+  coral: '#FF3B30',
   coralText: '#FFFFFF',
 
-  // Grid lines
-  gridLine: 'rgba(255, 255, 255, 0.08)',
-  gridLineActive: '#EB3B2E',
-  overlay: 'rgba(5, 8, 12, 0.85)',
+  gridLine: 'rgba(255, 255, 255, 0.06)',
+  gridLineActive: '#FF3B30',
+  overlay: 'rgba(0, 0, 0, 0.75)',
   transparent: 'transparent',
 
-  // Warm bone sand contrast panel from reference
-  panelBone: '#E4DFD7',
-  panelBoneText: '#0A0F15',
-  panelBoneMuted: '#68645C',
-  panelBoneBorder: '#C9C3BA',
+  panelBone: '#2C2C2E',
+  panelBoneText: '#FFFFFF',
+  panelBoneMuted: '#8E8E93',
+  panelBoneBorder: 'rgba(255, 255, 255, 0.12)',
 
-  // Silver / technical slate light
-  slateLight: '#B9C0C8',
-  techBadgeBg: '#0D141D',
+  slateLight: '#8E8E93',
+  techBadgeBg: '#2C2C2E',
 };
 
 export const lightPalette: ColorPalette = {
-  // Light mode variant still follows the technical industrial aesthetic
-  background: '#EAEBE6',
-  surface: '#F4F5F1',
-  surfaceLighter: '#FFFFFF',
-  surfaceCard: '#F0F1ED',
-  cardDark: '#E2E8F0',
-  cardDarker: '#CBD5E1',
+  // Apple HIG Light Mode Palette (System Grouped Background)
+  background: '#F2F2F7',
+  surface: '#FFFFFF',
+  surfaceLighter: '#F8F8FA',
+  surfaceCard: '#FFFFFF',
+  cardDark: '#E5E5EA',
+  cardDarker: '#D1D1D6',
 
-  textPrimary: '#0C1117',
-  textSecondary: '#5C6775',
-  textMuted: '#7D8895',
+  textPrimary: '#000000',
+  textSecondary: '#6C6C70',
+  textMuted: '#8E8E93',
   textInverted: '#FFFFFF',
 
-  border: 'rgba(12, 17, 23, 0.14)',
-  borderLight: 'rgba(12, 17, 23, 0.07)',
+  border: 'rgba(60, 60, 67, 0.14)',
+  borderLight: 'rgba(60, 60, 67, 0.08)',
 
-  accent: '#EB3B2E',
+  accent: '#FF3B30',
   accentText: '#FFFFFF',
-  accentRed: '#EB3B2E',
-  accentRedDark: '#C92A1E',
-  accentRedSurface: 'rgba(235, 59, 46, 0.12)',
+  accentRed: '#FF3B30',
+  accentRedDark: '#D70015',
+  accentRedSurface: 'rgba(255, 59, 48, 0.12)',
 
-  positive: '#10B981',
-  negative: '#EB3B2E',
-  negativeSurface: 'rgba(235, 59, 46, 0.12)',
-  warning: '#D97706',
+  positive: '#34C759',
+  negative: '#FF3B30',
+  negativeSurface: 'rgba(255, 59, 48, 0.12)',
+  warning: '#FF9500',
 
-  coral: '#EB3B2E',
+  coral: '#FF3B30',
   coralText: '#FFFFFF',
 
-  gridLine: 'rgba(12, 17, 23, 0.12)',
-  gridLineActive: '#EB3B2E',
-  overlay: 'rgba(12, 17, 23, 0.6)',
+  gridLine: 'rgba(60, 60, 67, 0.08)',
+  gridLineActive: '#FF3B30',
+  overlay: 'rgba(0, 0, 0, 0.5)',
   transparent: 'transparent',
 
-  panelBone: '#E4DFD7',
-  panelBoneText: '#0A0F15',
-  panelBoneMuted: '#68645C',
-  panelBoneBorder: '#C9C3BA',
+  panelBone: '#FFFFFF',
+  panelBoneText: '#000000',
+  panelBoneMuted: '#6C6C70',
+  panelBoneBorder: 'rgba(60, 60, 67, 0.14)',
 
-  slateLight: '#C3C9D0',
-  techBadgeBg: '#E2E8F0',
+  slateLight: '#6C6C70',
+  techBadgeBg: '#E5E5EA',
 };

@@ -46,10 +46,11 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
         style={[
           styles.mainCard,
           {
-            backgroundColor: colors.surface,
-            borderColor: colors.border,
+            backgroundColor: colors.surfaceCard,
+            borderColor: colors.borderLight,
+            borderWidth: StyleSheet.hairlineWidth,
             borderRadius: radius.lg,
-            padding: spacing.md,
+            padding: 18,
           },
         ]}
       >
@@ -64,9 +65,9 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
             />
             <AppText
               variant="label"
-              style={{ color: colors.textPrimary, letterSpacing: 1.4, fontWeight: '700' }}
+              style={{ color: colors.textPrimary, letterSpacing: 0.4, fontWeight: '600', fontSize: 13 }}
             >
-              {monthName.toUpperCase()} BUDGET
+              {monthName} Budget
             </AppText>
           </View>
 
@@ -74,21 +75,22 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
             style={[
               styles.usedChip,
               {
-                backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
-                borderRadius: radius.sm,
+                backgroundColor: colors.surfaceLighter,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: 12,
               },
             ]}
           >
             <AppText
-              variant="metadata"
+              variant="labelSmall"
               style={{
                 color: isBudgetExceeded ? colors.accentRed : colors.textPrimary,
-                fontWeight: '700',
+                fontWeight: '600',
                 fontSize: 11,
               }}
             >
-              {isBudgetExceeded ? 'EXCEEDED' : `${spentPercent}% Used`}
+              {isBudgetExceeded ? 'Exceeded' : `${spentPercent}% Used`}
             </AppText>
           </View>
         </View>
@@ -98,24 +100,24 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
           <AppText
             variant="displayMedium"
             privacySensitive
-            style={{ color: colors.textPrimary, fontWeight: '800' }}
+            style={{ color: colors.textPrimary, fontWeight: '700', fontSize: 24, lineHeight: 30 }}
           >
             {formatCurrency(totalSpent, currencySymbol, isPrivacyMode, false)}
           </AppText>
           <AppText
-            variant="label"
+            variant="bodyMedium"
             privacySensitive
-            style={{ color: colors.textSecondary, fontWeight: '600', marginLeft: 8, marginBottom: 4 }}
+            style={{ color: colors.textSecondary, fontWeight: '500', marginLeft: 6, marginBottom: 2 }}
           >
             / {formatCurrency(totalBudget, currencySymbol, isPrivacyMode, false)}
           </AppText>
         </View>
 
-        {/* Flat Progress Bar (100% solid, zero gradient) */}
+        {/* Flat Progress Bar (Apple HIG rounded capsule) */}
         <View
           style={[
             styles.progressBarTrack,
-            { backgroundColor: colors.cardDark, borderRadius: radius.full, height: 6, overflow: 'hidden' },
+            { backgroundColor: colors.surfaceLighter, borderRadius: radius.full, height: 7, overflow: 'hidden' },
           ]}
         >
           <View
@@ -125,7 +127,7 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
                 width: `${Math.min(100, Math.max(3, spentPercent))}%`,
                 backgroundColor: isBudgetExceeded ? colors.accentRed : colors.positive,
                 borderRadius: radius.full,
-                height: 6,
+                height: 7,
               },
             ]}
           />
@@ -138,7 +140,8 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
             privacySensitive
             style={{
               color: isBudgetExceeded ? colors.accentRed : colors.positive,
-              fontWeight: '700',
+              fontWeight: '600',
+              fontSize: 12,
             }}
           >
             {isBudgetExceeded
@@ -147,7 +150,7 @@ export const MonthlyBudgetBanner: React.FC<MonthlyBudgetBannerProps> = ({
           </AppText>
 
           {totalRemaining > 0 && !isBudgetExceeded && (
-            <AppText variant="metadata" style={{ color: colors.textMuted, fontSize: 11 }}>
+            <AppText variant="metadata" style={{ color: colors.textMuted, fontSize: 12 }}>
               {daysRemaining} days left • {formatCurrency(dailySafePace, currencySymbol, isPrivacyMode, false)}/day
             </AppText>
           )}

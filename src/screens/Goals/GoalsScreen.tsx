@@ -79,21 +79,23 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
       <Header
-        subtitle="TARGETS"
-        title="Savings Goals"
+        subtitle="Savings"
+        title="Goals & Vaults"
         rightAction={
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('CreateGoal')}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             style={[
               styles.plusIconBtn,
               {
                 backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
               },
             ]}
           >
-            <CategoryIcon name="Plus" size={16} color={colors.textPrimary} strokeWidth={2.2} />
+            <CategoryIcon name="Plus" size={17} color={colors.textPrimary} strokeWidth={2.2} />
           </TouchableOpacity>
         }
       />
@@ -117,21 +119,25 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
           style={[
             styles.summaryCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              padding: spacing.md,
+              padding: spacing.md + 2,
               marginBottom: spacing.md,
             },
           ]}
         >
-          <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
+          <AppText
+            variant="sectionHeading"
+            style={{ color: colors.textSecondary }}
+          >
             TOTAL SAVED FOR GOALS
           </AppText>
           <AppText
             variant="displayMedium"
             privacySensitive
-            style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 2 }}
+            style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 4 }}
           >
             {formatCurrency(totalSaved, currencySymbol, isPrivacyMode, false)}
           </AppText>
@@ -152,15 +158,15 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
 
         {goals.length === 0 && (
           <EmptyState
-            title="NO SAVINGS GOALS"
+            title="No Savings Goals"
             subtitle="Create a goal and start building toward your dreams."
-            actionTitle="+ CREATE GOAL"
+            actionTitle="Create Goal"
             onAction={() => navigation.navigate('CreateGoal')}
           />
         )}
 
         <AppButton
-          title="+ NEW SAVINGS GOAL"
+          title="New Savings Goal"
           onPress={() => navigation.navigate('CreateGoal')}
           variant="primary"
           size="large"
@@ -190,19 +196,28 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
               style={[
                 styles.contributeSheet,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
+                  backgroundColor: colors.surfaceCard,
+                  borderColor: colors.borderLight,
+                  borderWidth: StyleSheet.hairlineWidth,
                   borderRadius: radius.xl,
                   padding: spacing.lg,
                 },
               ]}
             >
-              <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
+              {/* Apple Sheet Drag Indicator */}
+              <View style={styles.sheetHandleWrap}>
+                <View style={[styles.sheetHandle, { backgroundColor: colors.borderLight }]} />
+              </View>
+
+              <AppText
+                variant="sectionHeading"
+                style={{ color: colors.textSecondary }}
+              >
                 ADD TO SAVINGS GOAL
               </AppText>
               <AppText
                 variant="cardTitle"
-                style={{ color: colors.textPrimary, fontSize: 20, marginTop: 2, marginBottom: spacing.md }}
+                style={{ color: colors.textPrimary, fontSize: 20, marginTop: 4, marginBottom: spacing.md, fontWeight: '700' }}
               >
                 {selectedGoal?.name}
               </AppText>
@@ -211,15 +226,14 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
                 style={[
                   styles.inputWrapper,
                   {
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
+                    backgroundColor: colors.surfaceLighter,
                     borderRadius: radius.md,
                     padding: spacing.md,
                     marginBottom: spacing.md,
                   },
                 ]}
               >
-                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 }}>
                   AMOUNT TO DEPOSIT
                 </AppText>
                 <TextInput
@@ -237,15 +251,14 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
                 style={[
                   styles.inputWrapper,
                   {
-                    backgroundColor: colors.background,
-                    borderColor: colors.border,
+                    backgroundColor: colors.surfaceLighter,
                     borderRadius: radius.md,
                     padding: spacing.md,
                     marginBottom: spacing.lg,
                   },
                 ]}
               >
-                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 }}>
                   OPTIONAL NOTE
                 </AppText>
                 <TextInput
@@ -258,7 +271,7 @@ export const GoalsScreen: React.FC<GoalsScreenProps> = ({ navigation }) => {
               </View>
 
               <AppButton
-                title="CONFIRM DEPOSIT"
+                title="Deposit Savings"
                 onPress={handleSaveContribution}
                 variant="primary"
                 size="large"
@@ -282,28 +295,33 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   plusIconBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 6,
-    borderWidth: 1,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
   summaryCard: {
-    borderWidth: 1,
+    gap: 4,
   },
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   contributeSheet: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    borderWidth: 1,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
   },
-  inputWrapper: {
-    borderWidth: 1,
+  sheetHandleWrap: {
+    alignItems: 'center',
+    marginBottom: 12,
   },
+  sheetHandle: {
+    width: 36,
+    height: 5,
+    borderRadius: 2.5,
+  },
+  inputWrapper: {},
   numericInput: {
     fontSize: 28,
     fontWeight: '700',

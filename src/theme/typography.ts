@@ -37,12 +37,12 @@ export const typography = {
     fontFamily: fonts.mono.bold,
   } as TextStyle,
 
-  // Technical Page heading (Inter Bold)
+  // Apple iOS Large Title
   pageHeading: {
-    fontSize: 28,
-    lineHeight: 34,
+    fontSize: 32,
+    lineHeight: 38,
     fontWeight: '700',
-    letterSpacing: -0.4,
+    letterSpacing: -0.6,
     fontFamily: fonts.inter.bold,
   } as TextStyle,
 
@@ -54,66 +54,64 @@ export const typography = {
     fontFamily: fonts.inter.semiBold,
   } as TextStyle,
 
-  // Section heading (Inter Bold)
+  // Section heading (Apple Grouped Section Header)
   sectionHeading: {
-    fontSize: 16,
-    lineHeight: 22,
-    fontWeight: '700',
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '600',
     letterSpacing: 0.6,
     textTransform: 'uppercase',
-    fontFamily: fonts.inter.bold,
+    fontFamily: fonts.inter.semiBold,
   } as TextStyle,
 
-  // Card title (Inter SemiBold)
+  // Card title
   cardTitle: {
-    fontSize: 15,
-    lineHeight: 20,
+    fontSize: 16,
+    lineHeight: 22,
     fontWeight: '600',
     letterSpacing: -0.2,
     fontFamily: fonts.inter.semiBold,
   } as TextStyle,
 
-  // Body text (Inter Regular)
+  // Body text
   bodyLarge: {
-    fontSize: 15,
+    fontSize: 16,
     lineHeight: 22,
     fontWeight: '400',
     fontFamily: fonts.inter.regular,
   } as TextStyle,
 
   bodyMedium: {
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 14,
+    lineHeight: 20,
     fontWeight: '400',
     fontFamily: fonts.inter.regular,
   } as TextStyle,
 
-  // Metadata / Timestamps (JetBrains Mono Medium)
+  // Metadata / Subtitles
   metadata: {
-    fontSize: 11,
-    lineHeight: 15,
-    fontWeight: '500',
-    letterSpacing: 0.4,
-    fontFamily: fonts.mono.medium,
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '400',
+    letterSpacing: -0.1,
+    fontFamily: fonts.inter.regular,
   } as TextStyle,
 
-  // Architectural / Spec labels (JetBrains Mono Bold uppercase)
+  // Apple-style labels
   label: {
-    fontSize: 10,
-    lineHeight: 14,
-    fontWeight: '700',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-    fontFamily: fonts.mono.bold,
+    fontSize: 12,
+    lineHeight: 16,
+    fontWeight: '600',
+    letterSpacing: 0.6,
+    fontFamily: fonts.inter.semiBold,
   } as TextStyle,
 
   labelSmall: {
-    fontSize: 9,
-    lineHeight: 12,
-    fontWeight: '700',
-    letterSpacing: 1.2,
-    textTransform: 'uppercase',
-    fontFamily: fonts.mono.bold,
+    fontSize: 11,
+    lineHeight: 14,
+    fontWeight: '600',
+    letterSpacing: 0.4,
+    fontFamily: fonts.inter.semiBold,
   } as TextStyle,
 
   // Technical Monospace & Spec tags

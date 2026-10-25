@@ -107,21 +107,21 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
       <Header
         showBack
         onPressBack={() => navigation.goBack()}
-        subtitle="BUDGETS"
+        subtitle="Budgets"
         title="Add Category"
         rightAction={
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={handleSave}
             style={{
               backgroundColor: colors.accentRed,
-              paddingHorizontal: 14,
+              paddingHorizontal: 16,
               paddingVertical: 7,
-              borderRadius: radius.sm,
+              borderRadius: radius.full,
             }}
           >
-            <AppText variant="labelSmall" style={{ color: '#FFFFFF', fontWeight: '800' }}>
-              SAVE
+            <AppText variant="labelSmall" style={{ color: '#FFFFFF', fontWeight: '700' }}>
+              Save
             </AppText>
           </TouchableOpacity>
         }
@@ -134,7 +134,7 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {/* Large Highlighted Yellow Category Block (Exact Reference Screenshot 2) */}
+        {/* Large Category Target Block */}
         <CategoryBlock
           name={selectedCategory.name}
           amount={parseFloat(amountStr) || 0}
@@ -154,14 +154,13 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
           </View>
         )}
 
-        {/* Stacked Dark Olive Green Category Selection Blocks (Exact Reference 2) */}
+        {/* Category Selection List */}
         <AppText
-          variant="label"
+          variant="sectionHeading"
           style={{
             color: colors.textSecondary,
-            letterSpacing: 1.6,
             marginTop: spacing.sm,
-            marginBottom: spacing.xs,
+            marginBottom: spacing.xs + 2,
           }}
         >
           AVAILABLE CATEGORIES
@@ -186,8 +185,9 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
           style={[
             styles.settingsCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
               padding: spacing.md,
               marginTop: spacing.md,
@@ -197,33 +197,42 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
         >
           {/* Period selector */}
           <View style={styles.periodRow}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+            <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 }}>
               BUDGET PERIOD
             </AppText>
-            <View style={styles.periodPills}>
+            <View
+              style={[
+                styles.periodPills,
+                {
+                  backgroundColor: colors.surfaceLighter,
+                  borderRadius: radius.sm,
+                  padding: 2,
+                },
+              ]}
+            >
               {(['monthly', 'weekly'] as const).map(p => {
                 const isSelected = period === p;
                 return (
                   <TouchableOpacity
                     key={p}
+                    activeOpacity={0.7}
                     onPress={() => setPeriod(p)}
                     style={[
                       styles.periodPill,
                       {
-                        backgroundColor: isSelected ? colors.accentRed : colors.surface,
-                        borderColor: isSelected ? colors.accentRed : colors.border,
-                        borderRadius: radius.sm,
+                        backgroundColor: isSelected ? colors.surfaceCard : 'transparent',
+                        borderRadius: 8,
                       },
                     ]}
                   >
                     <AppText
                       variant="labelSmall"
                       style={{
-                        color: isSelected ? '#FFFFFF' : colors.textPrimary,
+                        color: isSelected ? colors.textPrimary : colors.textSecondary,
                         fontWeight: isSelected ? '700' : '500',
                       }}
                     >
-                      {p.toUpperCase()}
+                      {p === 'monthly' ? 'Monthly' : 'Weekly'}
                     </AppText>
                   </TouchableOpacity>
                 );
@@ -232,10 +241,10 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
           </View>
 
           {/* Rollover Toggle */}
-          <View style={[styles.switchRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
+          <View style={[styles.switchRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
             <View style={{ flex: 1, paddingRight: spacing.md }}>
-              <AppText variant="labelSmall" style={{ color: colors.textPrimary }}>
-                ROLLOVER UNUSED BUDGET
+              <AppText variant="bodyMedium" style={{ color: colors.textPrimary, fontWeight: '600' }}>
+                Rollover Unused Budget
               </AppText>
               <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>
                 Carry forward remaining balance to next period
@@ -244,14 +253,14 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
             <Switch
               value={rollover}
               onValueChange={setRollover}
-              trackColor={{ false: colors.border, true: colors.accentRedSurface }}
-              thumbColor={rollover ? colors.accentRed : '#F4F4F4'}
+              trackColor={{ false: colors.surfaceLighter, true: colors.accentRed }}
+              thumbColor={'#FFFFFF'}
             />
           </View>
 
           {/* Alert Thresholds */}
-          <View style={[styles.thresholdsRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginBottom: 8 }}>
+          <View style={[styles.thresholdsRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginBottom: 8, fontWeight: '600', letterSpacing: 0.5 }}>
               ALERT THRESHOLDS
             </AppText>
             <View style={styles.thresholdChips}>
@@ -260,20 +269,20 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
                 return (
                   <TouchableOpacity
                     key={th}
+                    activeOpacity={0.7}
                     onPress={() => toggleThreshold(th)}
                     style={[
                       styles.thresholdChip,
                       {
-                        backgroundColor: isActive ? colors.accentRed : colors.surfaceCard,
-                        borderColor: isActive ? colors.accentRed : colors.border,
-                        borderRadius: radius.sm,
+                        backgroundColor: isActive ? colors.accentRed : colors.surfaceLighter,
+                        borderRadius: radius.full,
                       },
                     ]}
                   >
                     <AppText
                       variant="labelSmall"
                       style={{
-                        color: isActive ? '#FFFFFF' : colors.textPrimary,
+                        color: isActive ? '#FFFFFF' : colors.textSecondary,
                         fontWeight: '700',
                       }}
                     >
@@ -288,9 +297,9 @@ export const AddBudgetCategoryScreen: React.FC<AddBudgetCategoryScreenProps> = (
 
         {/* Save Button */}
         <AppButton
-          title="SAVE BUDGET CATEGORY"
+          title="Save Budget Category"
           onPress={handleSave}
-          variant="accent"
+          variant="primary"
           size="large"
           style={{ marginTop: spacing.xs, marginBottom: spacing.xl }}
         />
@@ -310,13 +319,13 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   settingsCard: {
-    borderWidth: 1,
+    gap: 12,
   },
   periodRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: 12,
+    paddingBottom: 10,
   },
   periodPills: {
     flexDirection: 'row',
@@ -324,8 +333,6 @@ const styles = StyleSheet.create({
   periodPill: {
     paddingVertical: 5,
     paddingHorizontal: 12,
-    borderWidth: 1,
-    marginLeft: 6,
   },
   switchRow: {
     flexDirection: 'row',
@@ -343,6 +350,5 @@ const styles = StyleSheet.create({
   thresholdChip: {
     paddingVertical: 6,
     paddingHorizontal: 16,
-    borderWidth: 1,
   },
 });

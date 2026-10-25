@@ -26,11 +26,11 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
   const insets = useSafeAreaInsets();
 
   const tabsConfig = [
-    { name: 'HomeTab', label: 'HOME', icon: 'Home' },
-    { name: 'TransactionsTab', label: 'HISTORY', icon: 'Receipt' },
-    { name: 'BudgetsTab', label: 'BUDGET', icon: 'SlidersHorizontal' },
-    { name: 'GoalsTab', label: 'GOALS', icon: 'Shield' },
-    { name: 'MoreTab', label: 'MORE', icon: 'Menu' },
+    { name: 'HomeTab', label: 'Home', icon: 'Home' },
+    { name: 'TransactionsTab', label: 'History', icon: 'Receipt' },
+    { name: 'BudgetsTab', label: 'Budget', icon: 'SlidersHorizontal' },
+    { name: 'GoalsTab', label: 'Goals', icon: 'Shield' },
+    { name: 'MoreTab', label: 'More', icon: 'Menu' },
   ];
 
   return (
@@ -39,8 +39,8 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
         styles.tabBar,
         {
           backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          paddingBottom: Math.max(insets.bottom + 6, 16),
+          borderTopColor: colors.borderLight,
+          paddingBottom: Math.max(insets.bottom + 4, 14),
         },
       ]}
     >
@@ -66,30 +66,20 @@ const CustomTabBar: React.FC<BottomTabBarProps> = ({ state, navigation }) => {
             onPress={onPress}
             style={styles.tabButton}
           >
-            {/* Precision top indicator bar */}
-            <View
-              style={[
-                styles.activeIndicator,
-                {
-                  backgroundColor: isFocused ? colors.accentRed : 'transparent',
-                },
-              ]}
-            />
-
             <View style={styles.iconWrap}>
               <CategoryIcon
                 name={item.icon}
-                size={20}
-                color={isFocused ? colors.textPrimary : colors.textMuted}
-                strokeWidth={isFocused ? 2.4 : 1.6}
+                size={22}
+                color={isFocused ? colors.accentRed : colors.textMuted}
+                strokeWidth={isFocused ? 2.4 : 1.8}
               />
               <AppText
                 variant="labelSmall"
                 style={[
                   styles.tabLabel,
                   {
-                    color: isFocused ? colors.textPrimary : colors.textMuted,
-                    fontWeight: isFocused ? '800' : '600',
+                    color: isFocused ? colors.accentRed : colors.textMuted,
+                    fontWeight: isFocused ? '600' : '500',
                   },
                 ]}
               >
@@ -121,27 +111,21 @@ export const MainTabNavigator: React.FC = () => {
 const styles = StyleSheet.create({
   tabBar: {
     flexDirection: 'row',
-    borderTopWidth: 1,
-    paddingTop: 6,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    paddingTop: 8,
   },
   tabButton: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  activeIndicator: {
-    width: 20,
-    height: 2,
-    borderRadius: 1,
-    marginBottom: 4,
-  },
   iconWrap: {
     alignItems: 'center',
     justifyContent: 'center',
   },
   tabLabel: {
-    marginTop: 4,
-    fontSize: 9,
-    letterSpacing: 1.2,
+    marginTop: 3,
+    fontSize: 10,
+    letterSpacing: 0.2,
   },
 });

@@ -1,9 +1,9 @@
 export const radius = {
   none: 0,
-  xs: 4,      // micro indicators
-  sm: 6,      // rounded-md: pills, inner segmented chips, small tags
-  md: 8,      // rounded-lg: buttons, inputs, keypad keys, category chips
-  lg: 12,     // rounded-xl: major cards, overview hero, budget cards
-  xl: 16,     // modal containers, dialogs
-  full: 9999, // rounded-full: avatar, progress bars
+  xs: 6,      // micro indicators & small badges
+  sm: 10,     // pills, inner segmented chips, small buttons
+  md: 14,     // Apple standard buttons, inputs, keypad keys
+  lg: 18,     // major cards, overview hero, budget cards
+  xl: 24,     // modal sheets, dialogs, floating action cards
+  full: 9999, // full pill, circular avatars, progress tracks
 };

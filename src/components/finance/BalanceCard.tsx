@@ -36,11 +36,12 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       style={[
         styles.panel,
         {
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
+          backgroundColor: colors.surfaceCard,
+          borderColor: colors.borderLight,
+          borderWidth: StyleSheet.hairlineWidth,
           borderRadius: radius.lg,
-          padding: spacing.md + 4,
-          marginBottom: spacing.md,
+          padding: 20,
+          marginBottom: 16,
         },
       ]}
     >
@@ -51,12 +52,12 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             variant="label"
             style={{
               color: colors.textSecondary,
-              letterSpacing: 1.4,
-              fontWeight: '700',
-              fontSize: 11,
+              letterSpacing: 0.5,
+              fontWeight: '600',
+              fontSize: 13,
             }}
           >
-            AVAILABLE BALANCE
+            Available Balance
           </AppText>
           <TouchableOpacity
             onPress={onTogglePrivacy}
@@ -65,7 +66,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           >
             <CategoryIcon
               name={isPrivacyMode ? 'EyeOff' : 'Eye'}
-              size={14}
+              size={15}
               color={colors.textMuted}
             />
           </TouchableOpacity>
@@ -78,9 +79,10 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             style={[
               styles.accountPill,
               {
-                backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
-                borderRadius: radius.sm,
+                backgroundColor: colors.surfaceLighter,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: 14,
               },
             ]}
           >
@@ -89,15 +91,15 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               variant="labelSmall"
               style={{
                 color: colors.textPrimary,
-                letterSpacing: 0.8,
+                letterSpacing: 0.2,
                 marginRight: 4,
-                fontWeight: '700',
-                fontSize: 11,
+                fontWeight: '600',
+                fontSize: 12,
               }}
             >
               {selectedAccountName}
             </AppText>
-            <CategoryIcon name="ChevronDown" size={12} color={colors.textSecondary} />
+            <CategoryIcon name="ChevronDown" size={13} color={colors.textSecondary} />
           </TouchableOpacity>
         )}
       </View>
@@ -109,7 +111,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           privacySensitive
           style={[
             styles.dominantNumber,
-            { color: colors.textPrimary, fontSize: 36, lineHeight: 42, letterSpacing: -1 },
+            { color: colors.textPrimary, fontSize: 38, lineHeight: 46, letterSpacing: -0.8 },
           ]}
         >
           {formatCurrency(totalBalance, currencySymbol, isPrivacyMode, false)}
@@ -121,15 +123,15 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         variant="metadata"
         style={{
           color: colors.textMuted,
-          fontSize: 11,
-          letterSpacing: 0.3,
+          fontSize: 13,
+          letterSpacing: 0.1,
           marginTop: 2,
         }}
       >
         {subtitle}
       </AppText>
 
-      {/* Clean Inflow & Outflow Chips (No harsh divider line) */}
+      {/* Clean Inflow & Outflow Chips (Apple HIG Style) */}
       {(inflow !== undefined || outflow !== undefined) && (
         <View style={styles.flowRow}>
           {/* Inflow Chip */}
@@ -137,32 +139,32 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             style={[
               styles.flowChip,
               {
-                backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
-                borderRadius: radius.md,
+                backgroundColor: colors.surfaceLighter,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: radius.sm,
               },
             ]}
           >
-            <CategoryIcon name="ArrowUpRight" size={13} color={colors.positive} strokeWidth={2.4} />
+            <CategoryIcon name="ArrowUpRight" size={14} color={colors.positive} strokeWidth={2.4} />
             <AppText
               variant="labelSmall"
               style={{
                 color: colors.textSecondary,
-                fontSize: 10,
-                letterSpacing: 0.8,
-                fontWeight: '700',
-                marginLeft: 4,
+                fontSize: 12,
+                fontWeight: '600',
+                marginLeft: 5,
               }}
             >
-              INFLOW
+              Inflow
             </AppText>
             <AppText
               variant="labelSmall"
               privacySensitive
               style={{
                 color: colors.positive,
-                fontWeight: '800',
-                fontSize: 12,
+                fontWeight: '700',
+                fontSize: 13,
                 marginLeft: 'auto',
               }}
             >
@@ -175,32 +177,32 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             style={[
               styles.flowChip,
               {
-                backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
-                borderRadius: radius.md,
+                backgroundColor: colors.surfaceLighter,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: radius.sm,
               },
             ]}
           >
-            <CategoryIcon name="ArrowDownLeft" size={13} color={colors.accentRed} strokeWidth={2.4} />
+            <CategoryIcon name="ArrowDownLeft" size={14} color={colors.accentRed} strokeWidth={2.4} />
             <AppText
               variant="labelSmall"
               style={{
                 color: colors.textSecondary,
-                fontSize: 10,
-                letterSpacing: 0.8,
-                fontWeight: '700',
-                marginLeft: 4,
+                fontSize: 12,
+                fontWeight: '600',
+                marginLeft: 5,
               }}
             >
-              OUTFLOW
+              Outflow
             </AppText>
             <AppText
               variant="labelSmall"
               privacySensitive
               style={{
                 color: colors.accentRed,
-                fontWeight: '800',
-                fontSize: 12,
+                fontWeight: '700',
+                fontSize: 13,
                 marginLeft: 'auto',
               }}
             >

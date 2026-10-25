@@ -102,18 +102,19 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
         title="Budgets & Limits"
         rightAction={
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={() => navigation.navigate('AddBudgetCategory')}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             style={[
               styles.addBudgetBtn,
               {
                 backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
               },
             ]}
           >
-            <CategoryIcon name="Plus" size={16} color={colors.textPrimary} strokeWidth={2.2} />
+            <CategoryIcon name="Plus" size={17} color={colors.textPrimary} strokeWidth={2.2} />
           </TouchableOpacity>
         }
       />
@@ -132,16 +133,17 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
           />
         }
       >
-        {/* Master Monthly Overview Card (Stitch: rounded-xl, #111822) */}
+        {/* Master Monthly Overview Card */}
         <View
           style={[
             styles.masterCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
               padding: spacing.md + 2,
-              marginTop: spacing.sm,
+              marginTop: spacing.xs,
               marginBottom: spacing.md,
             },
           ]}
@@ -149,18 +151,17 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
           {/* Header Row */}
           <View style={styles.masterTopRow}>
             <AppText
-              variant="label"
-              style={{ color: colors.textSecondary, letterSpacing: 1.2, fontWeight: '600' }}
+              variant="sectionHeading"
+              style={{ color: colors.textSecondary }}
             >
-              TOTAL MONTHLY BUDGET
+              MONTHLY BUDGET
             </AppText>
             <View
               style={[
                 styles.spentPill,
                 {
-                  backgroundColor: colors.cardDark,
-                  borderColor: colors.border,
-                  borderRadius: radius.xs,
+                  backgroundColor: colors.surfaceLighter,
+                  borderRadius: radius.full,
                 },
               ]}
             >
@@ -205,7 +206,7 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
             style={[
               styles.masterBarTrack,
               {
-                backgroundColor: colors.cardDark,
+                backgroundColor: colors.surfaceLighter,
                 borderRadius: radius.full,
               },
             ]}
@@ -226,13 +227,16 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
           <View
             style={[
               styles.masterBottomSplit,
-              { borderTopColor: colors.border, borderTopWidth: 1 },
+              {
+                borderTopColor: colors.borderLight,
+                borderTopWidth: StyleSheet.hairlineWidth,
+              },
             ]}
           >
             <View>
               <AppText
                 variant="labelSmall"
-                style={{ color: colors.textSecondary, letterSpacing: 0.8 }}
+                style={{ color: colors.textSecondary, letterSpacing: 0.5, fontWeight: '600' }}
               >
                 REMAINING
               </AppText>
@@ -252,7 +256,7 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
             <View style={{ alignItems: 'flex-end' }}>
               <AppText
                 variant="labelSmall"
-                style={{ color: colors.textSecondary, letterSpacing: 0.8 }}
+                style={{ color: colors.textSecondary, letterSpacing: 0.5, fontWeight: '600' }}
               >
                 DAILY SAFE PACE
               </AppText>
@@ -272,27 +276,25 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Filter Segmented Navigation (Stitch: rounded-lg p-1 flex gap-1) */}
+        {/* Filter Segmented Control */}
         <View
           style={[
             styles.filterSegment,
             {
-              backgroundColor: colors.background,
-              borderColor: colors.border,
-              borderRadius: radius.md,
+              backgroundColor: colors.surfaceLighter,
+              borderRadius: 12,
               marginBottom: spacing.md,
             },
           ]}
         >
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={() => setActiveFilter('ALL')}
             style={[
               styles.filterTab,
               {
                 backgroundColor: activeFilter === 'ALL' ? colors.surfaceCard : 'transparent',
-                borderColor: activeFilter === 'ALL' ? colors.accentRed : 'transparent',
-                borderRadius: radius.sm,
+                borderRadius: 9,
               },
             ]}
           >
@@ -308,14 +310,13 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={() => setActiveFilter('NEAR_LIMIT')}
             style={[
               styles.filterTab,
               {
                 backgroundColor: activeFilter === 'NEAR_LIMIT' ? colors.surfaceCard : 'transparent',
-                borderColor: activeFilter === 'NEAR_LIMIT' ? colors.accentRed : 'transparent',
-                borderRadius: radius.sm,
+                borderRadius: 9,
               },
             ]}
           >
@@ -331,14 +332,13 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={() => setActiveFilter('ON_TRACK')}
             style={[
               styles.filterTab,
               {
                 backgroundColor: activeFilter === 'ON_TRACK' ? colors.surfaceCard : 'transparent',
-                borderColor: activeFilter === 'ON_TRACK' ? colors.accentRed : 'transparent',
-                borderRadius: radius.sm,
+                borderRadius: 9,
               },
             ]}
           >
@@ -354,42 +354,51 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Spend Alert Notice Box (Stitch: border-l-4 border-l-[#EB3B2E] rounded-lg p-3.5) */}
+        {/* Spend Alert Notice Box */}
         {highestRiskCat && (
           <View
             style={[
               styles.noticeBox,
               {
                 backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
-                borderLeftColor:
-                  highestRiskCat.isOverrun || highestRiskCat.percentage >= 80
-                    ? colors.accentRed
-                    : colors.positive,
-                borderRadius: radius.md,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: radius.lg,
                 marginBottom: spacing.md,
               },
             ]}
           >
-            <CategoryIcon
-              name="AlertTriangle"
-              size={18}
-              color={
-                highestRiskCat.isOverrun || highestRiskCat.percentage >= 80
-                  ? colors.accentRed
-                  : colors.positive
-              }
-            />
+            <View
+              style={[
+                styles.noticeIconWrap,
+                {
+                  backgroundColor:
+                    highestRiskCat.isOverrun || highestRiskCat.percentage >= 80
+                      ? 'rgba(255, 59, 48, 0.12)'
+                      : 'rgba(52, 199, 89, 0.12)',
+                },
+              ]}
+            >
+              <CategoryIcon
+                name="AlertTriangle"
+                size={18}
+                color={
+                  highestRiskCat.isOverrun || highestRiskCat.percentage >= 80
+                    ? colors.accentRed
+                    : colors.positive
+                }
+              />
+            </View>
             <View style={styles.noticeContent}>
               <AppText
                 variant="cardTitle"
-                style={{ fontSize: 13, color: colors.textPrimary, fontWeight: '700' }}
+                style={{ fontSize: 14, color: colors.textPrimary, fontWeight: '600' }}
               >
                 Budget Notice
               </AppText>
               <AppText
                 variant="bodyMedium"
-                style={{ color: colors.textSecondary, marginTop: 2, lineHeight: 18 }}
+                style={{ color: colors.textSecondary, marginTop: 3, lineHeight: 19 }}
               >
                 {highestRiskCat.isOverrun ? (
                   <>
@@ -398,7 +407,7 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
                     </AppText>{' '}
                     is{' '}
                     <AppText style={{ color: colors.accentRed, fontWeight: '600' }}>
-                      OVERRUN
+                      over limit
                     </AppText>{' '}
                     by{' '}
                     <AppText style={{ color: colors.accentRed, fontWeight: '600' }}>
@@ -444,8 +453,8 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
         {/* Section Heading */}
         <View style={styles.sectionHeaderRow}>
           <AppText
-            variant="label"
-            style={{ color: colors.textSecondary, letterSpacing: 1.2, fontWeight: '600' }}
+            variant="sectionHeading"
+            style={{ color: colors.textSecondary }}
           >
             ALLOCATED CATEGORIES
           </AppText>
@@ -454,7 +463,7 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
           </AppText>
         </View>
 
-        {/* Category Budget Cards Stack (Stitch: rounded-xl, #111822) */}
+        {/* Category Budget Cards Stack */}
         {filteredCategories.map(cat => {
           const catOverrun = cat.isOverrun;
           const catNearLimit = !catOverrun && cat.percentage >= 80;
@@ -471,8 +480,9 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
               style={[
                 styles.categoryCard,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: catOverrun ? colors.accentRed : colors.border,
+                  backgroundColor: colors.surfaceCard,
+                  borderColor: catOverrun ? colors.accentRed : colors.borderLight,
+                  borderWidth: StyleSheet.hairlineWidth,
                   borderRadius: radius.lg,
                   padding: spacing.md,
                   marginBottom: spacing.sm + 2,
@@ -486,24 +496,23 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
                     style={[
                       styles.iconContainer,
                       {
-                        backgroundColor: colors.cardDark,
-                        borderColor: colors.border,
+                        backgroundColor: colors.surfaceLighter,
                         borderRadius: radius.md,
                       },
                     ]}
                   >
                     <CategoryIcon
                       name={cat.categoryIcon}
-                      size={16}
+                      size={18}
                       color={colors.textPrimary}
                     />
                   </View>
-                  <View style={{ marginLeft: 10 }}>
+                  <View style={{ marginLeft: 12 }}>
                     <AppText
                       variant="cardTitle"
                       style={{
                         color: colors.textPrimary,
-                        fontSize: 14,
+                        fontSize: 15,
                         fontWeight: '600',
                       }}
                     >
@@ -511,7 +520,7 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
                     </AppText>
                     <AppText
                       variant="metadata"
-                      style={{ color: colors.textSecondary, marginTop: 1 }}
+                      style={{ color: colors.textSecondary, marginTop: 2 }}
                     >
                       Limit: {formatCurrency(cat.limitAmount, currencySymbol, isPrivacyMode, false)}
                     </AppText>
@@ -523,9 +532,8 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
                   style={[
                     styles.catBadge,
                     {
-                      backgroundColor: colors.cardDark,
-                      borderColor: colors.border,
-                      borderRadius: radius.xs,
+                      backgroundColor: colors.surfaceLighter,
+                      borderRadius: radius.full,
                     },
                   ]}
                 >
@@ -573,7 +581,7 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
                 style={[
                   styles.catBarTrack,
                   {
-                    backgroundColor: colors.cardDark,
+                    backgroundColor: colors.surfaceLighter,
                     borderRadius: radius.full,
                   },
                 ]}
@@ -612,7 +620,7 @@ export const BudgetsScreen: React.FC<BudgetsScreenProps> = ({ navigation }) => {
 
         {/* Action Button: Add Budget Category */}
         <AppButton
-          title="+ ALLOCATE NEW CATEGORY"
+          title="Allocate New Category"
           onPress={() => navigation.navigate('AddBudgetCategory')}
           variant="primary"
           size="large"
@@ -628,10 +636,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   addBudgetBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 6,
-    borderWidth: 1,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -639,7 +646,6 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   masterCard: {
-    borderWidth: 1,
     gap: 12,
   },
   masterTopRow: {
@@ -648,9 +654,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   spentPill: {
-    borderWidth: 1,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -679,25 +684,28 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   filterSegment: {
-    borderWidth: 1,
     padding: 3,
     flexDirection: 'row',
     gap: 4,
   },
   filterTab: {
     flex: 1,
-    borderWidth: 1,
-    paddingVertical: 6,
+    paddingVertical: 7,
     alignItems: 'center',
     justifyContent: 'center',
   },
   noticeBox: {
-    borderWidth: 1,
-    borderLeftWidth: 4,
-    padding: 12,
+    padding: 14,
     flexDirection: 'row',
     alignItems: 'flex-start',
-    gap: 10,
+    gap: 12,
+  },
+  noticeIconWrap: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   noticeContent: {
     flex: 1,
@@ -710,7 +718,6 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   categoryCard: {
-    borderWidth: 1,
     gap: 10,
   },
   catHeaderRow: {
@@ -723,16 +730,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    width: 32,
-    height: 32,
-    borderWidth: 1,
+    width: 38,
+    height: 38,
     alignItems: 'center',
     justifyContent: 'center',
   },
   catBadge: {
-    borderWidth: 1,
-    paddingVertical: 3,
-    paddingHorizontal: 8,
+    paddingVertical: 4,
+    paddingHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,

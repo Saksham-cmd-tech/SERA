@@ -64,35 +64,34 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
 
   return (
     <TouchableOpacity
-      activeOpacity={0.75}
+      activeOpacity={0.7}
       onPress={onPress}
       onLongPress={onLongPress}
       style={[
         styles.container,
         {
-          paddingVertical: spacing.sm + 4,
+          paddingVertical: 12,
           borderBottomColor: colors.borderLight,
-          borderBottomWidth: showDivider ? 1 : 0,
+          borderBottomWidth: showDivider ? StyleSheet.hairlineWidth : 0,
         },
       ]}
     >
-      {/* Left Brand / Category Logo Box with Tinted Tone */}
+      {/* Left Brand / Category Logo Box with Apple Squircle */}
       <View
         style={[
           styles.iconBox,
           {
             backgroundColor: visual.color ? `${visual.color}1E` : colors.surfaceLighter,
-            borderColor: visual.color ? `${visual.color}44` : colors.border,
             borderRadius: radius.md,
-            width: 36,
-            height: 36,
-            marginRight: spacing.md,
+            width: 40,
+            height: 40,
+            marginRight: 12,
           },
         ]}
       >
         <CategoryIcon
           name={visual.icon}
-          size={16}
+          size={18}
           color={visual.color || colors.textPrimary}
           strokeWidth={2.2}
         />
@@ -103,25 +102,27 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
         <AppText
           variant="cardTitle"
           numberOfLines={1}
-          style={{ color: colors.textPrimary, fontSize: 15, fontWeight: '700', marginBottom: 2 }}
+          style={{ color: colors.textPrimary, fontSize: 15, fontWeight: '600' }}
         >
           {transaction.merchant}
         </AppText>
         <AppText
-          variant="labelSmall"
-          style={{ color: colors.textSecondary, letterSpacing: 1.4, fontSize: 8.5 }}
+          variant="metadata"
+          numberOfLines={1}
+          style={{ color: colors.textSecondary, marginTop: 2, fontSize: 13 }}
         >
-          {categoryName.toUpperCase()}
+          {categoryName}{transaction.time ? ` • ${transaction.time}` : ''}
         </AppText>
       </View>
 
-      {/* Right Column: Amount & Time */}
+      {/* Right Column: Amount */}
       <View style={styles.rightCol}>
         <AppText
           variant="amountSmall"
           privacySensitive
           style={{
-            fontWeight: '800',
+            fontSize: 16,
+            fontWeight: '600',
             color: isIncome ? colors.positive : colors.textPrimary,
           }}
         >
@@ -131,12 +132,6 @@ export const TransactionRow: React.FC<TransactionRowProps> = ({
             currencySymbol,
             isPrivacyMode
           )}
-        </AppText>
-        <AppText
-          variant="metadata"
-          style={{ color: colors.textMuted, marginTop: 2, fontSize: 10 }}
-        >
-          {transaction.time || '12:00 PM'}
         </AppText>
       </View>
     </TouchableOpacity>
@@ -150,11 +145,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   iconBox: {
-    width: 38,
-    height: 38,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
   },
   centerCol: {
     flex: 1,

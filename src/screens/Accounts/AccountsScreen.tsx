@@ -82,21 +82,23 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
       <Header
         showBack
         onPressBack={() => navigation.goBack()}
-        subtitle="FINANCIAL ACCOUNTS"
+        subtitle="Accounts"
         title="Net Worth"
         rightAction={
           <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() => setModalVisible(true)}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             style={[
               styles.plusBtn,
               {
                 backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
               },
             ]}
           >
-            <CategoryIcon name="Plus" size={16} color={colors.textPrimary} strokeWidth={2.2} />
+            <CategoryIcon name="Plus" size={17} color={colors.textPrimary} strokeWidth={2.2} />
           </TouchableOpacity>
         }
       />
@@ -115,34 +117,35 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
           />
         }
       >
-        {/* Net Worth Rectangular Card */}
+        {/* Apple Card Net Worth Hero */}
         <View
           style={[
             styles.netWorthCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
-              padding: spacing.md,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderRadius: radius.lg,
+              padding: spacing.md + 2,
               marginBottom: spacing.md,
             },
           ]}
         >
-          <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
             TOTAL NET WORTH
           </AppText>
           <AppText
             variant="displayMedium"
             privacySensitive
-            style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 2 }}
+            style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 4 }}
           >
             {formatCurrency(netWorth.netWorth, currencySymbol, isPrivacyMode, false)}
           </AppText>
 
-          <View style={[styles.assetsLiabilitiesRow, { borderTopColor: colors.border, borderTopWidth: 1, marginTop: spacing.md, paddingTop: spacing.sm }]}>
+          <View style={[styles.assetsLiabilitiesRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth, marginTop: spacing.md, paddingTop: spacing.sm + 2 }]}>
             <View>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                ASSETS
+              <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 }}>
+                TOTAL ASSETS
               </AppText>
               <AppText
                 variant="amountSmall"
@@ -154,13 +157,13 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
             </View>
 
             <View style={{ alignItems: 'flex-end' }}>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                LIABILITIES
+              <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 }}>
+                TOTAL LIABILITIES
               </AppText>
               <AppText
                 variant="amountSmall"
                 privacySensitive
-                style={{ color: colors.coral, fontWeight: '700', marginTop: 2 }}
+                style={{ color: colors.accentRed, fontWeight: '700', marginTop: 2 }}
               >
                 -{formatCurrency(netWorth.liabilities, currencySymbol, isPrivacyMode, false)}
               </AppText>
@@ -168,35 +171,47 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
           </View>
         </View>
 
-        {/* Transfer Money Action Banner */}
+        {/* Transfer Action Row */}
         <TouchableOpacity
-          activeOpacity={0.8}
+          activeOpacity={0.7}
           onPress={() => navigation.navigate('Transfer')}
           style={[
             styles.transferBanner,
             {
-              backgroundColor: colors.accent,
-              borderColor: colors.border,
-              borderRadius: radius.xs,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderRadius: radius.lg,
               padding: spacing.md,
-              marginBottom: spacing.md,
+              marginBottom: spacing.lg,
             },
           ]}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <CategoryIcon name="ArrowRightLeft" size={18} color={colors.accentText} />
-            <AppText
-              variant="label"
-              style={{ color: colors.accentText, letterSpacing: 1.4, marginLeft: 8, fontWeight: '700' }}
+            <View
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 16,
+                backgroundColor: 'rgba(0, 122, 255, 0.12)',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
             >
-              TRANSFER MONEY BETWEEN ACCOUNTS
+              <CategoryIcon name="ArrowRightLeft" size={16} color="#007AFF" />
+            </View>
+            <AppText
+              variant="bodyLarge"
+              style={{ color: colors.textPrimary, marginLeft: 12, fontWeight: '600' }}
+            >
+              Transfer Between Accounts
             </AppText>
           </View>
-          <CategoryIcon name="ChevronRight" size={18} color={colors.accentText} />
+          <CategoryIcon name="ChevronRight" size={16} color={colors.textSecondary} />
         </TouchableOpacity>
 
         {/* Accounts List */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 8 }}>
+        <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 10 }}>
           ALL ACCOUNTS ({accounts.length})
         </AppText>
 
@@ -210,7 +225,7 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
         ))}
 
         <AppButton
-          title="+ ADD NEW ACCOUNT"
+          title="Add New Account"
           onPress={() => setModalVisible(true)}
           variant="primary"
           size="large"
@@ -240,32 +255,37 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
               style={[
                 styles.modalSheet,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                  borderRadius: radius.md,
+                  backgroundColor: colors.surfaceCard,
+                  borderColor: colors.borderLight,
+                  borderWidth: StyleSheet.hairlineWidth,
+                  borderRadius: radius.xl,
                   padding: spacing.lg,
                 },
               ]}
             >
-              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md }}>
+              <View style={styles.sheetHandleWrap}>
+                <View style={[styles.sheetHandle, { backgroundColor: colors.borderLight }]} />
+              </View>
+
+              <AppText variant="cardTitle" style={{ color: colors.textPrimary, marginBottom: spacing.md, fontWeight: '700', fontSize: 18 }}>
                 Add New Account
               </AppText>
 
-              <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+              <View style={[styles.inputBox, { backgroundColor: colors.surfaceLighter }]}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 }}>
                   ACCOUNT NAME
                 </AppText>
                 <TextInput
                   value={name}
                   onChangeText={setName}
-                  placeholder="e.g. Axis Bank, Wallet, Gold"
+                  placeholder="e.g. HDFC Bank, Cash Wallet, Savings"
                   placeholderTextColor={colors.textMuted}
                   style={[styles.inputField, { color: colors.textPrimary }]}
                 />
               </View>
 
-              <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border, marginTop: 10 }]}>
-                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+              <View style={[styles.inputBox, { backgroundColor: colors.surfaceLighter, marginTop: 10 }]}>
+                <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '600', letterSpacing: 0.5 }}>
                   STARTING BALANCE
                 </AppText>
                 <TextInput
@@ -279,7 +299,7 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
               </View>
 
               {/* Type selector */}
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginTop: 12, marginBottom: 6 }}>
+              <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginTop: 14, marginBottom: 8 }}>
                 ACCOUNT TYPE
               </AppText>
               <View style={styles.typesRow}>
@@ -288,12 +308,13 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
                   return (
                     <TouchableOpacity
                       key={t}
+                      activeOpacity={0.7}
                       onPress={() => setType(t)}
                       style={[
                         styles.typeChip,
                         {
-                          backgroundColor: isSelected ? colors.accentRed : colors.surface,
-                          borderColor: isSelected ? colors.accentRed : colors.border,
+                          backgroundColor: isSelected ? colors.accentRed : colors.surfaceLighter,
+                          borderRadius: radius.full,
                         },
                       ]}
                     >
@@ -304,7 +325,7 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
                           fontWeight: isSelected ? '700' : '500',
                         }}
                       >
-                        {t.toUpperCase()}
+                        {t.charAt(0).toUpperCase() + t.slice(1)}
                       </AppText>
                     </TouchableOpacity>
                   );
@@ -312,7 +333,7 @@ export const AccountsScreen: React.FC<AccountsScreenProps> = ({ navigation }) =>
               </View>
 
               <AppButton
-                title="CREATE ACCOUNT"
+                title="Create Account"
                 onPress={handleCreateAccount}
                 variant="primary"
                 size="large"
@@ -337,15 +358,14 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
   },
   plusBtn: {
-    width: 32,
-    height: 32,
-    borderRadius: 6,
-    borderWidth: 1,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
   },
   netWorthCard: {
-    borderWidth: 1,
+    gap: 4,
   },
   assetsLiabilitiesRow: {
     flexDirection: 'row',
@@ -356,21 +376,27 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderWidth: 1,
   },
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
   },
   modalSheet: {
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    borderWidth: 1,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  sheetHandleWrap: {
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  sheetHandle: {
+    width: 36,
+    height: 5,
+    borderRadius: 2.5,
   },
   inputBox: {
-    padding: 10,
-    borderWidth: 1,
-    borderRadius: 4,
+    padding: 12,
+    borderRadius: 12,
   },
   inputField: {
     fontSize: 16,
@@ -380,13 +406,10 @@ const styles = StyleSheet.create({
   typesRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    gap: 8,
   },
   typeChip: {
-    paddingVertical: 6,
-    paddingHorizontal: 12,
-    borderWidth: 1,
-    borderRadius: 4,
-    marginRight: 6,
-    marginBottom: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
   },
 });

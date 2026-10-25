@@ -89,7 +89,7 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
       edges={['top', 'left', 'right', 'bottom']}
       style={[styles.safeArea, { backgroundColor: colors.background }]}
     >
-      <Header showBack onPressBack={() => navigation.goBack()} subtitle="SAVINGS" title="Create Goal" />
+      <Header showBack onPressBack={() => navigation.goBack()} subtitle="Savings" title="Create Goal" />
 
       <ScrollView
         ref={scrollRef}
@@ -104,13 +104,13 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
-        {/* Editorial Question Banner from Reference */}
+        {/* Apple HIG Section Title */}
         <View style={{ marginBottom: spacing.md }}>
-          <AppText variant="pageSubheading" style={{ color: colors.textSecondary }}>
-            How much do
+          <AppText variant="pageHeading" style={{ color: colors.textPrimary }}>
+            Set a Target
           </AppText>
-          <AppText variant="pageHeading" style={{ color: colors.textPrimary, textTransform: 'uppercase' }}>
-            You want to save?
+          <AppText variant="bodyMedium" style={{ color: colors.textSecondary, marginTop: 4 }}>
+            Define how much and when you plan to save.
           </AppText>
         </View>
 
@@ -119,15 +119,16 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
           style={[
             styles.card,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              padding: spacing.md,
+              padding: spacing.md + 2,
               marginBottom: spacing.md,
             },
           ]}
         >
-          <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
             TARGET AMOUNT
           </AppText>
           <View style={styles.inputPrefixRow}>
@@ -155,23 +156,24 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
           style={[
             styles.card,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              padding: spacing.md,
+              paddingHorizontal: spacing.md,
               marginBottom: spacing.md,
             },
           ]}
         >
           {/* Goal Name */}
           <View style={styles.fieldRow}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 90 }}>
-              GOAL NAME
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, width: 100, fontWeight: '500' }}>
+              Goal Name
             </AppText>
             <TextInput
               value={name}
               onChangeText={setName}
-              placeholder="e.g. MacBook Pro, Trip"
+              placeholder="e.g. MacBook Pro, Vacation"
               placeholderTextColor={colors.textMuted}
               onFocus={() => {
                 setTimeout(() => {
@@ -183,9 +185,9 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
           </View>
 
           {/* Initial Balance */}
-          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 90 }}>
-              SAVED SO FAR
+          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, width: 100, fontWeight: '500' }}>
+              Saved So Far
             </AppText>
             <TextInput
               value={currentAmountStr}
@@ -203,9 +205,9 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
           </View>
 
           {/* Target Date */}
-          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 90 }}>
-              TARGET DATE
+          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, width: 100, fontWeight: '500' }}>
+              Target Date
             </AppText>
             <TextInput
               value={targetDate}
@@ -222,9 +224,9 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
           </View>
 
           {/* Monthly Contribution */}
-          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 90 }}>
-              MONTHLY TARGET
+          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, width: 100, fontWeight: '500' }}>
+              Monthly Pace
             </AppText>
             <TextInput
               value={monthlyContributionStr}
@@ -243,8 +245,8 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
         </View>
 
         {/* Icon Selection */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 8 }}>
-          SELECT GOAL ICON
+        <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 10, marginTop: 4 }}>
+          CHOOSE ICON
         </AppText>
         <View style={styles.iconRow}>
           {iconsList.map(ic => {
@@ -252,20 +254,22 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
             return (
               <TouchableOpacity
                 key={ic}
+                activeOpacity={0.7}
                 onPress={() => setSelectedIcon(ic)}
                 style={[
                   styles.iconOption,
                   {
-                    backgroundColor: isSelected ? colors.accentRedSurface : colors.surface,
-                    borderColor: isSelected ? colors.accent : colors.border,
+                    backgroundColor: isSelected ? colors.accentRed : colors.surfaceCard,
                     borderRadius: radius.md,
+                    borderColor: colors.borderLight,
+                    borderWidth: isSelected ? 0 : StyleSheet.hairlineWidth,
                   },
                 ]}
               >
                 <CategoryIcon
                   name={ic}
-                  size={18}
-                  color={isSelected ? colors.accent : colors.textPrimary}
+                  size={20}
+                  color={isSelected ? '#FFFFFF' : colors.textPrimary}
                 />
               </TouchableOpacity>
             );
@@ -273,7 +277,7 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
         </View>
 
         {/* Linked Account Selection */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 8 }}>
+        <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 10, marginTop: 4 }}>
           LINKED ACCOUNT
         </AppText>
         <View style={styles.iconRow}>
@@ -282,24 +286,26 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
             return (
               <TouchableOpacity
                 key={acc.id}
+                activeOpacity={0.7}
                 onPress={() => setSelectedAccountId(acc.id)}
                 style={[
                   styles.accountSelectChip,
                   {
-                    backgroundColor: isSelected ? colors.accentRedSurface : colors.surface,
-                    borderColor: isSelected ? colors.accent : colors.border,
-                    borderRadius: radius.md,
+                    backgroundColor: isSelected ? colors.accentRed : colors.surfaceCard,
+                    borderRadius: radius.full,
+                    borderColor: colors.borderLight,
+                    borderWidth: isSelected ? 0 : StyleSheet.hairlineWidth,
                   },
                 ]}
               >
                 <AppText
                   variant="labelSmall"
                   style={{
-                    color: isSelected ? colors.accent : colors.textPrimary,
+                    color: isSelected ? '#FFFFFF' : colors.textPrimary,
                     fontWeight: isSelected ? '700' : '500',
                   }}
                 >
-                  {acc.name.toUpperCase()}
+                  {acc.name}
                 </AppText>
               </TouchableOpacity>
             );
@@ -308,11 +314,11 @@ export const CreateGoalScreen: React.FC<CreateGoalScreenProps> = ({ navigation }
 
         {/* Save Button */}
         <AppButton
-          title="CREATE SAVINGS GOAL"
+          title="Create Savings Goal"
           onPress={handleSave}
           variant="primary"
           size="large"
-          style={{ marginTop: spacing.xl, marginBottom: 30 }}
+          style={{ marginTop: spacing.lg, marginBottom: 30 }}
         />
       </ScrollView>
     </SafeAreaView>
@@ -329,9 +335,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 40,
   },
-  card: {
-    borderWidth: 1,
-  },
+  card: {},
   inputPrefixRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -339,16 +343,16 @@ const styles = StyleSheet.create({
   },
   largeInput: {
     flex: 1,
-    fontSize: 48,
-    lineHeight: 52,
+    fontSize: 44,
+    lineHeight: 48,
     fontWeight: '700',
     paddingVertical: 0,
-    marginLeft: 4,
+    marginLeft: 6,
   },
   fieldRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 14,
   },
   input: {
     flex: 1,
@@ -361,18 +365,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   iconOption: {
-    width: 42,
-    height: 42,
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    marginRight: 8,
-    marginBottom: 8,
+    marginRight: 10,
+    marginBottom: 10,
   },
   accountSelectChip: {
     paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderWidth: 1,
+    paddingHorizontal: 16,
     marginRight: 8,
     marginBottom: 8,
   },

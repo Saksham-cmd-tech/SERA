@@ -301,18 +301,21 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
         centerTitle
         rightAction={
           <TouchableOpacity
-            activeOpacity={0.8}
+            activeOpacity={0.7}
             onPress={() => setSmartFillVisible(true)}
             style={[
               styles.receiptScanBtn,
               {
                 backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
-                borderRadius: radius.md,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
+                borderRadius: 18,
+                width: 36,
+                height: 36,
               },
             ]}
           >
-            <CategoryIcon name="Receipt" size={17} color={colors.textSecondary} />
+            <CategoryIcon name="Receipt" size={17} color={colors.textPrimary} />
           </TouchableOpacity>
         }
       />
@@ -334,9 +337,9 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
         <View style={{ marginBottom: spacing.md }}>
           <SegmentedControl
             options={[
-              { value: 'expense', label: 'EXPENSE' },
-              { value: 'income', label: 'INCOME' },
-              { value: 'transfer', label: 'TRANSFER' },
+              { value: 'expense', label: 'Expense' },
+              { value: 'income', label: 'Income' },
+              { value: 'transfer', label: 'Transfer' },
             ]}
             selectedValue={type}
             onSelect={val => setType(val)}
@@ -345,37 +348,46 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
 
         {/* Smart Text Parser Action Bar */}
         <TouchableOpacity
-          activeOpacity={0.8}
+          activeOpacity={0.7}
           onPress={() => setSmartFillVisible(true)}
           style={[
             styles.smartFillBar,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderRadius: radius.md,
-              paddingVertical: 10,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
+              borderRadius: radius.lg,
+              paddingVertical: 12,
               paddingHorizontal: spacing.md,
               marginBottom: spacing.md,
             },
           ]}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={[styles.smartIconWrap, { backgroundColor: colors.cardDark }]}>
-              <CategoryIcon name="Zap" size={12} color={colors.accent} strokeWidth={2.4} />
-            </View>
-            <AppText
-              variant="labelSmall"
+            <View
               style={{
-                color: colors.textPrimary,
-                fontWeight: '700',
-                marginLeft: 8,
-                letterSpacing: 1.2,
+                width: 28,
+                height: 28,
+                borderRadius: 14,
+                backgroundColor: 'rgba(255, 149, 0, 0.15)',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-              SMART TEXT PARSER
+              <CategoryIcon name="Zap" size={14} color={colors.warning} strokeWidth={2.4} />
+            </View>
+            <AppText
+              variant="bodyMedium"
+              style={{
+                color: colors.textPrimary,
+                fontWeight: '600',
+                marginLeft: 10,
+              }}
+            >
+              Smart Text Parser
             </AppText>
           </View>
-          <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+          <AppText variant="metadata" style={{ color: colors.accentRed, fontWeight: '600' }}>
             Auto-Parse →
           </AppText>
         </TouchableOpacity>
@@ -387,24 +399,25 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           style={[
             styles.amountContainer,
             {
-              backgroundColor: colors.surface,
-              borderColor: keypadVisible ? colors.textPrimary : colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              padding: spacing.md,
+              padding: spacing.md + 2,
               marginBottom: spacing.md,
             },
           ]}
         >
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, width: '100%' }}>
             <AppText
-              variant="labelSmall"
-              style={{ color: colors.textSecondary, letterSpacing: 1.6 }}
+              variant="sectionHeading"
+              style={{ color: colors.textSecondary }}
             >
               AMOUNT
             </AppText>
-            <TouchableOpacity onPress={() => setKeypadVisible(!keypadVisible)}>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary, fontWeight: '700' }}>
-                {keypadVisible ? 'HIDE KEYPAD' : 'SHOW KEYPAD'}
+            <TouchableOpacity activeOpacity={0.7} onPress={() => setKeypadVisible(!keypadVisible)}>
+              <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '600' }}>
+                {keypadVisible ? 'Hide Keypad' : 'Show Keypad'}
               </AppText>
             </TouchableOpacity>
           </View>
@@ -437,15 +450,14 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                 style={[
                   styles.incrementChip,
                   {
-                    backgroundColor: colors.surfaceCard,
-                    borderColor: colors.border,
-                    borderRadius: radius.sm,
+                    backgroundColor: colors.surfaceLighter,
+                    borderRadius: radius.full,
                   },
                 ]}
               >
                 <AppText
                   variant="labelSmall"
-                  style={{ color: colors.textPrimary, fontWeight: '700' }}
+                  style={{ color: colors.textPrimary, fontWeight: '600' }}
                 >
                   +{val >= 1000 ? `${val.toLocaleString()}` : val}
                 </AppText>
@@ -459,10 +471,11 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           style={[
             styles.fieldsCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              padding: spacing.md,
+              paddingHorizontal: spacing.md,
               marginBottom: spacing.md,
             },
           ]}
@@ -476,11 +489,11 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
             }}
             style={styles.fieldRow}
           >
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 80 }}>
-              {type === 'transfer' ? 'FROM' : 'ACCOUNT'}
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, width: 90, fontWeight: '500' }}>
+              {type === 'transfer' ? 'From' : 'Account'}
             </AppText>
             <View style={styles.pickerSelector}>
-              <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15 }}>
+              <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15, fontWeight: '600' }}>
                 {selectedAccount?.name || 'Select Account'}
               </AppText>
               <AppText variant="metadata" style={{ color: colors.textSecondary, marginLeft: 6 }}>
@@ -495,16 +508,16 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => setCategoryModalVisible(true)}
-              style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}
+              style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}
             >
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 80 }}>
-                CATEGORY
+              <AppText variant="bodyMedium" style={{ color: colors.textSecondary, width: 90, fontWeight: '500' }}>
+                Category
               </AppText>
               <View style={styles.pickerSelector}>
                 <View
                   style={[
                     styles.smallIconCircle,
-                    { backgroundColor: colors.cardDark, marginRight: 8 },
+                    { backgroundColor: colors.surfaceLighter, marginRight: 8, borderRadius: 10 },
                   ]}
                 >
                   <CategoryIcon
@@ -513,7 +526,7 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                     color={colors.textPrimary}
                   />
                 </View>
-                <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15 }}>
+                <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15, fontWeight: '600' }}>
                   {selectedCategory?.name || 'Select Category'}
                 </AppText>
               </View>
@@ -522,9 +535,9 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           )}
 
           {/* Merchant / Description Input */}
-          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 80 }}>
-              MERCHANT
+          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, width: 90, fontWeight: '500' }}>
+              Payee
             </AppText>
             <TextInput
               value={merchant}
@@ -549,13 +562,13 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                 setTargetAccountField('to');
                 setAccountModalVisible(true);
               }}
-              style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}
+              style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}
             >
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 80 }}>
-                TO
+              <AppText variant="bodyMedium" style={{ color: colors.textSecondary, width: 90, fontWeight: '500' }}>
+                To
               </AppText>
               <View style={styles.pickerSelector}>
-                <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15 }}>
+                <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15, fontWeight: '600' }}>
                   {selectedToAccount?.name || 'Select Account'}
                 </AppText>
                 <AppText variant="metadata" style={{ color: colors.textSecondary, marginLeft: 6 }}>
@@ -567,9 +580,9 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           )}
 
           {/* Date & Time display */}
-          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 80 }}>
-              DATE / TIME
+          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, width: 90, fontWeight: '500' }}>
+              Date
             </AppText>
             <AppText variant="bodyMedium" style={{ color: colors.textPrimary }}>
               {date} • {time}
@@ -577,9 +590,9 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           </View>
 
           {/* Notes Input */}
-          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1 }]}>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 80 }}>
-              NOTES
+          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth }]}>
+            <AppText variant="bodyMedium" style={{ color: colors.textSecondary, width: 90, fontWeight: '500' }}>
+              Note
             </AppText>
             <TextInput
               value={notes}
@@ -597,10 +610,10 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           </View>
 
           {/* Receipt Attachment Section */}
-          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: 1, flexDirection: 'column', alignItems: 'stretch' }]}>
+          <View style={[styles.fieldRow, { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth, flexDirection: 'column', alignItems: 'stretch' }]}>
             <View style={styles.receiptHeaderRow}>
-              <AppText variant="labelSmall" style={{ color: colors.textSecondary, width: 80 }}>
-                RECEIPT
+              <AppText variant="bodyMedium" style={{ color: colors.textSecondary, width: 90, fontWeight: '500' }}>
+                Receipt
               </AppText>
               <TouchableOpacity
                 activeOpacity={0.7}
@@ -610,12 +623,12 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                 <CategoryIcon
                   name="Camera"
                   size={16}
-                  color={receiptUri ? colors.positive : colors.textPrimary}
+                  color={receiptUri ? colors.positive : colors.accentRed}
                 />
                 <AppText
                   variant="bodyMedium"
                   style={{
-                    color: receiptUri ? colors.positive : colors.textPrimary,
+                    color: receiptUri ? colors.positive : colors.accentRed,
                     marginLeft: 6,
                     fontWeight: '600',
                   }}
@@ -626,13 +639,13 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
             </View>
 
             {receiptUri ? (
-              <View style={[styles.receiptPreviewBox, { borderColor: colors.border, backgroundColor: colors.background, borderRadius: radius.md }]}>
+              <View style={[styles.receiptPreviewBox, { borderColor: colors.borderLight, backgroundColor: colors.surfaceLighter, borderRadius: radius.md }]}>
                 <Image source={{ uri: receiptUri }} style={styles.receiptThumb} resizeMode="cover" />
                 <View style={styles.receiptInfo}>
                   <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <CategoryIcon name="CheckCircle2" size={14} color={colors.positive} />
                     <AppText variant="labelSmall" style={{ color: colors.positive, fontWeight: '700', marginLeft: 4 }}>
-                      ATTACHED
+                      Attached
                     </AppText>
                   </View>
                   <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>
@@ -643,8 +656,8 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                     style={{ marginTop: 6 }}
                   >
-                    <AppText variant="labelSmall" style={{ color: colors.coral, fontWeight: '700' }}>
-                      REMOVE RECEIPT
+                    <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '700' }}>
+                      Remove Receipt
                     </AppText>
                   </TouchableOpacity>
                 </View>
@@ -653,15 +666,12 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
           </View>
         </View>
 
-        {/* Quick Categories Bar from Stitch Screen 1 */}
+        {/* Quick Categories Bar */}
         {type !== 'transfer' && (
           <View style={{ marginBottom: spacing.md }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.4 }}>
+              <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
                 QUICK CATEGORIES
-              </AppText>
-              <AppText variant="metadata" style={{ color: colors.textMuted, fontSize: 11 }}>
-                RECENT
               </AppText>
             </View>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingBottom: 2 }}>
@@ -670,28 +680,28 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
                 return (
                   <TouchableOpacity
                     key={c.id}
-                    activeOpacity={0.8}
+                    activeOpacity={0.7}
                     onPress={() => setCategoryId(c.id)}
                     style={{
                       flexDirection: 'row',
                       alignItems: 'center',
-                      backgroundColor: colors.surfaceCard,
-                      borderColor: isSelected ? colors.accentRed : colors.border,
-                      borderWidth: 1,
-                      borderRadius: radius.md,
-                      paddingHorizontal: 12,
+                      backgroundColor: isSelected ? colors.accentRed : colors.surfaceCard,
+                      borderColor: colors.borderLight,
+                      borderWidth: isSelected ? 0 : StyleSheet.hairlineWidth,
+                      borderRadius: radius.full,
+                      paddingHorizontal: 14,
                       paddingVertical: 8,
                     }}
                   >
                     <CategoryIcon
                       name={c.icon}
                       size={14}
-                      color={isSelected ? colors.accentRed : colors.textSecondary}
+                      color={isSelected ? '#FFFFFF' : colors.textSecondary}
                     />
                     <AppText
                       variant="labelSmall"
                       style={{
-                        color: isSelected ? colors.textPrimary : colors.textSecondary,
+                        color: isSelected ? '#FFFFFF' : colors.textPrimary,
                         fontWeight: isSelected ? '700' : '500',
                         marginLeft: 6,
                         fontSize: 12,
@@ -720,13 +730,13 @@ export const AddTransactionScreen: React.FC<AddTransactionScreenProps> = ({
         <AppButton
           title={
             type === 'expense'
-              ? `SAVE EXPENSE • ${currencySymbol}${amountStr}`
+              ? `Save Expense • ${currencySymbol}${amountStr}`
               : type === 'income'
-              ? `SAVE INCOME • ${currencySymbol}${amountStr}`
-              : `EXECUTE TRANSFER • ${currencySymbol}${amountStr}`
+              ? `Save Income • ${currencySymbol}${amountStr}`
+              : `Confirm Transfer • ${currencySymbol}${amountStr}`
           }
           onPress={handleSave}
-          variant={type === 'expense' ? 'accent' : 'primary'}
+          variant="primary"
           size="large"
           style={{ marginBottom: 30 }}
         />

@@ -197,7 +197,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           style={[
             styles.quickActionBar,
             {
-              marginBottom: spacing.md,
+              marginBottom: 16,
               gap: 8,
             },
           ]}
@@ -214,12 +214,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               },
             ]}
           >
-            <CategoryIcon name="Plus" size={15} color="#FFFFFF" strokeWidth={2.8} />
+            <CategoryIcon name="Plus" size={16} color="#FFFFFF" strokeWidth={2.4} />
             <AppText
               variant="labelSmall"
-              style={{ color: '#FFFFFF', letterSpacing: 0.8, marginLeft: 4, fontWeight: '700' }}
+              style={{ color: '#FFFFFF', letterSpacing: 0.2, marginLeft: 6, fontWeight: '600', fontSize: 13 }}
             >
-              EXPENSE
+              Expense
             </AppText>
           </TouchableOpacity>
 
@@ -230,17 +230,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               styles.quickActionBtn,
               {
                 backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
                 borderRadius: radius.md,
               },
             ]}
           >
-            <CategoryIcon name="Plus" size={15} color={colors.positive} strokeWidth={2.8} />
+            <CategoryIcon name="Plus" size={16} color={colors.positive} strokeWidth={2.4} />
             <AppText
               variant="labelSmall"
-              style={{ color: colors.positive, letterSpacing: 0.8, marginLeft: 4, fontWeight: '700' }}
+              style={{ color: colors.textPrimary, letterSpacing: 0.2, marginLeft: 6, fontWeight: '600', fontSize: 13 }}
             >
-              INCOME
+              Income
             </AppText>
           </TouchableOpacity>
 
@@ -251,24 +252,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               styles.quickActionBtn,
               {
                 backgroundColor: colors.surfaceCard,
-                borderColor: colors.border,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
                 borderRadius: radius.md,
               },
             ]}
           >
-            <CategoryIcon name="ArrowRightLeft" size={15} color={colors.textPrimary} strokeWidth={2.2} />
+            <CategoryIcon name="ArrowRightLeft" size={15} color={colors.textSecondary} strokeWidth={2.2} />
             <AppText
               variant="labelSmall"
-              style={{ color: colors.textPrimary, letterSpacing: 0.8, marginLeft: 4, fontWeight: '700' }}
+              style={{ color: colors.textPrimary, letterSpacing: 0.2, marginLeft: 6, fontWeight: '600', fontSize: 13 }}
             >
-              TRANSFER
+              Transfer
             </AppText>
           </TouchableOpacity>
         </View>
 
-        {/* Monthly Budget Section (Stitch Screen 3 Layout) */}
+        {/* Monthly Budget Section */}
         <MonthlyBudgetBanner
-          monthName={budgetSummary?.monthName || new Date().toLocaleString('default', { month: 'long' }).toUpperCase()}
+          monthName={budgetSummary?.monthName || new Date().toLocaleString('default', { month: 'long' })}
           totalBudget={budgetSummary?.totalBudget || settings.monthlyBudgetGoal || 0}
           totalSpent={budgetSummary?.totalSpent || 0}
           totalRemaining={budgetSummary?.totalRemaining || 0}
@@ -279,14 +281,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         />
 
         {/* Accounts Rail */}
-        <View style={{ marginBottom: spacing.md }}>
-          <View style={[styles.sectionHeaderRow, { marginBottom: 6 }]}>
-            <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
-              ACCOUNTS
+        <View style={{ marginBottom: 16 }}>
+          <View style={[styles.sectionHeaderRow, { marginBottom: 8 }]}>
+            <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
+              Accounts
             </AppText>
-            <TouchableOpacity onPress={() => setAccountModalVisible(true)}>
-              <AppText variant="labelSmall" style={{ color: colors.textPrimary, fontWeight: '700' }}>
-                SWITCH ↗
+            <TouchableOpacity onPress={() => navigation.navigate('MoreTab', { screen: 'Accounts' })}>
+              <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '600', fontSize: 13 }}>
+                Manage
               </AppText>
             </TouchableOpacity>
           </View>
@@ -303,11 +305,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 styles.accountRailCard,
                 {
                   backgroundColor: selectedAccountId === 'all' ? colors.surfaceCard : colors.surface,
-                  borderColor: selectedAccountId === 'all' ? colors.accentRed : colors.border,
+                  borderColor: selectedAccountId === 'all' ? colors.accentRed : colors.borderLight,
+                  borderWidth: selectedAccountId === 'all' ? 1.5 : StyleSheet.hairlineWidth,
                   borderRadius: radius.md,
-                  paddingHorizontal: 12,
-                  paddingVertical: 10,
-                  minWidth: 120,
+                  paddingHorizontal: 14,
+                  paddingVertical: 12,
+                  minWidth: 124,
                 },
               ]}
             >
@@ -325,12 +328,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   variant="labelSmall"
                   style={{
                     color: selectedAccountId === 'all' ? colors.textPrimary : colors.textSecondary,
-                    fontWeight: '700',
-                    letterSpacing: 0.8,
+                    fontWeight: '600',
+                    fontSize: 11,
                   }}
                   numberOfLines={1}
                 >
-                  ALL ACCOUNTS
+                  All Accounts
                 </AppText>
               </View>
               <AppText
@@ -338,6 +341,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 style={{
                   color: colors.textPrimary,
                   fontWeight: '700',
+                  fontSize: 15,
                 }}
               >
                 {isPrivacyMode ? '••••••' : formatCurrency(financialSummary?.availableBalance || 0, currencySymbol)}
@@ -356,10 +360,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     styles.accountRailCard,
                     {
                       backgroundColor: isSelected ? colors.surfaceCard : colors.surface,
-                      borderColor: isSelected ? colors.accentRed : colors.border,
+                      borderColor: isSelected ? colors.accentRed : colors.borderLight,
+                      borderWidth: isSelected ? 1.5 : StyleSheet.hairlineWidth,
                       borderRadius: radius.md,
-                      paddingHorizontal: 12,
-                      paddingVertical: 10,
+                      paddingHorizontal: 14,
+                      paddingVertical: 12,
                       minWidth: 130,
                     },
                   ]}
@@ -378,12 +383,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                       variant="labelSmall"
                       style={{
                         color: isSelected ? colors.textPrimary : colors.textSecondary,
-                        fontWeight: '700',
-                        letterSpacing: 0.8,
+                        fontWeight: '600',
+                        fontSize: 11,
                       }}
                       numberOfLines={1}
                     >
-                      {acc.name.toUpperCase()}
+                      {acc.name}
                     </AppText>
                   </View>
                   <AppText
@@ -391,6 +396,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     style={{
                       color: colors.textPrimary,
                       fontWeight: '700',
+                      fontSize: 15,
                     }}
                   >
                     {isPrivacyMode ? '••••••' : formatCurrency(acc.balance, currencySymbol)}
@@ -410,12 +416,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
         {/* Spending Category Breakdown Preview */}
         <View style={styles.sectionHeaderRow}>
-          <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
-            SPENDING BREAKDOWN
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
+            Top Spending
           </AppText>
           <TouchableOpacity onPress={() => navigation.navigate('Analytics')}>
-            <AppText variant="labelSmall" style={{ color: colors.textPrimary, fontWeight: '700' }}>
-              ANALYTICS ↗
+            <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '600', fontSize: 13 }}>
+              Analytics
             </AppText>
           </TouchableOpacity>
         </View>
@@ -424,10 +430,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           style={[
             styles.spendingBox,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              marginBottom: spacing.lg,
+              marginBottom: 16,
             },
           ]}
         >
@@ -440,7 +447,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   key={cat.categoryId}
                   style={[
                     styles.spendingRow,
-                    idx > 0 && { borderTopColor: colors.borderLight, borderTopWidth: 1 },
+                    idx > 0 && { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth },
                   ]}
                 >
                   <View style={styles.spendingLeft}>
@@ -452,7 +459,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     />
                     <AppText
                       variant="cardTitle"
-                      style={{ color: colors.textPrimary, fontSize: 15, marginLeft: 8 }}
+                      style={{ color: colors.textPrimary, fontSize: 15, marginLeft: 8, fontWeight: '600' }}
                     >
                       {cat.categoryName}
                     </AppText>
@@ -462,7 +469,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     privacySensitive
                     style={{
                       color: cat.isOverrun ? colors.coral : colors.textPrimary,
-                      fontWeight: '700',
+                      fontWeight: '600',
+                      fontSize: 15,
                     }}
                   >
                     {formatCurrency(cat.spentAmount, currencySymbol, isPrivacyMode, false)}
@@ -470,8 +478,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                 </View>
               ))
           ) : (
-            <View style={{ padding: spacing.md, alignItems: 'center' }}>
-              <AppText variant="metadata" style={{ color: colors.textSecondary }}>
+            <View style={{ padding: 16, alignItems: 'center' }}>
+              <AppText variant="metadata" style={{ color: colors.textSecondary, fontSize: 13 }}>
                 No category expenses recorded this month yet.
               </AppText>
             </View>
@@ -480,14 +488,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
         {/* Savings Goals Preview */}
         {goals.length > 0 && (
-          <View style={{ marginBottom: spacing.lg }}>
+          <View style={{ marginBottom: 16 }}>
             <View style={styles.sectionHeaderRow}>
-              <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
-                SAVINGS GOALS
+              <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
+                Savings Goals
               </AppText>
               <TouchableOpacity onPress={() => navigation.navigate('GoalsTab')}>
-                <AppText variant="labelSmall" style={{ color: colors.textPrimary, fontWeight: '700' }}>
-                  VIEW ALL ↗
+                <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '600', fontSize: 13 }}>
+                  See All
                 </AppText>
               </TouchableOpacity>
             </View>
@@ -498,21 +506,22 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               style={[
                 styles.goalPreviewCard,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
+                  backgroundColor: colors.surfaceCard,
+                  borderColor: colors.borderLight,
+                  borderWidth: StyleSheet.hairlineWidth,
                   borderRadius: radius.lg,
-                  padding: spacing.md,
+                  padding: 16,
                 },
               ]}
             >
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 16 }}>
+                <AppText variant="cardTitle" style={{ color: colors.textPrimary, fontSize: 15, fontWeight: '600' }}>
                   {goals[0].name}
                 </AppText>
                 <AppText
                   variant="amountSmall"
                   privacySensitive
-                  style={{ color: colors.textPrimary, fontWeight: '700' }}
+                  style={{ color: colors.textPrimary, fontWeight: '600', fontSize: 14 }}
                 >
                   {formatCurrency(goals[0].currentAmount, currencySymbol, isPrivacyMode, false)} / {formatCurrency(goals[0].targetAmount, currencySymbol, isPrivacyMode, false)}
                 </AppText>
@@ -521,7 +530,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
               <View
                 style={[
                   styles.goalBarTrack,
-                  { backgroundColor: colors.borderLight, marginTop: 8 },
+                  { backgroundColor: colors.surfaceLighter, borderRadius: radius.full, height: 6, marginTop: 10, overflow: 'hidden' },
                 ]}
               >
                 <View
@@ -529,6 +538,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     styles.goalBarFill,
                     {
                       backgroundColor: colors.accentRed,
+                      borderRadius: radius.full,
+                      height: 6,
                       width: `${Math.min(100, Math.max(3, goals[0].percentage))}%`,
                     },
                   ]}
@@ -538,15 +549,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </View>
         )}
 
-        {/* Recent Transactions List with "SHOW MORE" button from Reference 3 */}
-        <View style={{ marginBottom: spacing.xl }}>
+        {/* Recent Transactions List */}
+        <View style={{ marginBottom: 24 }}>
           <View style={styles.sectionHeaderRow}>
-            <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
-              RECENT TRANSACTIONS
+            <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
+              Recent Transactions
             </AppText>
             <TouchableOpacity onPress={() => navigation.navigate('TransactionsTab')}>
-              <AppText variant="labelSmall" style={{ color: colors.textPrimary, fontWeight: '700' }}>
-                ALL TRANSACTIONS ↗
+              <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '600', fontSize: 13 }}>
+                See All
               </AppText>
             </TouchableOpacity>
           </View>
@@ -555,10 +566,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
             style={[
               styles.txBox,
               {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.borderLight,
+                borderWidth: StyleSheet.hairlineWidth,
                 borderRadius: radius.lg,
-                paddingHorizontal: spacing.md,
+                paddingHorizontal: 16,
               },
             ]}
           >
@@ -580,19 +592,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   onPress={() => navigation.navigate('TransactionsTab')}
                   style={[
                     styles.showMoreButton,
-                    { borderTopColor: colors.borderLight, borderTopWidth: 1 },
+                    { borderTopColor: colors.borderLight, borderTopWidth: StyleSheet.hairlineWidth },
                   ]}
                 >
                   <AppText
                     variant="labelSmall"
                     style={{
-                      color: colors.textSecondary,
-                      letterSpacing: 1.8,
-                      fontWeight: '700',
+                      color: colors.accentRed,
+                      fontWeight: '600',
+                      fontSize: 13,
                       textAlign: 'center',
                     }}
                   >
-                    SHOW MORE ↗
+                    View All Transactions
                   </AppText>
                 </TouchableOpacity>
               </>

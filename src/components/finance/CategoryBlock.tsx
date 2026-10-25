@@ -26,45 +26,91 @@ export const CategoryBlock: React.FC<CategoryBlockProps> = ({
   const { colors, spacing, radius, currencySymbol, isPrivacyMode } = useAppTheme();
 
   if (highlighted) {
-    // Large warm yellow rectangular card inspired directly by Reference Screenshot 2
     return (
       <TouchableOpacity
-        activeOpacity={0.85}
+        activeOpacity={0.8}
         onPress={onPress}
         style={[
           styles.highlightedCard,
           {
-            backgroundColor: colors.accent,
+            backgroundColor: colors.surfaceCard,
+            borderColor: colors.borderLight,
+            borderWidth: StyleSheet.hairlineWidth,
             borderRadius: radius.lg,
-            padding: spacing.md,
+            padding: spacing.lg,
           },
         ]}
       >
-        <AppText
-          variant="label"
-          style={{ color: colors.accentText, letterSpacing: 1.8, fontWeight: '700' }}
-        >
-          {name.toUpperCase()}
-        </AppText>
+        <View style={styles.topRow}>
+          <AppText
+            variant="sectionHeading"
+            style={{ color: colors.textSecondary }}
+          >
+            TARGET CATEGORY
+          </AppText>
+          <View
+            style={[
+              styles.selectedBadge,
+              {
+                backgroundColor: colors.surfaceLighter,
+                borderRadius: radius.full,
+              },
+            ]}
+          >
+            <AppText
+              variant="labelSmall"
+              style={{ color: colors.textPrimary, fontWeight: '600' }}
+            >
+              Selected
+            </AppText>
+          </View>
+        </View>
 
-        {/* Center Gigantic '+' Sign */}
+        {/* Center Name & Amount */}
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={onPressPlus || onPress}
-          style={styles.plusContainer}
+          style={styles.centerContent}
         >
-          <CategoryIcon name="Plus" size={54} color={colors.accentText} strokeWidth={1.5} />
-        </TouchableOpacity>
-
-        {/* Bottom row: BUDGET label on left, Amount on right */}
-        <View style={styles.bottomRow}>
-          <AppText variant="labelSmall" style={{ color: colors.accentText, letterSpacing: 1.4 }}>
-            BUDGET
+          <AppText
+            variant="cardTitle"
+            style={{ color: colors.textPrimary, fontSize: 18, fontWeight: '700', marginBottom: 4 }}
+          >
+            {name}
           </AppText>
           <AppText
-            variant="amountMedium"
+            variant="displayMedium"
             privacySensitive
-            style={{ color: colors.accentText, fontWeight: '700' }}
+            style={{ color: colors.accentRed, fontWeight: '700' }}
+          >
+            {formatCurrency(amount, currencySymbol, isPrivacyMode, false)}
+          </AppText>
+          <AppText
+            variant="metadata"
+            style={{ color: colors.textMuted, marginTop: 4 }}
+          >
+            Tap keypad below to edit limit
+          </AppText>
+        </TouchableOpacity>
+
+        {/* Bottom row */}
+        <View
+          style={[
+            styles.bottomRow,
+            {
+              borderTopColor: colors.borderLight,
+              borderTopWidth: StyleSheet.hairlineWidth,
+              paddingTop: spacing.sm,
+            },
+          ]}
+        >
+          <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 0.5, fontWeight: '600' }}>
+            MONTHLY CAP
+          </AppText>
+          <AppText
+            variant="amountSmall"
+            privacySensitive
+            style={{ color: colors.textPrimary, fontWeight: '600' }}
           >
             {formatCurrency(amount, currencySymbol, isPrivacyMode, false)}
           </AppText>
@@ -73,36 +119,38 @@ export const CategoryBlock: React.FC<CategoryBlockProps> = ({
     );
   }
 
-  // Stacked dark horizontal rectangular block (Reference Screenshot 2)
+  // Grouped row
   return (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={0.7}
       onPress={onPress}
       style={[
         styles.darkRowCard,
         {
-          backgroundColor: colors.cardDark,
+          backgroundColor: colors.surfaceCard,
+          borderColor: colors.borderLight,
+          borderWidth: StyleSheet.hairlineWidth,
           borderRadius: radius.md,
-          paddingVertical: spacing.md - 2,
+          paddingVertical: spacing.sm + 4,
           paddingHorizontal: spacing.md,
           marginBottom: spacing.xs,
         },
       ]}
     >
       <AppText
-        variant="label"
-        style={{ color: colors.textPrimary, letterSpacing: 1.6, fontWeight: '600' }}
+        variant="bodyMedium"
+        style={{ color: colors.textPrimary, fontWeight: '600' }}
       >
-        {name.toUpperCase()}
+        {name}
       </AppText>
 
       <AppText
         variant="amountSmall"
         privacySensitive
-        style={{ color: colors.textPrimary, fontWeight: '600' }}
+        style={{ color: colors.textSecondary, fontWeight: '600' }}
       >
         {isAddMode && amount === 0
-          ? `${currencySymbol}00.0`
+          ? `${currencySymbol}0`
           : formatCurrency(amount, currencySymbol, isPrivacyMode, false)}
       </AppText>
     </TouchableOpacity>
@@ -111,15 +159,23 @@ export const CategoryBlock: React.FC<CategoryBlockProps> = ({
 
 const styles = StyleSheet.create({
   highlightedCard: {
-    height: 190,
+    minHeight: 180,
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  plusContainer: {
+  topRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  selectedBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+  },
+  centerContent: {
     alignItems: 'center',
     justifyContent: 'center',
-    alignSelf: 'center',
-    marginVertical: 10,
+    marginVertical: 12,
   },
   bottomRow: {
     flexDirection: 'row',

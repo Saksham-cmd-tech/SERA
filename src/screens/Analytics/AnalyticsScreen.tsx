@@ -117,21 +117,22 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
           style={[
             styles.heroCard,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              padding: spacing.md,
+              padding: spacing.md + 2,
               marginBottom: spacing.md,
             },
           ]}
         >
-          <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
             {new Date().toLocaleString('default', { month: 'long' }).toUpperCase()} SPENDING
           </AppText>
           <AppText
             variant="displayMedium"
             privacySensitive
-            style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 2 }}
+            style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 4 }}
           >
             {formatCurrency(financialSummary?.totalExpense ?? 0, currencySymbol, isPrivacyMode, false)}
           </AppText>
@@ -143,7 +144,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
           <View
             style={{
               height: 6,
-              backgroundColor: colors.cardDark,
+              backgroundColor: colors.surfaceLighter,
               borderRadius: radius.full,
               overflow: 'hidden',
               marginTop: spacing.md,
@@ -168,8 +169,8 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
           </View>
         </View>
 
-        {/* Calculated Insights Section (Requirement 24) */}
-        <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 8 }}>
+        {/* Calculated Insights Section */}
+        <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 8, marginTop: 4 }}>
           CALCULATED INSIGHTS
         </AppText>
 
@@ -180,9 +181,10 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
               style={[
                 styles.insightCard,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: item.type === 'warning' ? colors.coral : colors.border,
-                  borderRadius: radius.md,
+                  backgroundColor: colors.surfaceCard,
+                  borderColor: item.type === 'warning' ? colors.accentRed : colors.borderLight,
+                  borderWidth: StyleSheet.hairlineWidth,
+                  borderRadius: radius.lg,
                   padding: spacing.md,
                   marginBottom: 8,
                 },
@@ -192,8 +194,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
                 <AppText
                   variant="labelSmall"
                   style={{
-                    color: item.type === 'warning' ? colors.coral : colors.textSecondary,
-                    letterSpacing: 1.4,
+                    color: item.type === 'warning' ? colors.accentRed : colors.textSecondary,
                     fontWeight: '700',
                   }}
                 >
@@ -204,7 +205,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
                     variant="label"
                     privacySensitive
                     style={{
-                      color: item.type === 'warning' ? colors.coral : colors.textPrimary,
+                      color: item.type === 'warning' ? colors.accentRed : colors.textPrimary,
                       fontWeight: '700',
                     }}
                   >
@@ -212,7 +213,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
                   </AppText>
                 )}
               </View>
-              <AppText variant="bodyMedium" style={{ color: colors.textPrimary, marginTop: 4 }}>
+              <AppText variant="bodyMedium" style={{ color: colors.textPrimary, marginTop: 4, lineHeight: 20 }}>
                 {item.description}
               </AppText>
             </View>
@@ -224,38 +225,39 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
           style={[
             styles.card,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              padding: spacing.md,
+              padding: spacing.md + 2,
               marginBottom: spacing.md,
             },
           ]}
         >
-          <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6 }}>
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
             5-MONTH CASH FLOW TREND
           </AppText>
           <View style={styles.barChartContainer}>
             {monthlyFlow.map(m => {
-              const incomeHeight = m.income > 0 ? Math.max(4, (m.income / maxFlowAmount) * 80) : 0;
-              const expenseHeight = m.expense > 0 ? Math.max(4, (m.expense / maxFlowAmount) * 80) : 0;
+              const incomeHeight = m.income > 0 ? Math.max(6, (m.income / maxFlowAmount) * 85) : 0;
+              const expenseHeight = m.expense > 0 ? Math.max(6, (m.expense / maxFlowAmount) * 85) : 0;
               return (
                 <View key={m.month} style={styles.chartCol}>
                   <View style={styles.barsPair}>
                     <View
                       style={[
                         styles.barItem,
-                        { height: incomeHeight, backgroundColor: colors.positive, width: 7, borderRadius: 2 },
+                        { height: incomeHeight, backgroundColor: colors.positive, width: 8, borderRadius: 4 },
                       ]}
                     />
                     <View
                       style={[
                         styles.barItem,
-                        { height: expenseHeight, backgroundColor: colors.coral, width: 7, marginLeft: 2, borderRadius: 2 },
+                        { height: expenseHeight, backgroundColor: colors.accentRed, width: 8, marginLeft: 4, borderRadius: 4 },
                       ]}
                     />
                   </View>
-                  <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginTop: 6, fontSize: 9 }}>
+                  <AppText variant="labelSmall" style={{ color: colors.textSecondary, marginTop: 8, fontSize: 11, fontWeight: '600' }}>
                     {m.month}
                   </AppText>
                 </View>
@@ -265,13 +267,13 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
           <View style={styles.legendRow}>
             <View style={styles.legendItem}>
               <View style={[styles.legendDot, { backgroundColor: colors.positive }]} />
-              <AppText variant="metadata" style={{ color: colors.textSecondary, marginLeft: 4 }}>
+              <AppText variant="metadata" style={{ color: colors.textSecondary, marginLeft: 6 }}>
                 Income
               </AppText>
             </View>
-            <View style={[styles.legendItem, { marginLeft: 16 }]}>
-              <View style={[styles.legendDot, { backgroundColor: colors.coral }]} />
-              <AppText variant="metadata" style={{ color: colors.textSecondary, marginLeft: 4 }}>
+            <View style={[styles.legendItem, { marginLeft: 20 }]}>
+              <View style={[styles.legendDot, { backgroundColor: colors.accentRed }]} />
+              <AppText variant="metadata" style={{ color: colors.textSecondary, marginLeft: 6 }}>
                 Expenses
               </AppText>
             </View>
@@ -283,20 +285,21 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
           style={[
             styles.card,
             {
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              padding: spacing.md,
-              marginBottom: spacing.xl,
+              padding: spacing.md + 2,
+              marginBottom: spacing.lg,
             },
           ]}
         >
-          <AppText variant="label" style={{ color: colors.textSecondary, letterSpacing: 1.6, marginBottom: 12 }}>
+          <AppText variant="sectionHeading" style={{ color: colors.textSecondary, marginBottom: 14 }}>
             CATEGORY OUTFLOW BREAKDOWN
           </AppText>
 
           {categoryBreakdown.slice(0, 6).map(item => (
-            <View key={item.catId} style={{ marginBottom: 10 }}>
+            <View key={item.catId} style={{ marginBottom: 12 }}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
                 <AppText variant="bodyMedium" style={{ color: colors.textPrimary, fontWeight: '600' }}>
                   {item.name}
@@ -316,7 +319,7 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
               <View
                 style={[
                   styles.categoryBarTrack,
-                  { backgroundColor: colors.cardDark, borderRadius: radius.full, height: 6, overflow: 'hidden', marginTop: 4 },
+                  { backgroundColor: colors.surfaceLighter, borderRadius: radius.full, height: 6, overflow: 'hidden', marginTop: 6 },
                 ]}
               >
                 <View
@@ -337,35 +340,34 @@ export const AnalyticsScreen: React.FC<AnalyticsScreenProps> = ({ navigation }) 
 
         {/* Net Worth Quick Link */}
         <TouchableOpacity
-          activeOpacity={0.8}
+          activeOpacity={0.7}
           onPress={() => navigation.navigate('Accounts')}
           style={[
             styles.netWorthBanner,
             {
-              backgroundColor: colors.surfaceLighter,
-              borderColor: colors.border,
-              borderLeftColor: colors.accentRed,
-              borderLeftWidth: 3,
+              backgroundColor: colors.surfaceCard,
+              borderColor: colors.borderLight,
+              borderWidth: StyleSheet.hairlineWidth,
               borderRadius: radius.lg,
-              padding: spacing.md,
+              padding: spacing.md + 2,
               marginBottom: spacing.xl,
             },
           ]}
         >
           <View>
-            <AppText variant="labelSmall" style={{ color: colors.textSecondary, letterSpacing: 1.4, fontWeight: '800' }}>
+            <AppText variant="sectionHeading" style={{ color: colors.textSecondary }}>
               NET FINANCIAL POSITION
             </AppText>
             <AppText
               variant="amountMedium"
               privacySensitive
-              style={{ color: colors.textPrimary, fontWeight: '800', marginTop: 2 }}
+              style={{ color: colors.textPrimary, fontWeight: '700', marginTop: 4 }}
             >
               {formatCurrency(netWorth.netWorth, currencySymbol, isPrivacyMode, false)}
             </AppText>
           </View>
-          <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '800', letterSpacing: 1.2 }}>
-            VIEW ACCOUNTS ↗
+          <AppText variant="labelSmall" style={{ color: colors.accentRed, fontWeight: '700' }}>
+            View Accounts ↗
           </AppText>
         </TouchableOpacity>
       </ScrollView>
@@ -383,15 +385,9 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 40,
   },
-  heroCard: {
-    borderWidth: 1,
-  },
-  card: {
-    borderWidth: 1,
-  },
-  insightCard: {
-    borderWidth: 1,
-  },
+  heroCard: {},
+  card: {},
+  insightCard: {},
   insightHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -401,7 +397,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    height: 100,
+    height: 105,
     marginTop: 16,
     paddingHorizontal: 8,
   },
@@ -412,12 +408,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
-  barItem: {
-    borderRadius: 1,
-  },
+  barItem: {},
   legendRow: {
     flexDirection: 'row',
-    marginTop: 14,
+    marginTop: 16,
     justifyContent: 'center',
   },
   legendItem: {
@@ -425,22 +419,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   legendDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   categoryBarTrack: {
-    height: 4,
     width: '100%',
-    overflow: 'hidden',
   },
-  categoryBarFill: {
-    height: '100%',
-  },
+  categoryBarFill: {},
   netWorthBanner: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    borderWidth: 1,
   },
 });
