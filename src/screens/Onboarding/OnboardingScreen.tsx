@@ -23,6 +23,7 @@ import {
   Sparkles,
   Repeat,
   Wallet,
+  User,
 } from 'lucide-react-native';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useKeyboardBottomInset } from '../../hooks/useKeyboardBottomInset';
@@ -380,34 +381,14 @@ const WelcomeSlide: React.FC<{
   colors: any;
   currentCurrencySymbol: string;
   isDark: boolean;
-}> = ({ colors, currentCurrencySymbol, isDark }) => {
+}> = ({ colors, currentCurrencySymbol }) => {
   return (
     <View style={styles.slideContainer}>
       {/* Hero Visual */}
       <View style={styles.heroVisualArea}>
-        {/* Soft Ambient Radial Halo */}
-        <View
-          style={[
-            styles.ambientGlow,
-            {
-              backgroundColor: isDark
-                ? 'rgba(235, 59, 46, 0.14)'
-                : 'rgba(235, 59, 46, 0.08)',
-            },
-          ]}
-        />
-
-        {/* Squircle App Emblem */}
-        <View
-          style={[
-            styles.logoContainer,
-            {
-              backgroundColor: colors.surfaceCard,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          <SeraLogo size={68} direction="column" />
+        {/* Direct Standalone SERA Logo */}
+        <View style={styles.cleanLogoWrapper}>
+          <SeraLogo size={82} direction="column" />
         </View>
 
         {/* Symmetrical Floating Security Pills */}
@@ -416,7 +397,7 @@ const WelcomeSlide: React.FC<{
             style={[
               styles.pillBadge,
               {
-                backgroundColor: colors.surface,
+                backgroundColor: colors.surfaceCard,
                 borderColor: colors.border,
               },
             ]}
@@ -434,7 +415,7 @@ const WelcomeSlide: React.FC<{
             style={[
               styles.pillBadge,
               {
-                backgroundColor: colors.surface,
+                backgroundColor: colors.surfaceCard,
                 borderColor: colors.border,
               },
             ]}
@@ -938,57 +919,53 @@ const SetupSlide: React.FC<SetupSlideProps> = ({
             { color: colors.textSecondary, fontFamily: fonts.inter.regular },
           ]}
         >
-          Tailor your currency and opening account to begin tracking.
+          Fill in your details below to set up your primary account.
         </AppText>
       </View>
 
-      {/* Apple Inset Grouped Table Section */}
-      <View
-        style={[
-          styles.groupedCard,
-          {
-            backgroundColor: colors.surfaceCard,
-            borderColor: colors.border,
-          },
-        ]}
-      >
-        {/* Row 1: Your Name */}
-        <View style={styles.tableRow}>
+      {/* Explicit User Setup Form */}
+      <View style={styles.formContainer}>
+        {/* Field 1: Your Name */}
+        <View style={styles.formGroup}>
           <AppText
-            variant="bodyMedium"
-            style={[styles.rowLabel, { color: colors.textPrimary }]}
+            variant="labelSmall"
+            style={[styles.formLabel, { color: colors.textSecondary }]}
           >
-            Name
-          </AppText>
-          <TextInput
-            value={userName}
-            onChangeText={setUserName}
-            placeholder="Your name"
-            placeholderTextColor={colors.textMuted}
-            style={[styles.rowInput, { color: colors.textPrimary }]}
-            onFocus={() => onFocusField(0)}
-          />
-        </View>
-
-        <View style={[styles.rowDivider, { backgroundColor: colors.borderLight }]} />
-
-        {/* Row 2: Currency Segmented Control */}
-        <View style={styles.tableRowVertical}>
-          <AppText
-            variant="bodyMedium"
-            style={[styles.rowLabel, { color: colors.textPrimary, marginBottom: 8 }]}
-          >
-            Currency
+            YOUR NAME
           </AppText>
           <View
             style={[
-              styles.segmentedContainer,
+              styles.inputBox,
               {
-                backgroundColor: colors.surface,
-                borderColor: colors.borderLight,
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
               },
             ]}
           >
+            <User size={18} color={colors.textSecondary} strokeWidth={2} style={styles.inputLeftIcon} />
+            <TextInput
+              value={userName}
+              onChangeText={setUserName}
+              placeholder="Enter your name"
+              placeholderTextColor={colors.textMuted}
+              style={[
+                styles.formInput,
+                { color: colors.textPrimary, fontFamily: fonts.inter.medium },
+              ]}
+              onFocus={() => onFocusField(0)}
+            />
+          </View>
+        </View>
+
+        {/* Field 2: Primary Currency */}
+        <View style={styles.formGroup}>
+          <AppText
+            variant="labelSmall"
+            style={[styles.formLabel, { color: colors.textSecondary }]}
+          >
+            PRIMARY CURRENCY
+          </AppText>
+          <View style={styles.currencyRow}>
             {CURRENCIES.map(curr => {
               const isSelected = selectedCurrency === curr.code;
               return (
@@ -997,26 +974,20 @@ const SetupSlide: React.FC<SetupSlideProps> = ({
                   activeOpacity={0.8}
                   onPress={() => setSelectedCurrency(curr.code)}
                   style={[
-                    styles.segmentTab,
-                    isSelected && [
-                      styles.segmentTabActive,
-                      {
-                        backgroundColor: isDark ? '#1C2634' : '#FFFFFF',
-                        borderColor: isDark ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)',
-                        shadowColor: '#000000',
-                      },
-                    ],
+                    styles.currencyChip,
+                    {
+                      backgroundColor: isSelected ? colors.accentRed : colors.surfaceCard,
+                      borderColor: isSelected ? colors.accentRed : colors.border,
+                    },
                   ]}
                 >
                   <AppText
                     variant="labelSmall"
-                    style={[
-                      styles.segmentText,
-                      {
-                        color: isSelected ? colors.textPrimary : colors.textSecondary,
-                        fontFamily: isSelected ? fonts.inter.bold : fonts.inter.medium,
-                      },
-                    ]}
+                    style={{
+                      color: isSelected ? '#FFFFFF' : colors.textPrimary,
+                      fontFamily: isSelected ? fonts.inter.bold : fonts.inter.medium,
+                      fontSize: 12,
+                    }}
                   >
                     {curr.label}
                   </AppText>
@@ -1026,94 +997,132 @@ const SetupSlide: React.FC<SetupSlideProps> = ({
           </View>
         </View>
 
-        <View style={[styles.rowDivider, { backgroundColor: colors.borderLight }]} />
-
-        {/* Row 3: Account Name */}
-        <View style={styles.tableRow}>
+        {/* Field 3: Primary Account */}
+        <View style={styles.formGroup}>
           <AppText
-            variant="bodyMedium"
-            style={[styles.rowLabel, { color: colors.textPrimary }]}
+            variant="labelSmall"
+            style={[styles.formLabel, { color: colors.textSecondary }]}
           >
-            Account
+            PRIMARY ACCOUNT NAME
           </AppText>
-          <TextInput
-            value={accountName}
-            onChangeText={setAccountName}
-            placeholder="Primary Bank"
-            placeholderTextColor={colors.textMuted}
-            style={[styles.rowInput, { color: colors.textPrimary }]}
-            onFocus={() => onFocusField(120)}
-          />
-        </View>
-
-        <View style={[styles.rowDivider, { backgroundColor: colors.borderLight }]} />
-
-        {/* Row 4: Starting Balance */}
-        <View style={styles.tableRow}>
-          <AppText
-            variant="bodyMedium"
-            style={[styles.rowLabel, { color: colors.textPrimary }]}
+          <View
+            style={[
+              styles.inputBox,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+              },
+            ]}
           >
-            Opening Balance
-          </AppText>
-          <View style={styles.numericInputWrap}>
-            <AppText
-              variant="bodyLarge"
-              style={{
-                color: colors.textSecondary,
-                fontFamily: fonts.mono.bold,
-                marginRight: 4,
-              }}
-            >
-              {currentCurrencySymbol}
-            </AppText>
+            <Wallet size={18} color={colors.textSecondary} strokeWidth={2} style={styles.inputLeftIcon} />
             <TextInput
-              value={initialBalance}
-              onChangeText={setInitialBalance}
-              placeholder="0"
+              value={accountName}
+              onChangeText={setAccountName}
+              placeholder="e.g. Primary Bank, Cash"
               placeholderTextColor={colors.textMuted}
-              keyboardType="numeric"
               style={[
-                styles.rowInputNumeric,
-                { color: colors.textPrimary, fontFamily: fonts.mono.bold },
+                styles.formInput,
+                { color: colors.textPrimary, fontFamily: fonts.inter.medium },
               ]}
-              onFocus={() => onFocusField(220)}
+              onFocus={() => onFocusField(140)}
             />
           </View>
         </View>
 
-        <View style={[styles.rowDivider, { backgroundColor: colors.borderLight }]} />
-
-        {/* Row 5: Monthly Budget Ceiling */}
-        <View style={styles.tableRow}>
+        {/* Field 4: Starting Balance */}
+        <View style={styles.formGroup}>
           <AppText
-            variant="bodyMedium"
-            style={[styles.rowLabel, { color: colors.textPrimary }]}
+            variant="labelSmall"
+            style={[styles.formLabel, { color: colors.textSecondary }]}
           >
-            Monthly Target
+            STARTING BALANCE
           </AppText>
-          <View style={styles.numericInputWrap}>
-            <AppText
-              variant="bodyLarge"
-              style={{
-                color: colors.textSecondary,
-                fontFamily: fonts.mono.bold,
-                marginRight: 4,
-              }}
+          <View
+            style={[
+              styles.inputBox,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.currencyPrefixBadge,
+                { backgroundColor: colors.surface, borderColor: colors.borderLight },
+              ]}
             >
-              {currentCurrencySymbol}
-            </AppText>
+              <AppText
+                variant="bodyLarge"
+                style={{ color: colors.accentRed, fontFamily: fonts.mono.bold }}
+              >
+                {currentCurrencySymbol}
+              </AppText>
+            </View>
             <TextInput
-              value={monthlyBudget}
-              onChangeText={setMonthlyBudget}
-              placeholder="Optional"
+              value={initialBalance}
+              onChangeText={setInitialBalance}
+              placeholder="0.00"
               placeholderTextColor={colors.textMuted}
               keyboardType="numeric"
               style={[
-                styles.rowInputNumeric,
+                styles.formInput,
                 { color: colors.textPrimary, fontFamily: fonts.mono.bold },
               ]}
-              onFocus={() => onFocusField(320)}
+              onFocus={() => onFocusField(240)}
+            />
+          </View>
+        </View>
+
+        {/* Field 5: Monthly Budget Ceiling */}
+        <View style={styles.formGroup}>
+          <View style={styles.labelWithOptional}>
+            <AppText
+              variant="labelSmall"
+              style={[styles.formLabel, { color: colors.textSecondary }]}
+            >
+              MONTHLY BUDGET TARGET
+            </AppText>
+            <AppText
+              variant="labelSmall"
+              style={{ color: colors.textMuted, fontSize: 10, letterSpacing: 0.8 }}
+            >
+              OPTIONAL
+            </AppText>
+          </View>
+          <View
+            style={[
+              styles.inputBox,
+              {
+                backgroundColor: colors.surfaceCard,
+                borderColor: colors.border,
+              },
+            ]}
+          >
+            <View
+              style={[
+                styles.currencyPrefixBadge,
+                { backgroundColor: colors.surface, borderColor: colors.borderLight },
+              ]}
+            >
+              <AppText
+                variant="bodyLarge"
+                style={{ color: colors.accentRed, fontFamily: fonts.mono.bold }}
+              >
+                {currentCurrencySymbol}
+              </AppText>
+            </View>
+            <TextInput
+              value={monthlyBudget}
+              onChangeText={setMonthlyBudget}
+              placeholder="e.g. 40,000"
+              placeholderTextColor={colors.textMuted}
+              keyboardType="numeric"
+              style={[
+                styles.formInput,
+                { color: colors.textPrimary, fontFamily: fonts.mono.bold },
+              ]}
+              onFocus={() => onFocusField(340)}
             />
           </View>
         </View>
@@ -1188,24 +1197,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginVertical: 12,
   },
-  ambientGlow: {
-    position: 'absolute',
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-  },
-  logoContainer: {
-    width: 96,
-    height: 96,
-    borderRadius: 24,
-    borderWidth: 1,
+  cleanLogoWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 12,
-    elevation: 4,
+    marginVertical: 14,
   },
   pillBadgeRow: {
     flexDirection: 'row',
@@ -1419,78 +1414,63 @@ const styles = StyleSheet.create({
     marginTop: 4,
     maxWidth: 290,
   },
-  groupedCard: {
-    borderRadius: 16,
-    borderWidth: 1,
-    overflow: 'hidden',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 3,
+  /* Form Layout */
+  formContainer: {
+    width: '100%',
   },
-  tableRow: {
+  formGroup: {
+    marginBottom: 14,
+  },
+  formLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    letterSpacing: 1.2,
+    marginBottom: 7,
+  },
+  labelWithOptional: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 7,
+  },
+  inputBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    minHeight: 52,
+    height: 52,
+    borderRadius: 12,
+    borderWidth: 1.2,
+    paddingHorizontal: 14,
   },
-  tableRowVertical: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+  inputLeftIcon: {
+    marginRight: 10,
   },
-  rowLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-  },
-  rowInput: {
+  formInput: {
     flex: 1,
-    textAlign: 'right',
-    fontSize: 15,
-    fontWeight: '500',
+    fontSize: 15.5,
     paddingVertical: 0,
-    marginLeft: 16,
+    includeFontPadding: false,
   },
-  rowDivider: {
-    height: 1,
-    marginLeft: 16,
-  },
-  segmentedContainer: {
+  currencyRow: {
     flexDirection: 'row',
-    borderRadius: 9,
-    padding: 3,
-    borderWidth: 1,
+    justifyContent: 'space-between',
   },
-  segmentTab: {
+  currencyChip: {
     flex: 1,
-    paddingVertical: 7,
+    height: 44,
+    borderRadius: 10,
+    borderWidth: 1.2,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 7,
+    marginHorizontal: 3,
   },
-  segmentTabActive: {
+  currencyPrefixBadge: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     borderWidth: 1,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.12,
-    shadowRadius: 3,
-    elevation: 1,
-  },
-  segmentText: {
-    fontSize: 11,
-  },
-  numericInputWrap: {
-    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    flex: 1,
-  },
-  rowInputNumeric: {
-    fontSize: 17,
-    textAlign: 'right',
-    paddingVertical: 0,
-    minWidth: 80,
+    justifyContent: 'center',
+    marginRight: 10,
   },
   privacyReassurance: {
     flexDirection: 'row',
