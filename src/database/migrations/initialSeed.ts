@@ -339,6 +339,26 @@ export const SEED_SUBSCRIPTIONS: Subscription[] = [
   },
 ];
 
+export const DEFAULT_SETTINGS: AppSettings = {
+  currency: 'INR',
+  currencySymbol: '₹',
+  isPrivacyMode: false,
+  isDarkMode: true,
+  pinLockEnabled: false,
+  pinCode: undefined,
+  autoLock: true,
+  biometricEnabled: false,
+  defaultAccountId: '',
+  defaultCategoryId: 'cat-food',
+  monthlyBudgetGoal: 0,
+  hasCompletedOnboarding: false,
+  userName: '',
+  userAvatarUri: undefined,
+  notificationsEnabled: true,
+  dailyReminderEnabled: true,
+  budgetAlertsEnabled: true,
+};
+
 export const SEED_SETTINGS: AppSettings = {
   currency: 'INR',
   currencySymbol: '₹',

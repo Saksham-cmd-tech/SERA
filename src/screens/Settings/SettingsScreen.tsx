@@ -538,7 +538,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
               textAlign: 'center',
             }}
           >
-            SERA v1.0.0 (Build 1)
+            SERA v1.0.1 (Build 2)
           </AppText>
           <AppText
             variant="metadata"

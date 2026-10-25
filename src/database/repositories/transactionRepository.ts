@@ -212,12 +212,13 @@ class TransactionRepository {
     const totalSavings = roundMoney(totalIncome - totalExpense);
     const savingsRate = totalIncome > 0 ? roundMoney((totalSavings / totalIncome) * 100) : 0;
 
-    const budgetTotal = budget ? budget.amount : 45000;
+    const settings = await db.getSettings();
+    const budgetTotal = budget ? budget.amount : (settings?.monthlyBudgetGoal || 0);
     const budgetSpent = totalExpense;
     const budgetRemaining = roundMoney(budgetTotal - budgetSpent);
 
     // Check category budget overruns
-    let isOverrun = budgetSpent > budgetTotal;
+    let isOverrun = budgetTotal > 0 ? budgetSpent > budgetTotal : false;
     let overrunCategory: string | undefined;
     let overrunAmount: number | undefined;
 

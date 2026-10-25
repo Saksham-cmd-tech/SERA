@@ -70,7 +70,7 @@ class WidgetService {
         .reduce((sum, t) => sum + t.amount, 0);
 
       // 3. Budget & Burn Rate
-      const monthlyBudget = budgetSummary?.totalBudget || 50000;
+      const monthlyBudget = budgetSummary?.totalBudget || 0;
       const spent = budgetSummary?.totalSpent || 0;
       const remaining = Math.max(0, monthlyBudget - spent);
       const progress = monthlyBudget > 0 ? Math.min(100, Math.round((spent / monthlyBudget) * 100)) : 0;
@@ -129,23 +129,23 @@ class WidgetService {
         todaySpentVal: `${currencySymbol}${todayExpenses.toLocaleString()}`,
         netWorth: `${currencySymbol}${totalNetWorth.toLocaleString()}`,
         budgetRemaining: `${currencySymbol}${remaining.toLocaleString()}`,
-        budgetTotal: `LEFT OF ${currencySymbol}${monthlyBudget.toLocaleString()}`,
+        budgetTotal: monthlyBudget > 0 ? `LEFT OF ${currencySymbol}${monthlyBudget.toLocaleString()}` : 'NO BUDGET SET',
         budgetProgress: progress,
-        dailySafeSpend: `Safe spend: ${currencySymbol}${dailySafe.toLocaleString()} / day`,
+        dailySafeSpend: monthlyBudget > 0 ? `Safe spend: ${currencySymbol}${dailySafe.toLocaleString()} / day` : 'No budget set',
         dailySafeVal: `${currencySymbol}${dailySafe.toLocaleString()}`,
         monthSpent: `Spent: ${currencySymbol}${spent.toLocaleString()}`,
 
-        acc1Name: acc1 ? acc1.name : 'Primary Bank',
+        acc1Name: acc1 ? acc1.name : (accounts.length > 0 ? 'Account' : 'No Accounts'),
         acc1Bal: acc1 ? `${currencySymbol}${acc1.balance.toLocaleString()}` : `${currencySymbol}0`,
-        acc2Name: acc2 ? acc2.name : (accounts.length > 0 ? '' : 'Savings Account'),
+        acc2Name: acc2 ? acc2.name : '',
         acc2Bal: acc2 ? `${currencySymbol}${acc2.balance.toLocaleString()}` : '',
 
-        goalTitle: activeGoal ? activeGoal.name : 'Emergency Fund',
+        goalTitle: activeGoal ? activeGoal.name : 'No Active Goals',
         goalAmounts: activeGoal
           ? `${currencySymbol}${activeGoal.currentAmount.toLocaleString()} of ${currencySymbol}${activeGoal.targetAmount.toLocaleString()}`
           : `${currencySymbol}0 of ${currencySymbol}0`,
         goalPercent,
-        goalRemaining: `${currencySymbol}${goalRemainingVal.toLocaleString()} left to save`,
+        goalRemaining: activeGoal ? `${currencySymbol}${goalRemainingVal.toLocaleString()} left to save` : 'Tap to create goal',
 
         tx1Name: tx1 ? (tx1.merchant || tx1.description || 'Transaction') : 'No recent transactions',
         tx1Amt: tx1 ? `${tx1.type === 'income' ? '+' : '-'}${currencySymbol}${tx1.amount.toLocaleString()}` : '',
@@ -154,7 +154,7 @@ class WidgetService {
 
         subMonthlyTotal: `${currencySymbol}${totalMonthlySub.toLocaleString()}`,
         subCount: `${subscriptions.length} Active`,
-        subNextName: nextSub ? nextSub.name : 'No active subscriptions',
+        subNextName: nextSub ? nextSub.name : 'No active bills',
         subNextDate: subNextDateStr,
         subNextAmt: nextSub ? `${currencySymbol}${nextSub.amount.toLocaleString()}` : '',
       };

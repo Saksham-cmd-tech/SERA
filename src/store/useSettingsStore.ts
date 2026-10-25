@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { AppSettings } from '../types';
 import { db } from '../database/database';
-import { SEED_SETTINGS } from '../database/migrations/initialSeed';
+import { DEFAULT_SETTINGS } from '../database/migrations/initialSeed';
 import { accountRepository } from '../database/repositories/accountRepository';
 import { budgetRepository } from '../database/repositories/budgetRepository';
 
@@ -26,7 +26,7 @@ interface SettingsState {
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
-  settings: SEED_SETTINGS,
+  settings: DEFAULT_SETTINGS,
   isLoading: true,
 
   loadSettings: async () => {
@@ -100,20 +100,26 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     // Save starting account
     const accounts = await accountRepository.getAll();
     const primaryAccountName = accountName.trim() || 'Primary Bank';
+    let defaultAccId = '';
     if (accounts.length > 0) {
       accounts[0].name = primaryAccountName;
       accounts[0].balance = initialBalance;
       accounts[0].currency = currency;
+      defaultAccId = accounts[0].id;
       await db.saveAccounts(accounts);
     } else {
-      await accountRepository.create({
+      const created = await accountRepository.create({
         name: primaryAccountName,
         type: 'bank',
         balance: initialBalance,
         currency,
         institution: 'Primary Bank',
       });
+      defaultAccId = created.id;
     }
+
+    updated.defaultAccountId = defaultAccId;
+    await db.saveSettings(updated);
 
     // Set starting monthly budget
     if (monthlyBudget > 0) {
@@ -122,7 +128,50 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   },
 
   resetToNewUser: async () => {
-    await db.initDatabase(true);
-    set({ settings: SEED_SETTINGS });
+    await db.resetDatabase();
+    set({ settings: DEFAULT_SETTINGS });
+
+    // Reset all in-memory store states
+    try {
+      const { useAccountStore } = require('./useAccountStore');
+      const { useTransactionStore } = require('./useTransactionStore');
+      const { useBudgetStore } = require('./useBudgetStore');
+      const { useGoalStore } = require('./useGoalStore');
+      const { useSubscriptionStore } = require('./useSubscriptionStore');
+      const { widgetService } = require('../services/widgetService');
+
+      useAccountStore.setState({ accounts: [], selectedAccountId: 'all', isLoading: false });
+      useTransactionStore.setState({
+        transactions: [],
+        filteredTransactions: [],
+        recentTransactions: [],
+        financialSummary: null,
+        insights: [],
+        isLoading: false,
+      });
+      useBudgetStore.setState({ summary: null, categories: [], isLoading: false });
+      useGoalStore.setState({ goals: [], isLoading: false });
+      useSubscriptionStore.setState({
+        summary: {
+          subscriptions: [],
+          monthlyTotal: 0,
+          yearlyTotal: 0,
+          nextDueSubscription: null,
+        },
+        isLoading: false,
+      });
+
+      widgetService.syncWidgets({
+        currencySymbol: DEFAULT_SETTINGS.currencySymbol,
+        accounts: [],
+        transactions: [],
+        budgetSummary: null,
+        goals: [],
+        subscriptions: [],
+        subMonthlyTotal: 0,
+      });
+    } catch (e) {
+      console.warn('Error resetting in-memory store state:', e);
+    }
   },
 }));

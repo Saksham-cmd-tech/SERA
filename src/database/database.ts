@@ -20,6 +20,7 @@ import {
   SEED_GOALS,
   SEED_SUBSCRIPTIONS,
   SEED_SETTINGS,
+  DEFAULT_SETTINGS,
 } from './migrations/initialSeed';
 
 const STORAGE_KEYS = {
@@ -33,7 +34,7 @@ const STORAGE_KEYS = {
   SUBSCRIPTIONS: '@money_tracker_subscriptions_v1',
   RECURRING_TRANSACTIONS: '@money_tracker_recurring_transactions_v1',
   SETTINGS: '@money_tracker_settings_v1',
-  INITIALIZED: '@money_tracker_initialized_v2',
+  INITIALIZED: '@money_tracker_initialized_v3',
 };
 
 type Listener = () => void;
@@ -59,7 +60,7 @@ class Database {
     try {
       const isAlreadyInit = await AsyncStorage.getItem(STORAGE_KEYS.INITIALIZED);
       if (!isAlreadyInit || forceReset) {
-        await this.seedInitialData();
+        await this.seedFreshInstallData();
         await AsyncStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
       }
       this.isInitialized = true;
@@ -69,7 +70,28 @@ class Database {
     }
   }
 
-  public async seedInitialData(): Promise<void> {
+  public async seedFreshInstallData(): Promise<void> {
+    await AsyncStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify([]));
+    await AsyncStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(SEED_CATEGORIES));
+    await AsyncStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify([]));
+    await AsyncStorage.removeItem(STORAGE_KEYS.BUDGET);
+    await AsyncStorage.setItem(STORAGE_KEYS.BUDGET_CATEGORIES, JSON.stringify([]));
+    await AsyncStorage.setItem(STORAGE_KEYS.GOALS, JSON.stringify([]));
+    await AsyncStorage.setItem(STORAGE_KEYS.GOAL_CONTRIBUTIONS, JSON.stringify([]));
+    await AsyncStorage.setItem(STORAGE_KEYS.SUBSCRIPTIONS, JSON.stringify([]));
+    await AsyncStorage.setItem(STORAGE_KEYS.RECURRING_TRANSACTIONS, JSON.stringify([]));
+    await AsyncStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(DEFAULT_SETTINGS));
+    this.notify();
+  }
+
+  public async resetDatabase(): Promise<void> {
+    await this.seedFreshInstallData();
+    await AsyncStorage.setItem(STORAGE_KEYS.INITIALIZED, 'true');
+    this.isInitialized = true;
+    this.notify();
+  }
+
+  public async seedDemoData(): Promise<void> {
     await AsyncStorage.setItem(STORAGE_KEYS.ACCOUNTS, JSON.stringify(SEED_ACCOUNTS));
     await AsyncStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(SEED_CATEGORIES));
     await AsyncStorage.setItem(STORAGE_KEYS.TRANSACTIONS, JSON.stringify(SEED_TRANSACTIONS));
@@ -187,7 +209,7 @@ class Database {
   // --- SETTINGS ---
   public async getSettings(): Promise<AppSettings> {
     const data = await AsyncStorage.getItem(STORAGE_KEYS.SETTINGS);
-    return data ? JSON.parse(data) : SEED_SETTINGS;
+    return data ? JSON.parse(data) : DEFAULT_SETTINGS;
   }
 
   public async saveSettings(settings: AppSettings): Promise<void> {
@@ -207,7 +229,7 @@ class Database {
     const settings = await this.getSettings();
 
     const backup = {
-      version: '1.0.0',
+      version: '1.0.1',
       exportedAt: new Date().toISOString(),
       data: {
         accounts,
@@ -247,9 +269,7 @@ class Database {
   }
 
   public async clearAllData(): Promise<void> {
-    await AsyncStorage.clear();
-    this.isInitialized = false;
-    await this.initDatabase(true);
+    await this.resetDatabase();
   }
 }
 
