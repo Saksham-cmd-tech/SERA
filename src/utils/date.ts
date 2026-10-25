@@ -56,3 +56,55 @@ export function getDaysRemainingInMonth(): number {
   const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
   return Math.max(1, lastDay - now.getDate());
 }
+
+/**
+ * Advances a subscription billing date by one month or one year.
+ */
+export function advanceNextBillingDate(
+  currentDateStr: string,
+  freq: 'monthly' | 'yearly'
+): string {
+  if (!currentDateStr || !/^\d{4}-\d{2}-\d{2}$/.test(currentDateStr)) {
+    const today = new Date();
+    if (freq === 'yearly') today.setFullYear(today.getFullYear() + 1);
+    else today.setMonth(today.getMonth() + 1);
+    return today.toISOString().split('T')[0];
+  }
+
+  const [y, m, d] = currentDateStr.split('-').map(Number);
+  const targetDate = new Date(y, m - 1, d);
+
+  if (freq === 'yearly') {
+    targetDate.setFullYear(targetDate.getFullYear() + 1);
+  } else {
+    targetDate.setMonth(targetDate.getMonth() + 1);
+  }
+
+  const nextY = targetDate.getFullYear();
+  const nextM = String(targetDate.getMonth() + 1).padStart(2, '0');
+  const nextD = String(targetDate.getDate()).padStart(2, '0');
+  return `${nextY}-${nextM}-${nextD}`;
+}
+
+/**
+ * Calculates due status badge info based on calendar date difference.
+ */
+export function getDueStatus(dueDateStr: string): {
+  text: string;
+  isUrgent: boolean;
+  diffDays: number;
+} {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const due = new Date(dueDateStr);
+  due.setHours(0, 0, 0, 0);
+  const diffDays = Math.ceil(
+    (due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  if (diffDays === 0) return { text: 'DUE TODAY', isUrgent: true, diffDays };
+  if (diffDays === 1) return { text: 'DUE TOMORROW', isUrgent: true, diffDays };
+  if (diffDays < 0) return { text: `OVERDUE (${Math.abs(diffDays)}d)`, isUrgent: true, diffDays };
+  if (diffDays <= 7) return { text: `IN ${diffDays} DAYS`, isUrgent: false, diffDays };
+  return { text: `IN ${diffDays} DAYS`, isUrgent: false, diffDays };
+}

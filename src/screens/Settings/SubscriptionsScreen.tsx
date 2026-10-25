@@ -25,7 +25,13 @@ import { useCategoryStore } from '../../store/useCategoryStore';
 import { useTransactionStore } from '../../store/useTransactionStore';
 import { Subscription } from '../../types';
 import { formatCurrency } from '../../utils/currency';
-import { getCurrentTimeString, getTodayDateString } from '../../utils/date';
+import {
+  advanceNextBillingDate,
+  getDueStatus,
+  getCurrentTimeString,
+  getTodayDateString,
+} from '../../utils/date';
+import { SubscriptionPromptModal } from '../../components/finance/SubscriptionPromptModal';
 
 interface SubscriptionsScreenProps {
   navigation: any;
@@ -33,11 +39,17 @@ interface SubscriptionsScreenProps {
 
 export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ navigation }) => {
   const { colors, spacing, radius, currencySymbol, isPrivacyMode } = useAppTheme();
-  const { summary, loadSubscriptions, createSubscription, updateSubscription, deleteSubscription, isLoading } =
-    useSubscriptionStore();
+  const {
+    summary,
+    loadSubscriptions,
+    createSubscription,
+    updateSubscription,
+    deleteSubscription,
+    logSubscriptionExpense,
+    isLoading,
+  } = useSubscriptionStore();
   const accounts = useAccountStore(state => state.accounts);
   const categories = useCategoryStore(state => state.categories);
-  const createTransaction = useTransactionStore(state => state.createTransaction);
 
   const getInitialNextDate = () => {
     const d = new Date();
@@ -47,6 +59,8 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
 
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [selectedSubForPrompt, setSelectedSubForPrompt] = useState<Subscription | null>(null);
+  const [isLoggingExpense, setIsLoggingExpense] = useState(false);
   const [name, setName] = useState('');
   const [amount, setAmount] = useState('');
   const [frequency, setFrequency] = useState<'monthly' | 'yearly'>('monthly');
@@ -98,75 +112,33 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
     ]);
   };
 
-  const advanceNextBillingDate = (currentDateStr: string, freq: 'monthly' | 'yearly'): string => {
-    const d = new Date(currentDateStr);
-    if (isNaN(d.getTime())) {
-      const today = new Date();
-      if (freq === 'yearly') {
-        today.setFullYear(today.getFullYear() + 1);
-      } else {
-        today.setMonth(today.getMonth() + 1);
-      }
-      return today.toISOString().split('T')[0];
-    }
-    if (freq === 'yearly') {
-      d.setFullYear(d.getFullYear() + 1);
-    } else {
-      d.setMonth(d.getMonth() + 1);
-    }
-    return d.toISOString().split('T')[0];
-  };
-
-  const getDueStatus = (dueDateStr: string) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const due = new Date(dueDateStr);
-    due.setHours(0, 0, 0, 0);
-    const diffDays = Math.ceil((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return { text: '⚡ DUE TODAY', isUrgent: true };
-    if (diffDays === 1) return { text: '⚠️ DUE TOMORROW', isUrgent: true };
-    if (diffDays < 0) return { text: `OVERDUE (${Math.abs(diffDays)}d)`, isUrgent: true };
-    if (diffDays <= 7) return { text: `IN ${diffDays} DAYS`, isUrgent: false };
-    return { text: `IN ${diffDays} DAYS`, isUrgent: false };
-  };
-
   const handleLogExpense = (sub: Subscription) => {
-    Alert.alert(
-      'Log Subscription Expense',
-      `Record ${formatCurrency(sub.amount, currencySymbol, false, false)} for "${sub.name}" as an expense and advance billing date?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Log & Advance',
-          onPress: async () => {
-            const effectiveAccountId = accounts.some(a => a.id === sub.accountId)
-              ? sub.accountId
-              : accounts[0]?.id || 'acc-primary';
+    setSelectedSubForPrompt(sub);
+  };
 
-            await createTransaction({
-              type: 'expense',
-              amount: sub.amount,
-              categoryId: sub.categoryId || 'cat-subscriptions',
-              accountId: effectiveAccountId,
-              merchant: sub.name,
-              description: `Recurring ${sub.frequency} subscription`,
-              date: getTodayDateString(),
-              time: getCurrentTimeString(),
-              currency: accounts.find(a => a.id === effectiveAccountId)?.currency || 'INR',
-            });
+  const handleConfirmLogExpense = async () => {
+    if (!selectedSubForPrompt) return;
+    setIsLoggingExpense(true);
+    try {
+      const targetSub = selectedSubForPrompt;
+      await logSubscriptionExpense(targetSub);
+      const subName = targetSub.name;
+      const amountStr = formatCurrency(targetSub.amount, currencySymbol, false, false);
+      const nextDate = advanceNextBillingDate(targetSub.nextBillingDate, targetSub.frequency);
+      setSelectedSubForPrompt(null);
+      Alert.alert(
+        'Subscription Paid',
+        `Logged ${amountStr} for "${subName}" to expenses. Next billing date: ${nextDate}.`
+      );
+    } catch {
+      Alert.alert('Error', 'Failed to log subscription expense.');
+    } finally {
+      setIsLoggingExpense(false);
+    }
+  };
 
-            const nextDate = advanceNextBillingDate(sub.nextBillingDate, sub.frequency);
-            await updateSubscription(sub.id, { nextBillingDate: nextDate });
-
-            Alert.alert(
-              'Subscription Paid',
-              `Logged ${formatCurrency(sub.amount, currencySymbol, false, false)} to expenses. Next billing date: ${nextDate}.`
-            );
-          },
-        },
-      ]
-    );
+  const handleDismissPrompt = () => {
+    setSelectedSubForPrompt(null);
   };
 
   return (
@@ -418,6 +390,43 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                 Add Subscription
               </AppText>
 
+              {/* Quick Preset Chips */}
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+                {[
+                  { label: 'Netflix', amt: '649' },
+                  { label: 'Spotify', amt: '119' },
+                  { label: 'YouTube', amt: '149' },
+                  { label: 'iCloud', amt: '75' },
+                ].map(preset => (
+                  <TouchableOpacity
+                    key={preset.label}
+                    onPress={() => {
+                      setName(preset.label);
+                      if (!amount) setAmount(preset.amt);
+                    }}
+                    style={{
+                      paddingVertical: 4,
+                      paddingHorizontal: 10,
+                      borderRadius: 12,
+                      backgroundColor: name === preset.label ? colors.accentRedSurface : colors.surfaceLighter,
+                      borderWidth: 1,
+                      borderColor: name === preset.label ? colors.accentRed : colors.border,
+                    }}
+                  >
+                    <AppText
+                      variant="labelSmall"
+                      style={{
+                        color: name === preset.label ? colors.coral : colors.textSecondary,
+                        fontSize: 11,
+                        fontWeight: '600',
+                      }}
+                    >
+                      +{preset.label}
+                    </AppText>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
               <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border }]}>
                 <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
                   SERVICE NAME
@@ -438,7 +447,7 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                 <TextInput
                   value={amount}
                   onChangeText={setAmount}
-                  placeholder="649"
+                  placeholder="e.g. 649"
                   placeholderTextColor={colors.textMuted}
                   keyboardType="numeric"
                   style={[styles.input, { color: colors.textPrimary }]}
@@ -446,9 +455,43 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
               </View>
 
               <View style={[styles.inputBox, { backgroundColor: colors.background, borderColor: colors.border, marginTop: 10 }]}>
-                <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
-                  NEXT BILLING DATE
-                </AppText>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                  <AppText variant="labelSmall" style={{ color: colors.textSecondary }}>
+                    NEXT BILLING DATE
+                  </AppText>
+                  <View style={{ flexDirection: 'row', gap: 6 }}>
+                    <TouchableOpacity
+                      onPress={() => setNextBillingDate(getTodayDateString())}
+                      style={{
+                        paddingVertical: 2,
+                        paddingHorizontal: 8,
+                        borderRadius: 4,
+                        backgroundColor: nextBillingDate === getTodayDateString() ? colors.accentRedSurface : colors.surfaceLighter,
+                        borderWidth: 1,
+                        borderColor: nextBillingDate === getTodayDateString() ? colors.accentRed : colors.border,
+                      }}
+                    >
+                      <AppText variant="labelSmall" style={{ color: nextBillingDate === getTodayDateString() ? colors.coral : colors.textSecondary, fontSize: 10 }}>
+                        ⚡ Today
+                      </AppText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setNextBillingDate(getInitialNextDate())}
+                      style={{
+                        paddingVertical: 2,
+                        paddingHorizontal: 8,
+                        borderRadius: 4,
+                        backgroundColor: nextBillingDate === getInitialNextDate() ? colors.accentRedSurface : colors.surfaceLighter,
+                        borderWidth: 1,
+                        borderColor: nextBillingDate === getInitialNextDate() ? colors.accentRed : colors.border,
+                      }}
+                    >
+                      <AppText variant="labelSmall" style={{ color: nextBillingDate === getInitialNextDate() ? colors.coral : colors.textSecondary, fontSize: 10 }}>
+                        +1 Month
+                      </AppText>
+                    </TouchableOpacity>
+                  </View>
+                </View>
                 <TextInput
                   value={nextBillingDate}
                   onChangeText={setNextBillingDate}
@@ -513,6 +556,15 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
           </TouchableOpacity>
         </KeyboardAvoidingView>
       </Modal>
+
+      {/* Subscription Expense Prompt Modal */}
+      <SubscriptionPromptModal
+        visible={!!selectedSubForPrompt}
+        subscription={selectedSubForPrompt}
+        onConfirm={handleConfirmLogExpense}
+        onDismiss={handleDismissPrompt}
+        isProcessing={isLoggingExpense}
+      />
     </SafeAreaView>
   );
 };

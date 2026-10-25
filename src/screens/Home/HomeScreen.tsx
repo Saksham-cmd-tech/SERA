@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Modal,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,12 +19,16 @@ import { MonthlyBudgetBanner } from '../../components/finance/MonthlyBudgetBanne
 import { TransactionRow } from '../../components/finance/TransactionRow';
 import { CategoryIcon } from '../../components/common/CategoryIcon';
 import { AppButton } from '../../components/common/AppButton';
+import { SubscriptionPromptModal } from '../../components/finance/SubscriptionPromptModal';
 import { useTransactionStore } from '../../store/useTransactionStore';
 import { useAccountStore } from '../../store/useAccountStore';
 import { useBudgetStore } from '../../store/useBudgetStore';
 import { useGoalStore } from '../../store/useGoalStore';
 import { useSettingsStore } from '../../store/useSettingsStore';
+import { useSubscriptionStore } from '../../store/useSubscriptionStore';
+import { Subscription } from '../../types';
 import { formatCurrency } from '../../utils/currency';
+import { getTodayDateString, advanceNextBillingDate } from '../../utils/date';
 import { widgetService } from '../../services/widgetService';
 
 interface HomeScreenProps {
@@ -50,9 +55,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const { summary: budgetSummary, loadBudgetSummary } = useBudgetStore();
   const { goals, loadGoals } = useGoalStore();
   const { togglePrivacyMode, settings } = useSettingsStore();
+  const {
+    summary: subscriptionSummary,
+    loadSubscriptions,
+    dismissedPromptIds,
+    dismissPrompt,
+    logSubscriptionExpense,
+  } = useSubscriptionStore();
 
   const [accountModalVisible, setAccountModalVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [promptSub, setPromptSub] = useState<Subscription | null>(null);
+  const [isProcessingPrompt, setIsProcessingPrompt] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -60,7 +74,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       loadAccounts();
       loadBudgetSummary();
       loadGoals();
-    }, [loadTransactions, loadAccounts, loadBudgetSummary, loadGoals])
+      loadSubscriptions();
+    }, [loadTransactions, loadAccounts, loadBudgetSummary, loadGoals, loadSubscriptions])
   );
 
   const onRefresh = async () => {
@@ -70,8 +85,49 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       loadAccounts(),
       loadBudgetSummary(),
       loadGoals(),
+      loadSubscriptions(),
     ]);
     setRefreshing(false);
+  };
+
+  useEffect(() => {
+    if (subscriptionSummary.subscriptions.length > 0 && !promptSub) {
+      const todayStr = getTodayDateString();
+      const dueSub = subscriptionSummary.subscriptions.find(
+        sub => sub.nextBillingDate <= todayStr && !dismissedPromptIds.includes(sub.id)
+      );
+      if (dueSub) {
+        setPromptSub(dueSub);
+      }
+    }
+  }, [subscriptionSummary.subscriptions, dismissedPromptIds, promptSub]);
+
+  const handleConfirmPrompt = async () => {
+    if (!promptSub) return;
+    const targetSub = promptSub;
+    setIsProcessingPrompt(true);
+    try {
+      await logSubscriptionExpense(targetSub);
+      const subName = targetSub.name;
+      const amountStr = formatCurrency(targetSub.amount, currencySymbol, false, false);
+      const nextDate = advanceNextBillingDate(targetSub.nextBillingDate, targetSub.frequency);
+      setPromptSub(null);
+      Alert.alert(
+        'Subscription Added to Expenses',
+        `Recorded ${amountStr} for "${subName}" to your expense history.\nNext billing cycle begins: ${nextDate}.`
+      );
+    } catch {
+      Alert.alert('Error', 'Unable to record subscription expense. Please try again.');
+    } finally {
+      setIsProcessingPrompt(false);
+    }
+  };
+
+  const handleDismissPrompt = () => {
+    if (promptSub) {
+      dismissPrompt(promptSub.id);
+      setPromptSub(null);
+    }
   };
 
   useEffect(() => {
@@ -695,6 +751,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </View>
         </TouchableOpacity>
       </Modal>
+
+      {/* Due Subscription Prompt Modal */}
+      <SubscriptionPromptModal
+        visible={!!promptSub}
+        subscription={promptSub}
+        onConfirm={handleConfirmPrompt}
+        onDismiss={handleDismissPrompt}
+        isProcessing={isProcessingPrompt}
+      />
     </SafeAreaView>
   );
 };
