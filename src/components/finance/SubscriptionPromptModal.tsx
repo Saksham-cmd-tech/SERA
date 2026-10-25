@@ -106,7 +106,7 @@ export const SubscriptionPromptModal: React.FC<SubscriptionPromptModalProps> = (
                   ]}
                 >
                   <CategoryIcon
-                    name={dueStatus.isUrgent ? 'Zap' : 'Repeat'}
+                    name="Repeat"
                     size={11}
                     color={dueStatus.isUrgent ? colors.coral : colors.accent}
                     strokeWidth={2.4}

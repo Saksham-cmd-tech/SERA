@@ -310,7 +310,7 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                     },
                   ]}
                 >
-                  <CategoryIcon name="Zap" size={12} color={colors.accentRed} strokeWidth={2.4} />
+                  <CategoryIcon name="Check" size={12} color={colors.accentRed} strokeWidth={2.4} />
                   <AppText variant="labelSmall" style={{ color: colors.textPrimary, marginLeft: 6, fontWeight: '700' }}>
                     MARK PAID (LOG EXPENSE)
                   </AppText>
@@ -472,7 +472,7 @@ export const SubscriptionsScreen: React.FC<SubscriptionsScreenProps> = ({ naviga
                       }}
                     >
                       <AppText variant="labelSmall" style={{ color: nextBillingDate === getTodayDateString() ? colors.coral : colors.textSecondary, fontSize: 10 }}>
-                        ⚡ Today
+                        Today
                       </AppText>
                     </TouchableOpacity>
                     <TouchableOpacity

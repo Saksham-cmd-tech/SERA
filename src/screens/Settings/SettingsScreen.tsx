@@ -157,7 +157,7 @@ export const SettingsScreen: React.FC<SettingsScreenProps> = ({ navigation }) =>
                   {settings.userName || 'User'}
                 </AppText>
                 <AppText variant="metadata" style={{ color: colors.textSecondary }}>
-                  EDIT ✎
+                  EDIT
                 </AppText>
               </View>
               <AppText variant="metadata" style={{ color: colors.textSecondary, marginTop: 2 }}>

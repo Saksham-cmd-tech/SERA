@@ -24,6 +24,7 @@ import {
   Repeat,
   Wallet,
   User,
+  Clock,
 } from 'lucide-react-native';
 import { useAppTheme } from '../../hooks/useAppTheme';
 import { useKeyboardBottomInset } from '../../hooks/useKeyboardBottomInset';
@@ -542,96 +543,156 @@ const SpeedSlide: React.FC<{
             },
           ]}
         >
-          {/* Card Top: Merchant & Amount */}
-          <View style={styles.walletCardTop}>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          {/* Header Row: Status & Speed Indicator */}
+          <View style={styles.walletHeaderRow}>
+            <View style={styles.walletStatusPill}>
               <View
                 style={[
-                  styles.merchantAvatar,
-                  { backgroundColor: 'rgba(245, 158, 11, 0.16)' },
+                  styles.statusDot,
+                  { backgroundColor: colors.positive },
                 ]}
+              />
+              <AppText
+                variant="labelSmall"
+                style={{
+                  color: colors.textSecondary,
+                  letterSpacing: 0.8,
+                  fontSize: 10,
+                  fontWeight: '600',
+                }}
               >
-                <Coffee size={20} color="#F59E0B" strokeWidth={2.2} />
-              </View>
-              <View style={{ marginLeft: 12 }}>
-                <AppText
-                  variant="bodyLarge"
-                  style={{ color: colors.textPrimary, fontWeight: '700', fontSize: 16 }}
-                >
-                  Blue Tokai Coffee
-                </AppText>
-                <AppText
-                  variant="metadata"
-                  style={{ color: colors.textSecondary, marginTop: 2 }}
-                >
-                  Dining & Cafes • Just now
-                </AppText>
-              </View>
+                RECENT OUTFLOW
+              </AppText>
+            </View>
+
+            <View
+              style={[
+                styles.speedPill,
+                {
+                  backgroundColor: colors.surface,
+                  borderColor: colors.borderLight,
+                },
+              ]}
+            >
+              <Clock size={11} color={colors.textSecondary} strokeWidth={2.2} />
+              <AppText
+                variant="labelSmall"
+                style={{
+                  color: colors.textSecondary,
+                  marginLeft: 4,
+                  fontWeight: '600',
+                  fontSize: 10,
+                }}
+              >
+                2.8s fast
+              </AppText>
+            </View>
+          </View>
+
+          {/* Card Main: Merchant & Amount */}
+          <View style={styles.walletMainRow}>
+            <View
+              style={[
+                styles.merchantAvatar,
+                { backgroundColor: 'rgba(245, 158, 11, 0.14)' },
+              ]}
+            >
+              <Coffee size={22} color="#F59E0B" strokeWidth={2.2} />
+            </View>
+            <View style={{ flex: 1, marginLeft: 12, marginRight: 8 }}>
+              <AppText
+                variant="cardTitle"
+                numberOfLines={1}
+                style={{
+                  color: colors.textPrimary,
+                  fontSize: 16,
+                  fontFamily: fonts.inter.bold,
+                }}
+              >
+                Blue Tokai Coffee
+              </AppText>
+              <AppText
+                variant="metadata"
+                numberOfLines={1}
+                style={{ color: colors.textSecondary, marginTop: 2, fontSize: 12 }}
+              >
+                Dining • Just now
+              </AppText>
             </View>
 
             <AppText
-              variant="amountMedium"
+              variant="amountLarge"
               style={{
                 color: colors.textPrimary,
                 fontFamily: fonts.mono.bold,
-                fontSize: 18,
+                fontSize: 19,
               }}
             >
               -{currentCurrencySymbol}340
             </AppText>
           </View>
 
-          {/* Card Divider */}
+          {/* Attached Receipt Inner Card */}
           <View
-            style={[styles.cardDivider, { backgroundColor: colors.borderLight }]}
-          />
-
-          {/* Card Bottom: Receipt Attached & Speed Pill */}
-          <View style={styles.walletCardBottom}>
-            <View
-              style={[
-                styles.receiptBadge,
-                {
-                  backgroundColor: 'rgba(52, 211, 153, 0.12)',
-                  borderColor: 'rgba(52, 211, 153, 0.3)',
-                },
-              ]}
-            >
-              <Camera size={12} color={colors.positive} strokeWidth={2.2} />
-              <AppText
-                variant="labelSmall"
-                style={{
-                  color: colors.positive,
-                  marginLeft: 5,
-                  fontWeight: '700',
-                  fontSize: 10,
-                }}
+            style={[
+              styles.receiptInnerCard,
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+              },
+            ]}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 10 }}>
+              <View
+                style={[
+                  styles.receiptIconBox,
+                  { backgroundColor: 'rgba(52, 211, 153, 0.12)' },
+                ]}
               >
-                Receipt Attached
-              </AppText>
-              <Check size={11} color={colors.positive} strokeWidth={2.6} style={{ marginLeft: 3 }} />
+                <Camera size={14} color={colors.positive} strokeWidth={2.2} />
+              </View>
+              <View style={{ marginLeft: 10, flex: 1 }}>
+                <AppText
+                  variant="bodyMedium"
+                  numberOfLines={1}
+                  style={{
+                    color: colors.textPrimary,
+                    fontWeight: '600',
+                    fontSize: 12,
+                  }}
+                >
+                  Receipt Attached
+                </AppText>
+                <AppText
+                  variant="metadata"
+                  numberOfLines={1}
+                  style={{ color: colors.textSecondary, fontSize: 10, marginTop: 1 }}
+                >
+                  Stored locally
+                </AppText>
+              </View>
             </View>
 
             <View
               style={[
-                styles.speedBadge,
+                styles.verifiedBadge,
                 {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
+                  backgroundColor: 'rgba(52, 211, 153, 0.12)',
+                  borderColor: 'rgba(52, 211, 153, 0.25)',
                 },
               ]}
             >
-              <Zap size={11} color={colors.accentRed} strokeWidth={2.4} />
+              <Check size={11} color={colors.positive} strokeWidth={2.8} />
               <AppText
                 variant="labelSmall"
                 style={{
-                  color: colors.textSecondary,
-                  marginLeft: 4,
+                  color: colors.positive,
                   fontWeight: '700',
-                  fontSize: 10,
+                  fontSize: 9,
+                  marginLeft: 3,
                 }}
               >
-                Logged in 2.8s
+                SAVED
               </AppText>
             </View>
           </View>
@@ -1263,10 +1324,35 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 4,
   },
-  walletCardTop: {
+  walletHeaderRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 14,
+  },
+  walletStatusPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginRight: 6,
+  },
+  speedPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  walletMainRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 14,
   },
   merchantAvatar: {
     width: 44,
@@ -1275,29 +1361,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cardDivider: {
-    height: 1,
-    marginVertical: 14,
-  },
-  walletCardBottom: {
+  receiptInnerCard: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  receiptBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 9,
-    paddingVertical: 5,
-    borderRadius: 14,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
     borderWidth: 1,
   },
-  speedBadge: {
+  receiptIconBox: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  verifiedBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 14,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 8,
     borderWidth: 1,
   },
 
